@@ -15,18 +15,18 @@ jobs:
     
     # Build the HTML documentation
     - name: Doxygen Action
-      uses: mattnotmitt/doxygen-action@v1.1.0
+      uses: mattnotmitt/doxygen-action@v1.9.4
       with:
           doxyfile-path: ./software/Doxyfile
           working-directory: .
     
     # Deploy the HTML documentation to GitHub Pages
     - name: GH Pages Deployment
-      uses: peaceiris/actions-gh-pages@v3
+      uses: peaceiris/actions-gh-pages@v3.9
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./doc/html/
-        enable_jekyll: true
+        enable_jekyll: false
         allow_empty_commit: false
         force_orphan: true
         publish_branch: gh-pages
