@@ -1,79 +1,42 @@
-![OH logo](https://github.com/jrsteensen/OpenHornet/blob/master/images/Logo/open_hornet_horizontal_final.png)
+# OpenHornet API Documentation
+
+
+![OH logo](https://raw.githubusercontent.com/jrsteensen/OpenHornet/master/images/Logo/open_hornet_horizontal_500x79.png)
 
 The OpenHornet Project is a F/A-18C OFP 13C Lot 20 1:1 Replica Simulator, consisting of a physical structure and electrical/software interfaces to a PC to be driven by Digital Combat Simulator (DCS).
 
-Currently, this repo reflects the project in its current state and is not 100% functional, and all items are subject to change.
+
+## Documentation
+
+This is the API documentation of the OpenHornet Software. You will find a documentation of all the Files, Classes and Functions of the OpenHornet Software here. The documentation was generated using Doxygen. For more information and documentation, visit the links below.
+
+## Current Software State
+
+| Repo  | State  |
+|:----------|:----------|
+| Sandbox   | ![Build Status](https://travis-ci.org/balzreber/OpenHornetSandbox.svg?branch=software)    |
+| Main Repo | ![Build Status](https://travis-ci.org/jrsteensen/OpenHornet.svg?branch=software)   |
+
+
+## Links
 
 * [OpenHornet Website](https://www.openhornet.com)
+* [OpenHornet main git repo](https://github.com/jrsteensen/OpenHornet)
+* [OpenHornet Software git repo](https://github.com/jrsteensen/OpenHornet-Software)
 * [OpenHornet Discord](https://discord.gg/G5PA5ju)
-* [Donate to OpenHornet](https://www.openhornet.com/campaigns/donate/)
+* [Donate to OpenHornet](https://www.openhornet.com/#awb-oc__2834)
 
-## Status
-| Assembly                       |                 | Status |                                |
-|--------------------------------|:---------------:|--------|--------------------------------|
-| Upper Instrument Panel (UIP)   | :no_entry_sign: | B1DF RC | Do not build / Errors expected |
-| Lower Instrument Panel (LIP)   | :no_entry_sign: | B1DF RC | Do not build / Errors expected |
-| Left Console (LCON)            | :no_entry_sign: | Design | Do not build / Errors expected |
-| Center Tub (CT)                | :no_entry_sign: | Design | Do not build / Errors expected |
-| Right Console (RCON)           | :no_entry_sign: | Design | Do not build / Errors expected |
-| Ejection Seat (SEAT)           | :no_entry_sign: | Design | Do not build / Errors expected |
-| Flight Stick Assembly (FLTSTK) | :no_entry_sign: | Design | Do not build / Errors expected |
-| Throttle Assembly (THROTTLE)   | :no_entry_sign: | Design | Do not build / Errors expected |
 
-![Overall Screen Grab](https://github.com/jrsteensen/OpenHornet/blob/master/images/Glareshields.2019.10.21.PNG)
+## Licensing
+   Copyright 2023 OpenHornet
 
-## Design Software Requirements
+   Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
-* Mechanical CAD Software Required: SolidWorks 2021 / [SolidWorks eDrawings Viewer](https://www.solidworks.com/sw/support/eDrawings/e2_register.htm)
-* Electrical CAD Software Required: KiCAD 5.1.0
-* Microsoft Office (or compatible)
+       http://www.apache.org/licenses/LICENSE-2.0
 
-## Sim Software Requirements
-* [DCS w/ F/A-18C module](https://www.digitalcombatsimulator.com/en/shop/modules/hornet/)
-* [DCSFlightPanels DCS-BIOS](https://github.com/DCSFlightpanels/dcs-bios)
+   Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+<span class="next_section_button">
 
-* [Contributing HOW-TO](CONTRIBUTING.md)
-
-## OpenHornet MCAD Model
-
-The MCAD is converting from SW2019 to 2021. No models for contribution will be accepted in anything except this format so we don't end up with various components in various software packages and increase the dependencies required. No commits from the educational or makers versions will be accepted.
-
-### Top Level Assembly Structure
-
-```
-MCAD
-|- OpenHornetSimPit.sldasm
-   |- Upper Instrument Panel.sldasm
-   |- Lower Instrument Panel.sldasm
-   |- Left Console.sldasm
-   |- Right Console.sldasm
-   |- Center Tub.sldasm (Not created yet. .sldprt is a placeholder.)
-   |- SJU-17.sldasm
-```
-
-## Authors and Acknowledgment
-
-### CORE DEVELOPMENT TEAM
-* Erik Scott (RandomTroubledMind): _Project Founder, Mechanical Design_
-* John Steensen (Noctum): _Systems/Mechanical Design Lead_
-* Oscar Arias (Amanuense): _Electrical/Software Design Lead_
-
-### DEVELOPMENT CONTRIBUTOR TEAM
-* Balz Reber (Balse): _Electrical/Software Design_
-* Tejay Beauparlant (Stang): _Mehcanical Design/Manufacturing Engineering_
-* Magic_Man: _Electrical Design_
-* Luke Walker (L.Walker): _Mechanical Design/Drafting/Backlighting System_
-
-### HONORABLE MENTIONS
-* __Logo Design__: NegativeONE
-* __Development Builders/Testers__: BuckEye, Splash, DG, Otso, L. Walker
-* __Donators__: AJMilner, bnepethomas, crosshairs2230
-* __Inactive Dev Contributors__: Bullant (Software Design/DCS-BIOS Expert), Gaberun24 (Electrical/Software Design), Damien022 (Software Design), Baago, Caviar4, NegativeONE, Ravell
-* **Subject Matter Expert**: FlyNavy75, Sixtigers, USMARINE108, Luft101, Lex
-
-## License
-![CC BY-NC-SA](https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png "CC BY-NC-SA")
-[CC BY-NC-SA](http://creativecommons.org/licenses/by-nc-sa/4.0/)
+Read Next: [Software Manual](docs/SoftwareManual.md)
+</span>
