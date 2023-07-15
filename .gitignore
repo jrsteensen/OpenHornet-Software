@@ -1,10 +1,6 @@
 *.bak
-fp-info-cache
-*.kicad_pcb-bak
-*.sch-bak
 .DS_Store
 ~*.*
 doxyHtml
-*-rescue.dcm
-*-rescue.lib
 doc
+html
