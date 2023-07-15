@@ -1,31 +1,24 @@
-# OpenHornet API Documentation
-
-
+# README
 ![OH logo](https://raw.githubusercontent.com/jrsteensen/OpenHornet/master/images/Logo/open_hornet_horizontal_500x79.png)
 
 OpenHornet is a F/A-18C OFP 13C Lot 20 1:1 Replica Simulator, consisting of a physical structure and electrical/software interfaces to a PC to be driven by Digital Combat Simulator (DCS).
 
+This repository is to manage and document all the software for OpenHornet.
 
 ## Documentation
-
 This is the API documentation of the OpenHornet Software. You will find a documentation of all the Files, Classes and Functions of the OpenHornet Software here. The documentation was generated using Doxygen. For more information and documentation, visit the links below.
 
 ## Current Software State
-
-| Repo  | State  |
+| Repo  | Docs | Testing |
 |:----------|:----------|
-| Sandbox   | ![Build Status](https://travis-ci.org/balzreber/OpenHornetSandbox.svg?branch=software)    |
-| Main Repo | ![Build Status](https://travis-ci.org/jrsteensen/OpenHornet.svg?branch=software)   |
-> Update these once testing is implemented in the OH Software Repo
+| Main | [![pages-build-deployment](https://github.com/jrsteensen/OpenHornet-Software/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)](https://github.com/jrsteensen/OpenHornet-Software/actions/workflows/pages/pages-build-deployment)   |     |
+| Staging |    |    |
 
 ## Project Links
-
-
 * [OpenHornet Website](https://www.openhornet.com)
 * [OpenHornet main git repo](https://github.com/jrsteensen/OpenHornet)
 * [OpenHornet Discord](https://discord.gg/G5PA5ju)
 * [Donate to OpenHornet](https://www.openhornet.com/campaigns/donate/)
-
 
 ## Licensing
 Copyright © 2016-2023 OpenHornet
