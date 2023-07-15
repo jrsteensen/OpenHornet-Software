@@ -24,27 +24,27 @@ body:
     validations:
       required: true
   - type: textarea
+    id: actual-results
+    attributes: 
+      label: Actual Results
+      description: What actually happened?
+      placeholder: Be very specific. The more detail, the better we can analyze the issue. Copy/Paste error messages directly and completely. Context matters!
+    validations:
+      required: true
+  - type: textarea
     id: images
     attributes: 
       label: Screenshots/Images/Files
-      description: Pictures/Files are worth 1000 words. Take some screen grab of the model, circle things with the snipping tool, put together a quick power point description of the issue, drop in a STEP/F3Z file of a fix you made - you can't put too much information here!
-      placeholder: You can just paste images or files in this field...
+      description: Pictures/Files are worth 1000 words. Take some pictures or a video of the unexpected behavior, show us where you think the bad code is, put together a quick power point description of the issue, drop in a .INO file of a fix you made - you can't put too much information here!
+      placeholder: You can just paste images, videos or files in this field...
     validations:
       required: false
-  - type: textarea
-    id: justification
-    attributes: 
-      label: Justification
-      description: Why would this improve OpenHornet? 
-      placeholder: Does it give OpenHornet new capabilities, or allow you to build it faster, cheaper, easier, or better?
-    validations:
-      required: true
   - type: input
     id: part-numbers
     attributes:
-      label: Applicable Part Numbers
-      description: List the part number(s) this issue applies to.
-      placeholder: ex. OH02A5-136, OH04A2-1, etc.
+      label: Applicable File Names
+      description: List the file(s) this issue applies to.
+      placeholder: ex. 1A1A1-RS485_BUS_MASTER_UIP.ino, 1A2-MASTER_ARM_PANEL.ino, etc.
     validations:
       required: true
   - type: dropdown
@@ -53,8 +53,8 @@ body:
       label: Release Version
       description: What release are you working with?
       options:
-        - 1.0.0-beta.1
-        - pre-1.0.0-beta.1 (Early Development/Alpha)
+        - 1.0.0-beta.2
+        - pre-1.0.0-beta.2 (Early Development/Alpha)
     validations:
       required: true
   - type: dropdown
@@ -64,9 +64,10 @@ body:
       description: Is this a mechanical and/or electrical issue or artwork? Mechanical being physical parts like structure, seat, mechanisms, etc. Electrical would be PCBs, wiring, etc. Artwork would be placards, stickers, dataplates or a vector art issue. (You may select more than one.) 
       multiple: true
       options:
-        - Mechanical (Structure/Panels/Mechanisms)
-        - Electrical (PCBs/Wiring/etc)
-        - Artwork (Decals)
+        - embedded (Arduino Sketches/Microcontroller embedded software)
+        - Libraries & Dependencies (Arduino Libraries, etc)
+        - DCS-BIOS
+        - Documentation
     validations:
         required: true
   - type: dropdown
@@ -84,14 +85,22 @@ body:
         - Right Console (RCON)
         - Flight Stick
         - Throttle
-        - Something else
     validations:
         required: true
+  - type: checkboxes
+    id: built-to-print
+    attributes:
+      label: Hardware is built to print & this software is tested on that hardware?
+      description: Did you build this part to the relevant drawing, using parts specified by OpenHornet? (It's okay if you didn't, just describe how you deviated in the Miscellaneous Info text area below.)
+      options:
+        - label: I built (or attempted to build) the part to the OpenHornet print without any deviations and tested the software on it.
+        - label: I am not building this part to the OH print. (List deviations in detail in the Miscellaneous Info text area below.)
+          required: true
   - type: textarea
     id: misc
     attributes: 
       label: Miscellaneous Info
       description: Do you have any additional information not previously covered?
-      placeholder: This space would be to provide specific applicable model names and versions, deviations from the OpenHornet build, or provide any information that is not covered elsewhere in this report.
+      placeholder: This space would be to provide specific code snippets and versions, list deviations from the OpenHornet build, or provide any information that is not covered elsewhere in this report.
     validations:
       required: false
