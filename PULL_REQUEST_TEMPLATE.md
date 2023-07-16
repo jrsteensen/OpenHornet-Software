@@ -16,7 +16,6 @@ Addresses # (issue)
 
 
 ### Checklist:
-
 - [ ] My code follows the (style guidelines)[https://jrsteensen.github.io/OpenHornet-Software/d4/d46/md__2github_2workspace_2_s_t_y_l_e_g_u_i_d_e.html] of this project
 - [ ] (I have complied with the software manual)[https://jrsteensen.github.io/OpenHornet-Software/d7/d78/md__software_manual.html] for this project
 - [ ] I have performed a self-review of my own code
