@@ -53,20 +53,45 @@ Click ```Create pull request``` and leave the box checked that says ```Allow edi
 ## Aw crap, I need to fix my PR (Or a reviewer requested changes.)
 * Thats easy! Just make another commit against the same branch the PR is against and it will apply it to the PR. (Try not to open a new PR unless explicitly instructed to by repository maintainers.)
 
-## Repository Structure
-    master
-    - 1.0.0-beta1
-    -- 1.0.0-beta1/feature-Ejection-Seat-2.0
-    -- 1.0.0-beta1/bugfix-obsolete-potentiometer
-	-- 1.0.0-beta1/docs-system-interconnect
-	-- 1.0.0-beta1/maint-hardware-optimization
+## Branches & Workflows
+### Main branch
+This branch is for the current release, and should contain stable, tested and known good code only. It should never be committed to directly, outside of an emergency hotfix at repository admin direction. It is merged from the `staging` branch.
+* Only repository admin can merge to this branch.
+* Must compile doxygen documents which is (hosted here.)[https://jrsteensen.github.io/OpenHornet-Software/index.html]
+* All Arduino sketches must pass CI testing, which is a simple 'smoke-test' that just verifies it does in fact compile with Arduino IDE, DCS-BIOS and any other required libraries/dependencies on the microcontroller it was designed for.
+> **Warning**
+> Individual contributors should NEVER commit, push or merge to this branch without explicit admin approval.
 
-## Branches
-### Master branch 
-The Master branch is the current stable release. The only time things will be committed to this branch is upon release by project administrators. (As a contributor, do not commit to Master. Ever.)
+#### Workflows
 
-### Version branch
-A version branch contains all the sub-branches that will feed into the release of that version of OpenHornet. This branch is merged to master immediately prior to release.
+##### <Workflow Name>
+* **Trigger Conditions:** On push to main branch
+* **Can manually trigger?** Yes/No
+* **Function:** XXXX
+##### <Workflow Name>
+* **Trigger Conditions:** On push to main branch
+* **Can manually trigger?** Yes/No
+* **Function:** XXXX
+
+### Staging branch
+This branch is where code is gathered and documented for the next release. It should contain only code that compiles, and is generally ready for release.
+* Only repository admin and maintainers can merge to this branch.
+* Must compile doxygen documents which are kept at `/docs/html/index.html` and available from within the repository.
+* All Arduino sketches must pass CI testing, which is a simple 'smoke-test' that just verifies it does in fact compile with Arduino IDE, DCS-BIOS and any other required libraries/dependencies.
+
+#### Workflows
+
+##### <Workflow Name>
+* **Trigger Conditions:** On push to main branch
+* **Can manually trigger?** Yes/No
+* **Function:** XXXX
+##### <Workflow Name>
+* **Trigger Conditions:** On push to main branch
+* **Can manually trigger?** Yes/No
+* **Function:** XXXX
+
+### Development branches
+These branches are where the majority of development happens. 
 
 #### Feature sub-branch
 Feature sub-branches are descriptively named branches which are stand-alone new features and will not/can not affect dependencies. They shall feed into the version branch it is associated with.
@@ -78,7 +103,7 @@ Bugfix sub-branches resolve identified issues with an OH component. They may aff
 Documentation sub-branches create or update project documentation, and should not affect any hardware component. Doc updates should be included directly with a feature or bugfix update, and a docs branch should only be created if that situation does not apply. They shall feed into the version branch it is associated with.
 
 #### Maint sub-branch
-Maintainence sub-branches are for cleanup, quality-of-life updates, and other issues not rising to the level of a bug. They shall feed into the version branch it is associated with.
+Maintainence sub-branches are for cleanup, refactoring, quality-of-life updates, and other issues not rising to the level of a bug. They shall feed into the version branch it is associated with.
 
 ## Commits
 
