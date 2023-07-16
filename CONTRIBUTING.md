@@ -57,7 +57,7 @@ Click ```Create pull request``` and leave the box checked that says ```Allow edi
 ### Main branch
 This branch is for the current release, and should contain stable, tested and known good code only. It should never be committed to directly, outside of an emergency hotfix at repository admin direction. It is merged from the `staging` branch.
 * Only repository admin can merge to this branch.
-* Must compile doxygen documents which is (hosted here.)[https://jrsteensen.github.io/OpenHornet-Software/index.html]
+* Must compile doxygen documents which is (hosted here)[https://jrsteensen.github.io/OpenHornet-Software/index.html].
 * All Arduino sketches must pass CI testing, which is a simple 'smoke-test' that just verifies it does in fact compile with Arduino IDE, DCS-BIOS and any other required libraries/dependencies on the microcontroller it was designed for.
 > **Warning**
 > Individual contributors should NEVER commit, push or merge to this branch without explicit admin approval.
