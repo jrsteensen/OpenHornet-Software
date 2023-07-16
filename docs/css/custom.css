@@ -1,0 +1,4 @@
+html {
+    /* Make sure sidebar is wide enough to contain the page title (logo + title + version) */
+    --side-nav-fixed-width: 335px;
+}
