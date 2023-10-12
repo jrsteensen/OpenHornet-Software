@@ -1,0 +1,28 @@
+name: Continuous Integration
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  compile-sketches:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+          submodules: 'true'
+
+    - name: Install Arduino CLI
+      uses: arduino/setup-arduino-cli@v1
+
+    # Recursively build all sketches with Makefiles
+    - name: Compile Sketches
+      run: |
+          cd embedded
+          make all
