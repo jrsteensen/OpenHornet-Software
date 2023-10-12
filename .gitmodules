@@ -1,0 +1,15 @@
+[submodule "libs/dcs-bios-arduino-library"]
+	path = libraries/dcs-bios-arduino-library
+	url = https://github.com/DCS-Skunkworks/dcs-bios-arduino-library.git
+[submodule "libraries/Arduino_Boards"]
+	path = libraries/Arduino_Boards
+	url = https://github.com/sparkfun/Arduino_Boards.git
+[submodule "libraries/Adafruit_NeoPixel"]
+	path = libraries/Adafruit_NeoPixel
+	url = https://github.com/adafruit/Adafruit_NeoPixel.git
+[submodule "include/Arduino-Makefile"]
+	path = include/Arduino-Makefile
+	url = https://github.com/sudar/Arduino-Makefile.git
+[submodule "libraries/Servo"]
+	path = libraries/Servo
+	url = https://github.com/arduino-libraries/Servo.git
