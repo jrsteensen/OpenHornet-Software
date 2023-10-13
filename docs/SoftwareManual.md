@@ -10,6 +10,9 @@ This manual is about writing software for the OpenHornet project. It shows how t
 ## Prerequisites
 
 - Arduino IDE (with Libraries listed below)
+- GNU Make
+  - [Windows](https://gnuwin32.sourceforge.net/packages/make.htm)
+  - [Mac](https://formulae.brew.sh/formula/make)
 - Local Doxygen installation
 - OpenHornetSandbox access
 
@@ -17,6 +20,7 @@ This manual is about writing software for the OpenHornet project. It shows how t
 ## Supported Software
 
 - Arduino 1.8.10
+- GNU Make 3.81+
 - DCS-bios 0.10.0
 - Doxygen 1.8.13
 
@@ -27,7 +31,7 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 ## Preparation
 
-The starting point of every new software sketch is the OHSketchTemplate folder. Please copy the whole folder. There are some test.skip files inside there who are needed for the travis-ci testing. Once copied delete the sample function from the OHSketchTemplate.ino. Then change all the \@tags with your own information.
+The starting point of every new software sketch is the OHSketchTemplate folder. Please copy the whole folder. There is a Makefile included which defines the target board and libraries needed for your sketch. Once copied delete the sample function from the OHSketchTemplate.ino. Then change all the \@tags with your own information.
 
 
 ## Sketch naming
@@ -254,6 +258,21 @@ Sketches who are untested have to have a leading "u" before the version number a
 
 eg: u.1.4.2 (untested)
 
+## Makefile
+Since the OpenHornet project targets multiple Arduino boards and libraries, the `Makefile` located in each sketch directory is necessary to determine which specific Arduino board and libraries are needed for each component.
+
+The file contains several variables or settings which are used by the [Arduino-Makefile](https://github.com/sudar/Arduino-Makefile) project to compile the sketch with the appropriate target board.
+
+`BOARD_TAG` should be set to the target Arduino board family.  Example options are `promicro`, `mega`, etc.  Run `make show_boards` to see a full list of valid board families.
+
+`BOARD_SUB` should be set to the specific sub-target of the board family.  Example options are `16MHzatmega32U4` (ProMicro 16MHz), `atmega2560` (Mega 2560), etc.  Run `make show_submenu` to see a full list of valid entries.
+
+`ARDUINO_LIBS` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](https://github.blog/2016-02-01-working-with-submodules/) in the `/libraries` folder of the project.
+
+Once the Makefile has been modified to set the appropriate board and libraries, you may run `make` from the command-line in the folder of the sketch you're working on to compile the .ino files and create a `build` folder with the firmware for the target board.
+
+For ease of testing, you may also run `make upload` to compile and attempt to upload and install the sketch onto a device connected to your computer.
+
 ## Testing your Software
 
 Before you upload anything, please check if your sketch compiles in your Arduino editor. If it does, check if doxygen compiles with your local doxygen installation.
@@ -266,37 +285,17 @@ Be aware that this is only a Sandbox. Code will not persist there and can be rem
 You can get access to the OpenHornet Sandbox by asking Balse (Balse#3320 on Discord).
 
 
-## Travis-CI
-Travis CI is a continuous integration testing engine. It is connected with the OpenHornet Sandbox (and with the main repo). If Travis detects a change in the repo, it automatically starts working. Basically it starts a virtual environment, clones the repo into that environment and then tries to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
+## Github Actions
+Github Actions is a continuous integration testing engine. It is connected with the OpenHornet Github repository. When a Pull request is opened or merged, Github Actions will checkout the git repo and attempt to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
 
-Travis uses a Adafruit script to carry out its tests. You can find the script here:
-[Travis-CI-Arduino](https://github.com/adafruit/travis-ci-arduino)
-
-### Tested Platforms
-By default Travis tests the code on the following platforms:
-
-- Arduino UNO (uno)
-- Arduino MEGA (mega)
-- Arduino Zero (zero)
-- Arduino Leonardo (leonardo)
-- ESP8266 (esp8266)
-- ESP32 (esp32)
-- Adafruit Metro M4 (m4)
-
-Since OpenHornet only uses Arduino NANO (same as Arduino UNO for testing) and Arduino MEGA, all other tests should be skipped.
-This is done by including a \*.test.skip file inside the directory the sketch resides. For example: esp8266.test.skip would skip the ESP8266 test. The necessary \*.test.skip files are included in the sketch template folder.
-
-Make sure that you include a uno.test.skip file for sketches who can only run on Arduino MEGA. Like the RS485 bus masters for example.
 
 ### Arduino Libraries
-Arduino Libraries who are included in your sketch need to be installed inside travis in order for the tests to work. You find a list of already included libraries in the "Supported Software" section of this manual. If you need anther library installed, ask Balse (Balse#3320 on Discord). He will install the library for you.
+Arduino Libraries which are included in your sketch need to be added as a git submodule to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
 
 
 
 ## Resources
 
-- https://learn.adafruit.com/the-well-automated-arduino-library/travis-ci
-- https://github.com/adafruit/travis-ci-arduino
+- 
 - http://www.doxygen.org
-- http://www.ravis-ci.org
 - https://github.com/dcs-bios
