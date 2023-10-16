@@ -26,3 +26,16 @@ jobs:
       run: |
           cd embedded
           make all
+
+    # Upload .eep and .hex files as artifacts with expiration
+    - name: Prep Artifacts
+      run: |
+          cd embedded
+          make release
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: firmware
+          path: release/
+          retention-days: 7
