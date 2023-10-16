@@ -267,7 +267,7 @@ The file contains several variables or settings which are used by the [Arduino-M
 
 `BOARD_SUB` should be set to the specific sub-target of the board family.  Example options are `16MHzatmega32U4` (ProMicro 16MHz), `atmega2560` (Mega 2560), etc.  Run `make show_submenu` to see a full list of valid entries.
 
-`ARDUINO_LIBS` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](https://github.blog/2016-02-01-working-with-submodules/) in the `/libraries` folder of the project.
+`ARDUINO_LIBS` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](#Git-Submodule) in the `/libraries` folder of the project.  See [Arduino Libraries](#Arduino-Libraries)
 
 Once the Makefile has been modified to set the appropriate board and libraries, you may run `make` from the command-line in the folder of the sketch you're working on to compile the .ino files and create a `build` folder with the firmware for the target board.
 
@@ -289,13 +289,21 @@ You can get access to the OpenHornet Sandbox by asking Balse (Balse#3320 on Disc
 Github Actions is a continuous integration testing engine. It is connected with the OpenHornet Github repository. When a Pull request is opened or merged, Github Actions will checkout the git repo and attempt to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
 
 
-### Arduino Libraries
-Arduino Libraries which are included in your sketch need to be added as a git submodule to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
+## Git Submodules
+The OpenHornet software projects makes use of [git submodules](https://github.blog/2016-02-01-working-with-submodules/) to include and link to other software libraries which are used in Arduino sketches to provide additional functionality.  Most git frontends and tools support git submodules although options differ between each.
 
+- Git for Windows: Ensure that you select the option to "recursively clone submodules" when you clone the repository.
+- Github Desktop: Github Desktop will clone submodules automatically if they exist in the main branch.
+
+
+## Arduino Libraries
+Arduino Libraries which are included in your sketch need to be added as a (git submodule)[#Git-Submodules] to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
+
+Libraries are downloaded during each Github Actions run and made available to the sketch when compiling.  Ensure that the libraries are referenced in the Makefile using the same name that they exist in the `/libraries` folder.
 
 
 ## Resources
 
-- 
 - http://www.doxygen.org
 - https://github.com/dcs-bios
+- https://github.blog/2016-02-01-working-with-submodules/
