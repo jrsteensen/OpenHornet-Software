@@ -8,6 +8,10 @@ on:
       - opened
       - reopened
       - synchronize
+  push:
+    branches:
+      - 'main'
+      - 'develop'
 
 jobs:
   compile-sketches:
