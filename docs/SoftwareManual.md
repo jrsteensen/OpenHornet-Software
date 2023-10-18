@@ -11,8 +11,6 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 - Arduino IDE (with Libraries listed below)
 - GNU Make
-  - [Windows](https://gnuwin32.sourceforge.net/packages/make.htm)
-  - [Mac](https://formulae.brew.sh/formula/make)
 - Local Doxygen installation
 - OpenHornetSandbox access
 
@@ -21,12 +19,12 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 - Arduino 1.8.10
 - GNU Make 3.81+
-- DCS-bios 0.10.0
+- DCS-BIOS 0.7.49
 - Doxygen 1.8.13
 
 ### Arduino Libraries
 
-- dcs-bios-arduino-library 0.2.11
+- dcs-bios-arduino-library 0.3.9
 
 
 ## Preparation
@@ -261,17 +259,15 @@ eg: u.1.4.2 (untested)
 ## Makefile
 Since the OpenHornet project targets multiple Arduino boards and libraries, the `Makefile` located in each sketch directory is necessary to determine which specific Arduino board and libraries are needed for each component.
 
-The file contains several variables or settings which are used by the [Arduino-Makefile](https://github.com/sudar/Arduino-Makefile) project to compile the sketch with the appropriate target board.
+`LIBRARIES` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](#Git-Submodule) in the `/libraries` folder of the project.  See [Arduino Libraries](#Arduino-Libraries)
 
-`BOARD_TAG` should be set to the target Arduino board family.  Example options are `promicro`, `mega`, etc.  Run `make show_boards` to see a full list of valid board families.
+The appropriate board Makefile must be included at the end of the file.  Valid options are:
+- ../../include/mega2560.mk (Mega 2560)
+- ../../include/promicro.mk (Sparkfun Pro Micro)
+- ../../include/promini.mk (Sparkfun Pro Mini)
+- ../../include/s2mini.mk (Wemos S2 Mini)
 
-`BOARD_SUB` should be set to the specific sub-target of the board family.  Example options are `16MHzatmega32U4` (ProMicro 16MHz), `atmega2560` (Mega 2560), etc.  Run `make show_submenu` to see a full list of valid entries.
-
-`ARDUINO_LIBS` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](#Git-Submodule) in the `/libraries` folder of the project.  See [Arduino Libraries](#Arduino-Libraries)
-
-Once the Makefile has been modified to set the appropriate board and libraries, you may run `make` from the command-line in the folder of the sketch you're working on to compile the .ino files and create a `build` folder with the firmware for the target board.
-
-For ease of testing, you may also run `make upload` to compile and attempt to upload and install the sketch onto a device connected to your computer.
+The Makefile will be used by Github Actions to verify that code will compile without errors. Once successful, a downloadable zip file will be created with the compiled firmware which can be flashed to the desired board.
 
 ## Testing your Software
 
