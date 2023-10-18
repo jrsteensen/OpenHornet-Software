@@ -13,3 +13,9 @@
 [submodule "libraries/Servo"]
 	path = libraries/Servo
 	url = https://github.com/arduino-libraries/Servo.git
+[submodule "libraries/arduino-esp32"]
+	path = libraries/arduino-esp32
+	url = https://github.com/espressif/arduino-esp32.git
+[submodule "include/makeEspArduino"]
+	path = include/makeEspArduino
+	url = https://github.com/plerup/makeEspArduino.git
