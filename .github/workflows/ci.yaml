@@ -30,8 +30,16 @@ jobs:
     - name: Install Arduino Tools
       run: sudo apt-get install -y arduino arduino-core-avr
 
+    - name: Cache esp32 Dependencies
+      uses: actions/cache@v3
+      with:
+          path: libraries/arduino-esp32/tools/dist/
+          key: ${{ runner.os }}-${{ hashFiles('.gitmodules') }}
+
     - name: Install esp32 Tools
-      run: python3 libraries/arduino-esp32/tools/get.py
+      run: |
+          cd libraries/arduino-esp32/tools/
+          python3 get.py
 
     # Recursively build all sketches with Makefiles
     - name: Compile Sketches

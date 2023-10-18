@@ -1,4 +1,4 @@
-[submodule "libs/dcs-bios-arduino-library"]
+[submodule "libraries/dcs-bios-arduino-library"]
 	path = libraries/dcs-bios-arduino-library
 	url = https://github.com/DCS-Skunkworks/dcs-bios-arduino-library.git
 [submodule "libraries/Arduino_Boards"]
