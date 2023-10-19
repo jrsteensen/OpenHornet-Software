@@ -10,6 +10,7 @@ This manual is about writing software for the OpenHornet project. It shows how t
 ## Prerequisites
 
 - Arduino IDE (with Libraries listed below)
+- GNU Make
 - Local Doxygen installation
 - OpenHornetSandbox access
 
@@ -17,17 +18,18 @@ This manual is about writing software for the OpenHornet project. It shows how t
 ## Supported Software
 
 - Arduino 1.8.10
-- DCS-bios 0.10.0
+- GNU Make 3.81+
+- DCS-BIOS 0.7.49
 - Doxygen 1.8.13
 
 ### Arduino Libraries
 
-- dcs-bios-arduino-library 0.2.11
+- dcs-bios-arduino-library 0.3.9
 
 
 ## Preparation
 
-The starting point of every new software sketch is the OHSketchTemplate folder. Please copy the whole folder. There are some test.skip files inside there who are needed for the travis-ci testing. Once copied delete the sample function from the OHSketchTemplate.ino. Then change all the \@tags with your own information.
+The starting point of every new software sketch is the OHSketchTemplate folder. Please copy the whole folder. There is a Makefile included which defines the target board and libraries needed for your sketch. Once copied delete the sample function from the OHSketchTemplate.ino. Then change all the \@tags with your own information.
 
 
 ## Sketch naming
@@ -254,6 +256,19 @@ Sketches who are untested have to have a leading "u" before the version number a
 
 eg: u.1.4.2 (untested)
 
+## Makefile
+Since the OpenHornet project targets multiple Arduino boards and libraries, the `Makefile` located in each sketch directory is necessary to determine which specific Arduino board and libraries are needed for each component.
+
+`LIBRARIES` is a space-separated list of libraries to include in your sketch.  These must first be added as a [git sub-module](#Git-Submodule) in the `/libraries` folder of the project.  See [Arduino Libraries](#Arduino-Libraries)
+
+The appropriate board Makefile must be included at the end of the file.  Valid options are:
+- ../../include/mega2560.mk (Mega 2560)
+- ../../include/promicro.mk (Sparkfun Pro Micro)
+- ../../include/promini.mk (Sparkfun Pro Mini)
+- ../../include/s2mini.mk (Wemos S2 Mini)
+
+The Makefile will be used by Github Actions to verify that code will compile without errors. Once successful, a downloadable zip file will be created with the compiled firmware which can be flashed to the desired board.
+
 ## Testing your Software
 
 Before you upload anything, please check if your sketch compiles in your Arduino editor. If it does, check if doxygen compiles with your local doxygen installation.
@@ -266,37 +281,25 @@ Be aware that this is only a Sandbox. Code will not persist there and can be rem
 You can get access to the OpenHornet Sandbox by asking Balse (Balse#3320 on Discord).
 
 
-## Travis-CI
-Travis CI is a continuous integration testing engine. It is connected with the OpenHornet Sandbox (and with the main repo). If Travis detects a change in the repo, it automatically starts working. Basically it starts a virtual environment, clones the repo into that environment and then tries to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
+## Github Actions
+Github Actions is a continuous integration testing engine. It is connected with the OpenHornet Github repository. When a Pull request is opened or merged, Github Actions will checkout the git repo and attempt to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
 
-Travis uses a Adafruit script to carry out its tests. You can find the script here:
-[Travis-CI-Arduino](https://github.com/adafruit/travis-ci-arduino)
 
-### Tested Platforms
-By default Travis tests the code on the following platforms:
+## Git Submodules
+The OpenHornet software projects makes use of [git submodules](https://github.blog/2016-02-01-working-with-submodules/) to include and link to other software libraries which are used in Arduino sketches to provide additional functionality.  Most git frontends and tools support git submodules although options differ between each.
 
-- Arduino UNO (uno)
-- Arduino MEGA (mega)
-- Arduino Zero (zero)
-- Arduino Leonardo (leonardo)
-- ESP8266 (esp8266)
-- ESP32 (esp32)
-- Adafruit Metro M4 (m4)
+- Git for Windows: Ensure that you select the option to "recursively clone submodules" when you clone the repository.
+- Github Desktop: Github Desktop will clone submodules automatically if they exist in the main branch.
 
-Since OpenHornet only uses Arduino NANO (same as Arduino UNO for testing) and Arduino MEGA, all other tests should be skipped.
-This is done by including a \*.test.skip file inside the directory the sketch resides. For example: esp8266.test.skip would skip the ESP8266 test. The necessary \*.test.skip files are included in the sketch template folder.
 
-Make sure that you include a uno.test.skip file for sketches who can only run on Arduino MEGA. Like the RS485 bus masters for example.
+## Arduino Libraries
+Arduino Libraries which are included in your sketch need to be added as a (git submodule)[#Git-Submodules] to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
 
-### Arduino Libraries
-Arduino Libraries who are included in your sketch need to be installed inside travis in order for the tests to work. You find a list of already included libraries in the "Supported Software" section of this manual. If you need anther library installed, ask Balse (Balse#3320 on Discord). He will install the library for you.
-
+Libraries are downloaded during each Github Actions run and made available to the sketch when compiling.  Ensure that the libraries are referenced in the Makefile using the same name that they exist in the `/libraries` folder.
 
 
 ## Resources
 
-- https://learn.adafruit.com/the-well-automated-arduino-library/travis-ci
-- https://github.com/adafruit/travis-ci-arduino
 - http://www.doxygen.org
-- http://www.ravis-ci.org
 - https://github.com/dcs-bios
+- https://github.blog/2016-02-01-working-with-submodules/

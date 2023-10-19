@@ -1,0 +1,80 @@
+/**************************************************************************************
+ *        ____                   _    _                       _
+ *       / __ \                 | |  | |                     | |
+ *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
+ *      | |  | | '_ \ / _ \ '_ \|  __  |/ _ \| '__| '_ \ / _ \ __|
+ *      | |__| | |_) |  __/ | | | |  | | (_) | |  | | | |  __/ |_
+ *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
+ *             | |
+ *             |_|
+ *
+ *
+ *   Copyright 2023 OpenHornet
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ *
+ *   Note: All other portions of OpenHornet not within the 'OpenHornet-software' GitHub repository
+ *   is released under the Creative Commons Atribution - Non Comercal - Share Alike License.
+ *   (CC BY-NC-SA 4.0)
+ *   
+ *   
+ *   This Project uses Doxygen as a documentation generator.
+ *   Please use Doxigen capable comments.
+ *   
+ **************************************************************************************/
+
+/**
+ * @file <sketchName.ino>
+ * @author <Author Name>
+ * @date <Date>
+ * @brief <Very Brief Description>
+ *
+ * @details <Put a more detailed description of the sketch here>
+ */
+
+
+/**
+* Arduino Setup Function
+* 
+* Arduino standard Setup Function. Code who should be executed
+* only once at the programm start, belongs in this function.
+*/
+void setup() {
+
+}
+
+/**
+* Arduino Loop Function
+* 
+* Arduino standard Loop Function. Code who should be executed
+* over and over in a loop, belongs in this function.
+*/
+void loop() {
+  
+}
+
+/**
+* A brief description on a single line, ended by a period or blank line.
+* 
+* A longer comment, which may stretch over several lines and may include other things like:
+* - a list like this
+* - special markup like below
+* 
+* @param myParam1 Description of 1st parameter.
+* @param myParam2 Description of 2nd parameter.
+* @returns Description of returned value.
+*/
+int sampleFunction(int myParam1, int myParam2) {
+  return myReturn;
+}

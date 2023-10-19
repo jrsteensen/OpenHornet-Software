@@ -1,0 +1,61 @@
+name: Continuous Integration
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - 'main'
+      - 'develop'
+
+jobs:
+  compile-sketches:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+          submodules: 'true'
+
+    - uses: actions/setup-python@v4
+
+    - name: Install pyserial
+      run: pip install pyserial
+
+    - name: Install Arduino Tools
+      run: sudo apt-get install -y arduino arduino-core-avr
+
+    - name: Cache esp32 Dependencies
+      uses: actions/cache@v3
+      with:
+          path: libraries/arduino-esp32/tools/dist/
+          key: ${{ runner.os }}-${{ hashFiles('.gitmodules') }}
+
+    - name: Install esp32 Tools
+      run: |
+          cd libraries/arduino-esp32/tools/
+          python3 get.py
+
+    # Recursively build all sketches with Makefiles
+    - name: Compile Sketches
+      run: |
+          cd embedded
+          make all
+
+    # Upload .eep and .hex files as artifacts with expiration
+    - name: Prep Artifacts
+      run: |
+          cd embedded
+          make release
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: firmware
+          path: release/
+          retention-days: 7

@@ -1,8 +1,15 @@
-name: Documentation
+name: Generate & Deploy Doxygen Docs
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
 on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches: [ main ]
+    
   push:
     branches: [ main ]
 

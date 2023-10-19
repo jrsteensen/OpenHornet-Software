@@ -1,0 +1,31 @@
+name: Generate Doxygen Docs
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    branches: [ develop ]
+    
+  push:
+    branches: [ develop ]
+
+  workflow_dispatch:
+
+jobs:
+  build-documentation:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    # Build the HTML documentation
+    - name: Doxygen Action
+      # uses: mattnotmitt/doxygen-action@1.9.7
+      uses: mattnotmitt/doxygen-action@edge
+      with:
+          doxyfile-path: Doxyfile
+          working-directory: ./docs
