@@ -4,8 +4,10 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 ## Supported Hardware
 
-- Arduino MEGA
-- Arduino Nano
+- [Arduino MEGA 2560](https://store-usa.arduino.cc/products/arduino-mega-2560-rev3)
+- [Sparkfun Pro-Micro](https://www.sparkfun.com/products/12640)
+- [Arduino Pro-Mini](https://www.adafruit.com/product/2378)
+- [WEMOS S2 mini (ESP32-S2FN4R2)](https://www.wemos.cc/en/latest/s2/s2_mini.html)
 
 ## Prerequisites
 
@@ -13,7 +15,6 @@ This manual is about writing software for the OpenHornet project. It shows how t
 - GNU Make
 - Local Doxygen installation
 - OpenHornetSandbox access
-
 
 ## Supported Software
 
@@ -239,7 +240,6 @@ The slave ID is given according to the last number in the sketch number.
 e.g 1A2A (Master Arm Panel) has to have the slave ID 2
 e.g 1A4A (L Warning Indicator) has to have the slave ID 4
 
-
 ## Versioning
 The version number consists of three digits.
 
@@ -273,17 +273,10 @@ The Makefile will be used by Github Actions to verify that code will compile wit
 
 Before you upload anything, please check if your sketch compiles in your Arduino editor. If it does, check if doxygen compiles with your local doxygen installation.
 
-Once those local tests are successfully, upload your sketch to the [OpenHornet Sandbox](https://balzreber.github.io/OpenHornetSandbox/) and see if the [travis-ci](http://www.ravis-ci.org) tests are successful. If they are, your sketch is ready to be uploaded to the [main repo](https://github.com/jrsteensen/OpenHornet).
-
-(The OpenHornet Sandbox should be seen as an extension of local testing.
-Be aware that this is only a Sandbox. Code will not persist there and can be removed at any time.)
-
-You can get access to the OpenHornet Sandbox by asking Balse (Balse#3320 on Discord).
-
+Once those local tests are successfully, open a PR to the OpenHornet-Software repo's develop branch and see if the CI/Doxygen tests are successful. If they are, then request your PR to be reviewed.
 
 ## Github Actions
 Github Actions is a continuous integration testing engine. It is connected with the OpenHornet Github repository. When a Pull request is opened or merged, Github Actions will checkout the git repo and attempt to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
-
 
 ## Git Submodules
 The OpenHornet software projects makes use of [git submodules](https://github.blog/2016-02-01-working-with-submodules/) to include and link to other software libraries which are used in Arduino sketches to provide additional functionality.  Most git frontends and tools support git submodules although options differ between each.
@@ -291,15 +284,14 @@ The OpenHornet software projects makes use of [git submodules](https://github.bl
 - Git for Windows: Ensure that you select the option to "recursively clone submodules" when you clone the repository.
 - Github Desktop: Github Desktop will clone submodules automatically if they exist in the main branch.
 
-
 ## Arduino Libraries
 Arduino Libraries which are included in your sketch need to be added as a (git submodule)[#Git-Submodules] to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
 
 Libraries are downloaded during each Github Actions run and made available to the sketch when compiling.  Ensure that the libraries are referenced in the Makefile using the same name that they exist in the `/libraries` folder.
 
-
 ## Resources
 
 - http://www.doxygen.org
-- https://github.com/dcs-bios
+- https://github.com/DCS-Skunkworks/dcs-bios
+- https://github.com/DCS-Skunkworks/dcs-bios-arduino-library/tree/327bf2233603c28989de63dc96e17abecf91ed31
 - https://github.blog/2016-02-01-working-with-submodules/
