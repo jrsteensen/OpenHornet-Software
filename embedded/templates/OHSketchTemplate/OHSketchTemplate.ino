@@ -27,7 +27,7 @@
  *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
  *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
- *   Please use Doxigen capable comments.  
+ *   Please use Doxygen capable comments.
  **************************************************************************************/
 
 /**
