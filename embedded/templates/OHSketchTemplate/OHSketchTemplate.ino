@@ -32,17 +32,18 @@
 
 /**
  * @file OHSketchTemplate.ino
- * @author Balz Reber
- * @date 02.26.2024
+ * @author Balz Reber (May include email link or discord name as well, if desired.)
+ * @date 02.26.2024 (MM.DD.YYYY)
  * @version u.0.0.1 (untested)
- * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware
- * @brief This is the OpenHornet Sketch Template.
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
+ * @brief <A short description of the PCB, will appear in the list of files.>
  *
  * @details This is the OpenHornet Sketch Template. It should be used as a starting point for every new sketch.
  * Please copy the whole OHSketchTemplate folder to start, and ensure the correct line in the Makefile is uncommented.
  * 
- *  * **Intended Board:**
- * <Replace with hardware type such as ABSIS ALE, or ABSIS ALE w/ABSIS Relay Module, etc.>
+ *  * **Reference Designator:** <Replace with full reference designator.>
+ *  * **Intended Board:** <Replace with the appropriate hardware, i.e. ABSIS ALE, ABSIS ALE w/ Relay Module, etc.>
+ *  * **RS485 Bus Address:** <NA or RS485 Bus Address, i.e. 1, 2, 3, etc.>
  * 
  * **Wiring diagram:**
  * PIN | Function
