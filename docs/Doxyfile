@@ -946,7 +946,7 @@ WARN_LOGFILE           =
 INPUT                  = ../docs \
                          ../README.md \
                          ../docs/SoftwareManual.md \
-                         ../ \
+                         ../embedded \
                          ../STYLEGUIDE.md
 
 # This tag can be used to specify the character encoding of the source files

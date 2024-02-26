@@ -31,29 +31,29 @@
  **************************************************************************************/
 
 /**
- * @file OH_1A2_ABSIS_ALE_BA1.ino
- * @author Sandra Carroll@smgvbest@gmail.com
+ * @file 1A2-MASTER_ARM_PANEL.ino
+ * @author Sandra Carroll (<a href="mailto:smgvbest@gmail.com">smgvbest@gmail.com</a>)
  * @date 27.12.2022
  * @version u.0.0.1 (untested)
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware.
  * @brief ABSIS ALE MASTER ARM, RS485 BUS ADDRESS 1 
  *
- * @details 
+ * @details This sketch is for the UIP Master Arm Panel.
  * 
- * 
- *  * **Intended Board:**
- * ABSIS ALE
- * 
+ *  * **Reference Designator:** 1A2
+ *  * **Intended Board:** ABSIS ALE
+ *  * **RS485 Bus Address:** 1
+ *  
  * **Wiring diagram:**
  * 
- * PIN | Function
+ * PIN | Function
  * --- | ---
  * A1  | Emergency Jettison Switch
  * A2  | Air to Ground Select
- * A3  | Ready/Disch Switch
+ * A3  | Ready/Discharge Switch
  * D2  | Air to Air Select
  * D3  | Master Arm Switch
- * D5  | TXENABLE_PIN for RS485 Communitions
+ * D5  | TXENABLE_PIN for RS485 Communications
  */
 
 /**
