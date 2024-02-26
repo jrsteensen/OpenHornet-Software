@@ -17,8 +17,6 @@
 *Add an "X" in the square brackets to check the applicable checkboxs.*
 ### Category:
 *Check one or more items.*
-- [ ] MCAD (SolidWorks)
-- [ ] ECAD (PCB Design or other electrical hardware)
 - [ ] Software - Sketch
 - [ ] Software - DCS-BIOS
 - [ ] Software - Library

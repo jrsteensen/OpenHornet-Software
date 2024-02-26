@@ -4,8 +4,10 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 ## Supported Hardware
 
-- Arduino MEGA
-- Arduino Nano
+- [Arduino MEGA 2560](https://store-usa.arduino.cc/products/arduino-mega-2560-rev3)
+- [Sparkfun Pro-Micro](https://www.sparkfun.com/products/12640)
+- [Arduino Pro-Mini](https://www.adafruit.com/product/2378)
+- [WEMOS S2 mini (ESP32-S2FN4R2)](https://www.wemos.cc/en/latest/s2/s2_mini.html)
 
 ## Prerequisites
 
@@ -14,18 +16,21 @@ This manual is about writing software for the OpenHornet project. It shows how t
 - Local Doxygen installation
 - OpenHornetSandbox access
 
-
 ## Supported Software
 
 - Arduino 1.8.10
 - GNU Make 3.81+
-- DCS-BIOS 0.7.49
+- DCS-BIOS v2.8.7+
 - Doxygen 1.8.13
 
 ### Arduino Libraries
 
-- dcs-bios-arduino-library 0.3.9
+- dcs-bios-arduino-library-0.3.9+
 
+### Suggested debug tools
+
+- Bort v0.2.4+
+- Dcs-Insight v1.8.3+
 
 ## Preparation
 
@@ -71,53 +76,27 @@ The following is an example of how to document code:
  *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
  *             | |
  *             |_|
+ *   ----------------------------------------------------------------------------------
+ *   Copyright 2016-2024 OpenHornet
  *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *   Project OpenHornet
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   The OpenHornet Project is a F/A-18C OFP 13C Lot 20 1:1 Replica Simulator,
- *   consisting of a physical structure and electrical/software interfaces to a PC
- *   to be driven by Digital Combat Simulator (DCS).
- *
- *   ---------------------------------------------------------------------------------
- *
- *   This Project is released under the Creative Commons
- *   Atribution - Non Comercal - Share Alike License.
- *
- *   CC BY-NC-SA 3.0
- *
- *   You are free to:
- *   - Share — copy and redistribute the material in any medium or format
- *   - Adapt — remix, transform, and build upon the material
- *   The licensor cannot revoke these freedoms as long as you follow the license terms.
- *
- *   Under the following terms:
- *   - Attribution — You must give appropriate credit, provide a link to the license,
- *     and indicate if changes were made. You may do so in any reasonable manner,
- *     but not in any way that suggests the licensor endorses you or your use.
- *   - NonCommercial — You may not use the material for commercial purposes.
- *   - ShareAlike — If you remix, transform, or build upon the material,
- *     you must distribute your contributions under the same license as the original.
- *
- *   No additional restrictions — You may not apply legal terms or technological
- *   measures that legally restrict others from doing anything the license permits.
- *
- *   More Information about the license can be found under:
- *   https://creativecommons.org/licenses/by-nc-sa/3.0/
- *
- *   ---------------------------------------------------------------------------------
- *
- *   The OpenHornet Software is based on DCS-BIOS
- *   You can find more information here: http://dcs-bios.a10c.de
- *
- *   DCS-BIOS is released under the following terms:
- *   https://github.com/dcs-bios/dcs-bios/blob/develop/DCS-BIOS-License.txt
- *
- *   ---------------------------------------------------------------------------------
- *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *   ----------------------------------------------------------------------------------
+ *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
+ *   GitHub repository is released under the Creative Commons Atribution - 
+ *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
+ *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
- *   Please use Doxigen capable comments.
- *
+ *   Please use Doxygen capable comments.
  **************************************************************************************/
 
 ```
@@ -131,13 +110,24 @@ The Sketch summary comments should be on top of the file, right after the Header
 /**
  * @file OHSketchTemplate.ino
  * @author Balz Reber
- * @date 22.11.2019
- * @version 0.0.1 (untested)
- * @warning This sketch is not yet tested on hardware
- * @brief This is the OpenHornet Sketch Template
+ * @date 02.26.2024
+ * @version u.0.0.1 (untested)
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware
+ * @brief This is the OpenHornet Sketch Template.
  *
- * @details This is the Open Hornet Sketch Template. It should be used as a starting point for every new sketch.
- * Please copy the whole OHSketchTemplate folder to start. As it also contains some test skip files needed for travis.
+ * @details This is the OpenHornet Sketch Template. It should be used as a starting point for every new sketch.
+ * Please copy the whole OHSketchTemplate folder to start, and ensure the correct line in the Makefile is uncommented.
+ * 
+ *  * **Intended Board:**
+ * <Replace with hardware type such as ABSIS ALE, or ABSIS ALE w/ABSIS Relay Module, etc.>
+ * 
+ * **Wiring diagram:**
+ * PIN | Function
+ * --- | ---
+ * 1   | function 1
+ * 2   | function 2
+ * 3   | function 3
+ * 
  */
 ```
 The elements in the summary are the following:
@@ -164,6 +154,11 @@ A brief description of the sketch.
 #### Detail
 A more detailed description of the sketch
 
+#### Intended board
+This is the hardware that this sketch is intended to run on.
+
+#### Wiring diagram
+A quick reference showing connections to this PCB, for ease of reference when reading this code.
 
 ### Functions
 
@@ -239,7 +234,6 @@ The slave ID is given according to the last number in the sketch number.
 e.g 1A2A (Master Arm Panel) has to have the slave ID 2
 e.g 1A4A (L Warning Indicator) has to have the slave ID 4
 
-
 ## Versioning
 The version number consists of three digits.
 
@@ -273,17 +267,10 @@ The Makefile will be used by Github Actions to verify that code will compile wit
 
 Before you upload anything, please check if your sketch compiles in your Arduino editor. If it does, check if doxygen compiles with your local doxygen installation.
 
-Once those local tests are successfully, upload your sketch to the [OpenHornet Sandbox](https://balzreber.github.io/OpenHornetSandbox/) and see if the [travis-ci](http://www.ravis-ci.org) tests are successful. If they are, your sketch is ready to be uploaded to the [main repo](https://github.com/jrsteensen/OpenHornet).
-
-(The OpenHornet Sandbox should be seen as an extension of local testing.
-Be aware that this is only a Sandbox. Code will not persist there and can be removed at any time.)
-
-You can get access to the OpenHornet Sandbox by asking Balse (Balse#3320 on Discord).
-
+Once those local tests are successfully, open a PR to the OpenHornet-Software repo's develop branch and see if the CI/Doxygen tests are successful. If they are, then request your PR to be reviewed.
 
 ## Github Actions
 Github Actions is a continuous integration testing engine. It is connected with the OpenHornet Github repository. When a Pull request is opened or merged, Github Actions will checkout the git repo and attempt to compile the code. If the code compiles successfully and there where no errors detected, it automatically updates the Doxygen documentation and uploads it back to the repo.
-
 
 ## Git Submodules
 The OpenHornet software projects makes use of [git submodules](https://github.blog/2016-02-01-working-with-submodules/) to include and link to other software libraries which are used in Arduino sketches to provide additional functionality.  Most git frontends and tools support git submodules although options differ between each.
@@ -291,15 +278,14 @@ The OpenHornet software projects makes use of [git submodules](https://github.bl
 - Git for Windows: Ensure that you select the option to "recursively clone submodules" when you clone the repository.
 - Github Desktop: Github Desktop will clone submodules automatically if they exist in the main branch.
 
-
 ## Arduino Libraries
 Arduino Libraries which are included in your sketch need to be added as a (git submodule)[#Git-Submodules] to the repository and then referenced in the Makefile for the sketch. You can find a list of already included libraries in the "Supported Software" section of this manual. If you need another library, please add it using `git submodule add https://github.com/<organization>/<project>.git` under the `/libraries` directory.
 
 Libraries are downloaded during each Github Actions run and made available to the sketch when compiling.  Ensure that the libraries are referenced in the Makefile using the same name that they exist in the `/libraries` folder.
 
-
 ## Resources
 
 - http://www.doxygen.org
-- https://github.com/dcs-bios
+- https://github.com/DCS-Skunkworks/dcs-bios
+- https://github.com/DCS-Skunkworks/dcs-bios-arduino-library/tree/327bf2233603c28989de63dc96e17abecf91ed31
 - https://github.blog/2016-02-01-working-with-submodules/
