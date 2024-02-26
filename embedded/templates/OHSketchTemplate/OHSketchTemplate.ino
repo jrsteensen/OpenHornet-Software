@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2023 OpenHornet
+ *   Copyright 2016-2024 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@
 /**
  * @file OHSketchTemplate.ino
  * @author Balz Reber
- * @date 10.18.2023
+ * @date 02.26.2024
  * @version u.0.0.1 (untested)
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware
  * @brief This is the OpenHornet Sketch Template.
@@ -42,10 +42,9 @@
  * Please copy the whole OHSketchTemplate folder to start, and ensure the correct line in the Makefile is uncommented.
  * 
  *  * **Intended Board:**
- * ABSIS XYZ
+ * <Replace with hardware type such as ABSIS ALE, or ABSIS ALE w/ABSIS Relay Module, etc.>
  * 
  * **Wiring diagram:**
- * 
  * PIN | Function
  * --- | ---
  * 1   | function 1

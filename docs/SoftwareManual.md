@@ -20,13 +20,17 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 - Arduino 1.8.10
 - GNU Make 3.81+
-- DCS-BIOS 0.7.49
+- DCS-BIOS v2.8.7+
 - Doxygen 1.8.13
 
 ### Arduino Libraries
 
-- dcs-bios-arduino-library 0.3.9
+- dcs-bios-arduino-library-0.3.9+
 
+### Suggested debug tools
+
+- Bort v0.2.4+
+- Dcs-Insight v1.8.3+
 
 ## Preparation
 
@@ -72,53 +76,27 @@ The following is an example of how to document code:
  *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
  *             | |
  *             |_|
+ *   ----------------------------------------------------------------------------------
+ *   Copyright 2016-2024 OpenHornet
  *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
  *
- *   Project OpenHornet
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- *   The OpenHornet Project is a F/A-18C OFP 13C Lot 20 1:1 Replica Simulator,
- *   consisting of a physical structure and electrical/software interfaces to a PC
- *   to be driven by Digital Combat Simulator (DCS).
- *
- *   ---------------------------------------------------------------------------------
- *
- *   This Project is released under the Creative Commons
- *   Atribution - Non Comercal - Share Alike License.
- *
- *   CC BY-NC-SA 3.0
- *
- *   You are free to:
- *   - Share — copy and redistribute the material in any medium or format
- *   - Adapt — remix, transform, and build upon the material
- *   The licensor cannot revoke these freedoms as long as you follow the license terms.
- *
- *   Under the following terms:
- *   - Attribution — You must give appropriate credit, provide a link to the license,
- *     and indicate if changes were made. You may do so in any reasonable manner,
- *     but not in any way that suggests the licensor endorses you or your use.
- *   - NonCommercial — You may not use the material for commercial purposes.
- *   - ShareAlike — If you remix, transform, or build upon the material,
- *     you must distribute your contributions under the same license as the original.
- *
- *   No additional restrictions — You may not apply legal terms or technological
- *   measures that legally restrict others from doing anything the license permits.
- *
- *   More Information about the license can be found under:
- *   https://creativecommons.org/licenses/by-nc-sa/3.0/
- *
- *   ---------------------------------------------------------------------------------
- *
- *   The OpenHornet Software is based on DCS-BIOS
- *   You can find more information here: http://dcs-bios.a10c.de
- *
- *   DCS-BIOS is released under the following terms:
- *   https://github.com/dcs-bios/dcs-bios/blob/develop/DCS-BIOS-License.txt
- *
- *   ---------------------------------------------------------------------------------
- *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *   ----------------------------------------------------------------------------------
+ *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
+ *   GitHub repository is released under the Creative Commons Atribution - 
+ *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
+ *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
- *   Please use Doxigen capable comments.
- *
+ *   Please use Doxygen capable comments.
  **************************************************************************************/
 
 ```
@@ -132,13 +110,24 @@ The Sketch summary comments should be on top of the file, right after the Header
 /**
  * @file OHSketchTemplate.ino
  * @author Balz Reber
- * @date 22.11.2019
- * @version 0.0.1 (untested)
- * @warning This sketch is not yet tested on hardware
- * @brief This is the OpenHornet Sketch Template
+ * @date 02.26.2024
+ * @version u.0.0.1 (untested)
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware
+ * @brief This is the OpenHornet Sketch Template.
  *
- * @details This is the Open Hornet Sketch Template. It should be used as a starting point for every new sketch.
- * Please copy the whole OHSketchTemplate folder to start. As it also contains some test skip files needed for travis.
+ * @details This is the OpenHornet Sketch Template. It should be used as a starting point for every new sketch.
+ * Please copy the whole OHSketchTemplate folder to start, and ensure the correct line in the Makefile is uncommented.
+ * 
+ *  * **Intended Board:**
+ * <Replace with hardware type such as ABSIS ALE, or ABSIS ALE w/ABSIS Relay Module, etc.>
+ * 
+ * **Wiring diagram:**
+ * PIN | Function
+ * --- | ---
+ * 1   | function 1
+ * 2   | function 2
+ * 3   | function 3
+ * 
  */
 ```
 The elements in the summary are the following:
@@ -165,6 +154,11 @@ A brief description of the sketch.
 #### Detail
 A more detailed description of the sketch
 
+#### Intended board
+This is the hardware that this sketch is intended to run on.
+
+#### Wiring diagram
+A quick reference showing connections to this PCB, for ease of reference when reading this code.
 
 ### Functions
 
