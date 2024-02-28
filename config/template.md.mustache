@@ -1,0 +1,64 @@
+Create a new sketch and makefile then PR them using an appropriately named feature branch to the `develop` branch of the OpenHornet-Software repository.
+
+- **Sketch Filename:** {{filename}}
+- **Sketch Repository Filepath:** `embedded\{{console}}`
+
+## Sketch Header
+Copy and paste to replace the header in the document, and fill out where indicated.
+```c
+/**
+ * @file {{filename}}
+ * @author <Replace with author's name>
+ * @date <MM.DD.YYYY>
+ * @version u.0.0.1 (untested)
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
+ * @brief {{brief}}
+ *
+ * @details
+ * 
+ *  * **Reference Designator:** {{refdes}}
+ *  * **Intended Board:** {{hwtype}}
+ *  * **RS485 Bus Address:** {{busaddr}}
+ * 
+ * **Wiring diagram:**
+ * PIN | Function
+ * --- | ---
+ * 1   | function 1
+ * 2   | function 2
+ * 3   | function 3
+ * 
+ */
+ ```
+
+## PR Checklist
+The following checklist is from the PR template, but is placed here to keep some requirements at the forefront of your mind as you create this sketch. Please update it as you go along.
+### Checklist:
+- [ ] My code follows the [style guidelines](https://jrsteensen.github.io/OpenHornet-Software/d4/d46/md__2github_2workspace_2_s_t_y_l_e_g_u_i_d_e.html) of this project
+- [ ] [I have complied with the software manual](https://jrsteensen.github.io/OpenHornet-Software/d7/d78/md__software_manual.html) for this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code fully with Doxygen compatible comments, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to non-Doxygen generated documentation
+- [ ] I have ran Doxygen locally, and it builds the docs successfully
+- [ ] My changes generate no errors on compile in Arduino IDE
+- [ ] My changes generate no new warnings on compile in Arduino IDE
+- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] (For sketches only) This sketch complies with OH-INTERCONNECT v**<insert version number here>**
+- [ ] If this sketch requires additional libraries, [I have added it as a sub-module per the Arduino Libraries section of the Software Manual.](https://jrsteensen.github.io/OpenHornet-Software/d7/d78/md__software_manual.html)
+
+### How Has This Been Tested?
+
+- [ ] I have tested the sketch in-circuit in DCS with DCS-BIOS and outputs (displays, LEDs, etc.) function as expected. 
+- [ ] I have tested the sketch in-circuit in DCS with DCS-BIOS and HID inputs (switches, pots, etc.) function as expected, with switches moving the correct direction.
+- [ ] I have tested the sketch in-circuit in DCS with DCS-BIOS and any logic in the sketch has been tested and functions as expected.
+- [ ] This code has not yet been tested in-circuit.
+- [ ] This code has not yet been tested in DCS-BIOS.
+
+#### Description of Testing
+<Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration>
+
+#### Test Configuration
+* Firmware version:
+* Hardware:
+* Toolchain:
+* SDK:
+ 
