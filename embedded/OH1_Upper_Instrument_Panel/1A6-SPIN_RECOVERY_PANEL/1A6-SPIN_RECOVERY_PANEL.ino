@@ -34,7 +34,7 @@
  * @file 1A6-SPIN_RECOVERY_PANEL.ino
  * @author Arribe
  * @date 02.26.2024
- * @version 0.0.1
+ * @version 0.0.2
  * @brief ABSIS ALE SPIN RECOVERY, RS485 BUS ADDRESS 5
  *
  * @details This sketch is for the UIP Spin Recovery Panel.
@@ -104,7 +104,7 @@
  */
 DcsBios::Potentiometer hmdOffBrt("HMD_OFF_BRT", A3);
 DcsBios::Switch3Pos irCoolSw("IR_COOL_SW", irOride, irOff);
-DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_COVER", spinRcvy, true);
+DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_COVER", spinRcvy);
 
 /**
 * Arduino Setup Function
