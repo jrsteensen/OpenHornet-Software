@@ -14,11 +14,10 @@ This manual is about writing software for the OpenHornet project. It shows how t
 - Arduino IDE (with Libraries listed below)
 - GNU Make
 - Local Doxygen installation
-- OpenHornetSandbox access
 
 ## Supported Software
 
-- Arduino 1.8.10
+- Arduino IDE 1.8.10+ (Arduino IDE 2.0.0+ preferred)
 - GNU Make 3.81+
 - DCS-BIOS v2.8.7+
 - Doxygen 1.8.13
@@ -36,21 +35,20 @@ This manual is about writing software for the OpenHornet project. It shows how t
 
 The starting point of every new software sketch is the OHSketchTemplate folder. Please copy the whole folder. There is a Makefile included which defines the target board and libraries needed for your sketch. Once copied delete the sample function from the OHSketchTemplate.ino. Then change all the \@tags with your own information.
 
-
 ## Sketch naming
 
-The Sketches are named according to the System Architecture drawing found in the OH documentation.
+The Sketches are named according to the reference designator found in the OH-INTERCONNECT document.
 The first part of the name is the OH No. found in the drawing. It is the number beneath the Board type.
 
-e.g: 1A2A for the Master Arm Panel. (Not 1A2A1A).
+e.g: 1A2 for the Master Arm Panel.
 
 The No. is followed by a minus sign "-" (without space). Then the name of the component the sketch is for.
 The name is written in uppercase and with underscores "\_" instead of spaces.
 
-e.g: 1A2A-MASTER_ARM_PANEL for the Master Arm Panel.
+e.g: 1A2-MASTER_ARM_PANEL for the Master Arm Panel.
 
 If the Sketch is for more than one component. Meaning that the board controls more than one component,
-use the name of the first component the sketch is for (the upper most component in the System Architecture drawing).
+use the name of the first component the sketch is for.
 
 
 ## Documenting Software with Doxygen
@@ -58,8 +56,6 @@ use the name of the first component the sketch is for (the upper most component 
 It is imperative that all the code you write is documented. We use doxygen as API documentation generator. So all the comments have to be doxygen compatible. Otherwise they will not show up in the documentation.
 
 We use Javadoc style comment markup. Since it is the easiest to read for humans.
-
-
 
 The following is an example of how to document code:
 
@@ -227,12 +223,10 @@ int result = 2 * input
 The insides of a function are a black box to doxygen. It is important that you comment the code inside a function nevertheless. This has to be done for other coders who might have to work with your code. Comments inside a function are done with a simple `//` before the comment.
 
 ## Slave ID
-All sketches who run as slave on the RS485 bus have to have a slave ID (DCSBIOS_RS485_SLAVE). That slave ID has to be unique on
-the RS485 bus the sketch runs on. But they can be the same for different buses (Every RS485 master has it's own bus).
-The slave ID is given according to the last number in the sketch number.
+All sketches who run as slave on the RS485 bus have to have a slave ID (DCSBIOS_RS485_SLAVE). That slave ID has to be unique on the RS485 bus the sketch runs on. But they can be the same for different buses (Every RS485 master has it's own bus).
+The slave ID is given according to the BUS ADDR in the interconnect.
 
-e.g 1A2A (Master Arm Panel) has to have the slave ID 2
-e.g 1A4A (L Warning Indicator) has to have the slave ID 4
+e.g 1A2A (Master Arm Panel) shall be Bus Address 1
 
 ## Versioning
 The version number consists of three digits.

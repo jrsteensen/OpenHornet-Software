@@ -1,0 +1,21 @@
+on:
+  workflow_dispatch:
+    inputs:
+      write:
+        description: "Change to 'true' to create issues, leave as 'false' to preview output"
+        default: "false"
+        type: boolean
+
+name: Bulk issue creator
+
+jobs:
+  bulk_issue_creator:
+    runs-on: ubuntu-latest
+    name: Bulk Issue Creator
+    steps:
+      - name: Checkout template and data
+        uses: actions/checkout@v2
+      - name: Create bulk issues
+        uses: benbalter/bulk-issue-creator@v2
+        with:
+          write: ${{ github.event.inputs.write }}
