@@ -19,3 +19,4 @@ jobs:
         uses: benbalter/bulk-issue-creator@v2
         with:
           write: ${{ github.event.inputs.write }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
