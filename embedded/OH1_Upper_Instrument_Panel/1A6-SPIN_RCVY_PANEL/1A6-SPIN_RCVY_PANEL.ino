@@ -95,7 +95,7 @@
  */
 const int hmdA = A3;
 const int irOff = A2;
-const int irOride =  2;
+const int irOride = 2;
 const int spinRcvy = 3;
 
 /**
