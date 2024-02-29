@@ -33,8 +33,8 @@
 /**
  * @file 1A6-SPIN_RCVY_PANEL.ino
  * @author Arribe
- * @date 02.27.2024
- * @version 0.0.1
+ * @date 02.28.2024
+ * @version 0.0.2
  * @brief Controls the SPIN RCVY panel.
  *
  * @details
@@ -93,16 +93,16 @@
  * @brief Define Control I/O for DCS-BIOS. 
  * 
  */
-#define hmdA A3
-#define irOff A2
-#define irOride 2
-#define spinRcvy 3
+const int hmdA = A3;
+const int irOff = A2;
+const int irOride =  2;
+const int spinRcvy = 3;
 
 /**
  * @brief Connect switches to DCS-BIOS 
  * 
  */
-DcsBios::Potentiometer hmdOffBrt("HMD_OFF_BRT", A3);
+DcsBios::Potentiometer hmdOffBrt("HMD_OFF_BRT", hmdA);
 DcsBios::Switch3Pos irCoolSw("IR_COOL_SW", irOride, irOff);
 DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_COVER", spinRcvy);
 
