@@ -28,7 +28,9 @@ jobs:
       run: pip install pyserial
 
     - name: Install Arduino Tools
-      run: sudo apt-get install -y arduino arduino-core-avr
+      run: |
+        sudo apt update
+        sudo apt-get install -y arduino arduino-core-avr
 
     - name: Cache esp32 Dependencies
       uses: actions/cache@v3
