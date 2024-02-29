@@ -34,7 +34,7 @@
  * @file 4A2A1-LDG_GEAR_PANEL.ino
  * @author Arribe
  * @date 2/28/2024
- * @version 0.0.1
+ * @version 0.0.2
  * @brief Controls the LDG GEAR panel.
  *
  * @details
@@ -95,15 +95,15 @@
  * @brief Define Control I/O for DCS-BIOS. 
  * 
  */
-#define lgEmergSw A1
-#define lgOrideSw A2
-#define lgWarnSw A3
-#define lgLeverSol 2
-#define lgLimitSw 3
-#define lgLed 4
+const int lgEmergSw = A1;
+const int lgOrideSw = A2;
+const int lgWarnSw =  A3;
+const int lgLeverSol = 2;
+const int lgLimitSw = 3;
+const int lgLed = 4;
 
 /**
-* Declare variables for down lock logic
+* @brief Declare variables for down lock logic
 * initializing values for weight on wheels under a cold / onground start and down lock off.
 *
 */
@@ -172,10 +172,10 @@ void loop() {
   //Run DCS Bios loop function
   DcsBios::loop();
 
-  /*
+/**
 * If landing gear handle in down position and lock override pushed, then activate soleniod to unlock handle.
-* If landing gear handle in down position and NO weight on wheels the activate soleniod to unlock handle.
-* IF landing gear handle is down and there is weight on at least one wheel then turn off soleniod to lock handle down.
+* If landing gear handle in down position and NO weight on wheels, then activate soleniod to unlock handle.
+* IF landing gear handle is down and there is weight on at least one wheel, then turn off soleniod to lock handle down.
 * If landing gear handle is up turn off soleniod, handle cannot be locked in up position.
 * 
 * Note: digital reads of switch state will allow the landing gear handle to operate using the downlock override button
