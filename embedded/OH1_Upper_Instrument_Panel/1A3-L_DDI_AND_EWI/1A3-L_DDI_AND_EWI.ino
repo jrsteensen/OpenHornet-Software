@@ -155,6 +155,8 @@ DcsBios::SwitchMultiPos leftDdiBrtSelect("LEFT_DDI_BRT_SELECT", leftDdiBrtSelect
 
 /**
  * @brief Setup DCS-BIOS control for DDI backlighting
+ *
+ * @bug Potential bug with backlighting, the lights are either full on when DCSBios reports the intensity >50% or full off <50%. May be an electrical / PCB issue.
  * 
  */
 void onInstrIntLtChange(unsigned int newValue) {
