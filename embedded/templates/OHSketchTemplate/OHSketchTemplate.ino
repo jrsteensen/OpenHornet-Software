@@ -32,8 +32,8 @@
 
 /**
  * @file OHSketchTemplate.ino
- * @author Balz Reber (May include email link or discord name as well, if desired.)
- * @date 02.26.2024 (MM.DD.YYYY)
+ * @author <Replace with author's name>
+ * @date <MM.DD.YYYY>
  * @version u.0.0.1 (untested)
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
  * @brief <A short description of the PCB, will appear in the list of files.>
@@ -52,17 +52,54 @@
  * 2   | function 2
  * 3   | function 3
  * 
- */
+ * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
+ * It also sets the address of this slave device. The slave address should be
+ * between 1 and 126 and must be unique among all devices on the same bus.
+ *
+ * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
+
+   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+*/
 
 /**
- * Set DCS Bios to use irq serial
+ * Check if we're on a Mega328 or Mega2560 and define the correct
+ * serial interface
+ * 
  */
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL
+#else
+#define DCSBIOS_DEFAULT_SERIAL
+#endif
+
+#ifdef __AVR__
+#include <avr/power.h>
+#endif
 
 /**
- * DCS Bios library include
- */
+ * The Arduino pin that is connected to the
+ * RE and DE pins on the RS-485 transceiver.
+*/
+#define TXENABLE_PIN 5
+#define UART1_SELECT
+
 #include "DcsBios.h"
+
+// Define pins for DCS-BIOS per interconnect diagram.
+#define PIN_NAME1 A1
+#define PIN_NAME2 A2
+
+//Declare variables for custom non-DCS logic <update comment as needed>
+bool wowLeft = true;           ///< Update variables as needed and update this Doxygen comment, or remove line/section if not needed.
+bool wowRight = true;          ///< Update variables as needed and update this Doxygen comment, or remove line/section if not needed.
+
+// Connect switches to DCS-BIOS 
+DcsBios::Switch2Pos emergencyGearRotate("EMERGENCY_GEAR_ROTATE", PIN_NAME1); //delete example and this comment.
+
+// DCSBios reads to save airplane state information. <update comment as needed>
+void onExtWowLeftChange(unsigned int newValue) {
+  wowLeft = newValue;
+} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
 
 
 /**
@@ -75,7 +112,6 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
-
 }
 
 /**
@@ -88,7 +124,6 @@ void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
-
 }
 
 /**
