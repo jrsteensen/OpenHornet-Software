@@ -1,5 +1,5 @@
 # Software Manual
-
+[TOC]
 This manual is about writing software for the OpenHornet project. It shows how to write, document and test your software.
 
 ## Supported Hardware
