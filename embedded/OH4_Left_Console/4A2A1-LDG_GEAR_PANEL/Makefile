@@ -1,5 +1,5 @@
 # Any extra libraries included by this sketch (space separated)
-LIBRARIES = Adafruit_NeoPixel Servo dcs-bios-arduino-library
+LIBRARIES = Adafruit_NeoPixel Servo dcs-bios-arduino-library TCA9534
 
 # Uncomment one of the following to choose the target board
 # include ../../include/mega2560.mk
