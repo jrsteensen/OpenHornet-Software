@@ -87,8 +87,8 @@
 #include "DcsBios.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
-#define PIN_NAME1 A1
-#define PIN_NAME2 A2
+#define PIN_NAME1 A1 ///< function 1
+#define PIN_NAME2 A2 ///< function 2
 
 //Declare variables for custom non-DCS logic <update comment as needed>
 bool wowLeft = true;           ///< Update variables as needed and update this Doxygen comment, or remove line/section if not needed.
