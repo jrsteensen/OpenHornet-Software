@@ -35,6 +35,7 @@
  * @author Arribe
  * @date 2/28/2024
  * @version 0.0.3
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the LDG GEAR panel.
  *
  * @details
@@ -43,7 +44,7 @@
  *  * **Intended Board:** ABSIS ALE /w Relay Module
  *  * **RS485 Bus Address:** 1
  * 
- * **Wiring diagram:**
+ * ### Wiring diagram:
  * PIN | Function
  * --- | ---
  * A1  | Landing Gear Emergency Rotate and Pull
@@ -52,26 +53,25 @@
  * 2   | Landing Gear Down Lock Soleniod
  * 3   | Landing Gear Limit Switch (handle raise / lower)
  * 4   | Landing Gear Lollipop LED
- * 
- *
+ */
+
+ /**
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
-
-   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
-*/
+ */
+ // #define DCSBIOS_RS485_SLAVE 1
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
  * serial interface
- * 
  */
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define DCSBIOS_IRQ_SERIAL
+#define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
-#define DCSBIOS_DEFAULT_SERIAL
+#define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
 #endif
 
 #ifdef __AVR__
@@ -82,19 +82,19 @@
  * The Arduino pin that is connected to the
  * RE and DE pins on the RS-485 transceiver.
 */
-#define TXENABLE_PIN 5
-#define UART1_SELECT
+#define TXENABLE_PIN 5 ///< Sets TXENABLE_PIN to Arduino Pin 5
+#define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
 
 
 // Define pins for DCS-BIOS per interconnect diagram.
-#define LG_EMERG A1
-#define LG_ORIDE A2
-#define LG_WARN A3
-#define LG_LEVER_SOLENOID 2
-#define LG_LIMIT 3
-#define LG_LED 4
+#define LG_EMERG A1 ///< Landing Gear Emergency Rotate and Pull
+#define LG_ORIDE A2 ///< Landing Gear Down Lock Override Button
+#define LG_WARN A3 ///< Landing Gear Warning Silence Button
+#define LG_LEVER_SOLENOID 2 ///< Landing Gear Down Lock Soleniod
+#define LG_LIMIT 3 ///< Landing Gear Limit Switch (handle raise / lower)
+#define LG_LED 4 ///< Landing Gear Lollipop LED
 
 //Declare variables for down lock logic
 bool wowLeft = true;           ///< Initializing weight-on-wheel value for cold/ground start.
@@ -152,14 +152,14 @@ void loop() {
   DcsBios::loop();
 
 /**
- ### Landing Gear Down Lock Logic
+* ### Landing Gear Down Lock Logic
 *  -# If landing gear handle in down position and lock override pushed, then activate soleniod to **unlock** handle. \n
 *  -# If landing gear handle in down position and NO weight on wheels, then activate soleniod to **unlock** handle. \n
 *  -# IF landing gear handle is down and there is weight on at least one wheel, then turn off soleniod to **lock** handle down. \n
 *  -# If landing gear handle is up turn off soleniod, handle cannot physically be locked in up position. \n
 *  \n
-* *Note: digital reads of switch state will allow the landing gear handle to operate using the downlock override button
-* without needing to have the sim running*.
+* @remark Digital reads of switch state will allow the landing gear handle to operate using the downlock override button
+* without needing to have the sim running.
 */
   if (digitalRead(LG_LIMIT) == 1) {                              //Switch closed, gear handle is down
     if (downLockOverride == true || !digitalRead(LG_ORIDE) == true) {  // Override switched pushed virually in sim or physcially in pit, turn on soleniod to unlock gear handle.
