@@ -35,6 +35,7 @@
  * @author Arribe
  * @date 03.01.2024
  * @version 0.0.1
+ * 
  * @brief Controls the SELECT JETT panel.
  *
  * @details
@@ -43,7 +44,7 @@
  *  * **Intended Board:** ABSIS ALE w/ Relay Module
  *  * **RS485 Bus Address:** 2
  * 
- * **Wiring diagram:**
+ * ### Wiring diagram:
  * PIN | Function
  * --- | ---
  * A0  | Hook Bypass Switch
@@ -66,8 +67,8 @@
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
-
-   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+ *
+//#define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
 */
 
 /**
@@ -107,20 +108,20 @@
 #define HOOK_DELAY 3200
 
 // Define pins for DCS-BIOS per interconnect diagram.
-#define HOOKB_SW A0
-#define LBAR_SW A1
-#define FLAPS_SW2 A2
-#define FLAPS_SW1 A3
-#define LBAR_RET 2    // Launch Bar Switch Mag
-#define HOOK_FIELD 3  //Hook Bypass Switch Mag
-#define LADG_SW 4
-#define SJET_SW1 6
-#define SJET_SW3 7
-#define SJET_SW5 8
-#define ASKID_SW 10
-#define SJET_SW2 14
-#define SJET_PUSH 15
-#define SJET_SW4 16
+#define HOOKB_SW A0 ///< Hook Bypass Switch
+#define LBAR_SW A1 ///< Launch Bar Switch
+#define FLAPS_SW2 A2 ///< Flaps Switch Position 2
+#define FLAPS_SW1 A3 ///< Flaps Switch Position 1
+#define LBAR_RET 2    ///< Launch Bar Switch Mag
+#define HOOK_FIELD 3  ///< Hook Bypass Switch Mag
+#define LADG_SW 4 ///< Landing Taxi Light
+#define SJET_SW1 6 ///< Selector Jettision Position 1
+#define SJET_SW3 7 ///< Selector Jettision Position 3
+#define SJET_SW5 8 ///< Selector Jettision Position 8
+#define ASKID_SW 10 ///< Antiskid Switch
+#define SJET_SW2 14 ///< Selector Jettision Position 2
+#define SJET_PUSH 15 ///< Selector Jettision Push
+#define SJET_SW4 16 ///< Selector Jettision Position 4
 
 //Declare variables for custom non-DCSBios logic for mag-switches
 bool hookBypassMagState = LOW;    ///< Initializing for correct cold/ground start position as switch releases on power off.
