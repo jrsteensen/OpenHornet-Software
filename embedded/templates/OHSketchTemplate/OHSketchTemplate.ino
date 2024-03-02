@@ -35,6 +35,7 @@
  * @author <Replace with author's name>
  * @date <MM.DD.YYYY>
  * @version u.0.0.1 (untested)
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
  * @brief <A short description of the PCB, will appear in the list of files.>
  *
@@ -45,7 +46,7 @@
  *  * **Intended Board:** <Replace with the appropriate hardware, i.e. ABSIS ALE, ABSIS ALE w/ Relay Module, etc.>
  *  * **RS485 Bus Address:** <NA or RS485 Bus Address, i.e. 1, 2, 3, etc.>
  * 
- * **Wiring diagram:**
+ * ### Wiring diagram:
  * PIN | Function
  * --- | ---
  * 1   | function 1
