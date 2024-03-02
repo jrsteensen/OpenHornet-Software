@@ -53,16 +53,16 @@
  * 2   | Landing Gear Down Lock Soleniod
  * 3   | Landing Gear Limit Switch (handle raise / lower)
  * 4   | Landing Gear Lollipop LED
- */
-
- /**
+ *
+ *
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
- */
+ *
  // #define DCSBIOS_RS485_SLAVE 1
+*/
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
