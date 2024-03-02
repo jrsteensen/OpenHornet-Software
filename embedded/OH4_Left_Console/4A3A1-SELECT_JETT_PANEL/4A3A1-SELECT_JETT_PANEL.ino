@@ -35,7 +35,7 @@
  * @author Arribe
  * @date 03.01.2024
  * @version 0.0.1
- * 
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the SELECT JETT panel.
  *
  * @details
