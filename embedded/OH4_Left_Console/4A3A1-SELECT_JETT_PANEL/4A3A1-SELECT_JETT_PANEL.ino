@@ -266,7 +266,7 @@ void loop() {
 *  If the launch bar mag-switch is held in extend position, then: \n
 *  -# if no weight on wheels retract the launch bar. \n
 *  -# if the launch bar auto-retract is defined as true and both engines' RPM is >85 then retract launch bar. \n
-*   *Note: If launch bar auto-retract is true, when connecting to the catapault it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
+*   @note If launch bar auto-retract is true, when connecting to the catapault it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
 * 
 */
   if (launchBarMagState == HIGH) {
@@ -277,12 +277,12 @@ void loop() {
       case 1:   //launch bar switch in extend
         if (wowLeft == wowRight == wowNose == false){ // no wheight on wheels retract launch bar
           digitalWrite(LBAR_RET, LOW);
-          launchBarMagState = LOW;  //note mag is off
+          launchBarMagState = LOW;  // mag is off
           break;
         }        
         if ((LBAR_SW_AUTORETRACT == true) && (rpmL >= 85 && rpmR >= 85)) {  //If Launch bar auto retract on throttle is true and both engines over 80% rpm turn off mag
           digitalWrite(LBAR_RET, LOW);
-          launchBarMagState = LOW;  //note mag is off
+          launchBarMagState = LOW;  // mag is off
         }
         break;
     }
