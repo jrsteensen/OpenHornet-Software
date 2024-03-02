@@ -35,7 +35,7 @@
  * @author Arribe
  * @date 2/28/2024
  * @version 0.0.3
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the LDG GEAR panel.
  *
  * @details
