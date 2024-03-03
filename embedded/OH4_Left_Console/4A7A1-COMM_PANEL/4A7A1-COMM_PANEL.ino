@@ -196,8 +196,14 @@ const byte comIlsChannelSwPins[20] =
 {ILS_SW1, ILS_SW2, ILS_SW3, ILS_SW4, ILS_SW5, ILS_SW6, ILS_SW7, 
 ILS_SW8, ILS_SW9, ILS_SW10, ILS_SW11, ILS_SW12, ILS_SW13, ILS_SW14,
 ILS_SW15, ILS_SW16, ILS_SW17, ILS_SW18, ILS_SW19, ILS_SW20};
+/**
+* @attention It is possible to spin the ILS rotary faster than the DCSBios debounce time, 
+* causing some channels to be skipped over in the sim.  If you want to see each channel's click you may
+* need to slow down.
+* 
+*/
 DcsBios::SwitchMultiPos comIlsChannelSw("COM_ILS_CHANNEL_SW", comIlsChannelSwPins, 20);
-
+ 
 //ANT SEL PANEL
 DcsBios::Switch3Pos comm1AntSelectSw("COMM1_ANT_SELECT_SW", COMANT_SW1, COMANT_SW2);
 DcsBios::Switch3Pos iffAntSelectSw("IFF_ANT_SELECT_SW", IFFANT_SW1, IFFANT_SW2);
