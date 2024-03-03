@@ -93,13 +93,8 @@
 #define TXENABLE_PIN 5
 #define UART1_SELECT
 
-
-//DCS Bios library include
 #include "DcsBios.h"
-
-//Uses library from @Balse on Discord - https://github.com/balzreber/TCA9534
 #include "TCA9534.h"
-
 
 // Define pins per the OH Interconnect. 
 #define LDDI_ROT_DAY A0 ///< LDDI Rotary - Day
