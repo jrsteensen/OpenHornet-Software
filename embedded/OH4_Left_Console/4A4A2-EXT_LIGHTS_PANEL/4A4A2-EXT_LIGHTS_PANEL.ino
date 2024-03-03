@@ -51,7 +51,7 @@
  * 2   | Strobe Dim
  * A2  | Position Lights Brightness
  * 3   | Strobe Bright
- * A1  | Inter Wing Inhibit
+ * A1  | Inter-Wing Tank Inhibit
  * 4   | Gentie Switch
  * A0  | Counter Measure Dispenser Switch
  * 
@@ -93,7 +93,7 @@
 #define STROBE_SW1 2   ///< Strobe Dim
 #define POSI_A A2  ///< Position Lights Brightness
 #define STROBE_SW2 3   ///< Strobe Bright
-#define INTRW_SW1 A1  ///< Inter-Wing Inhibit
+#define INTRW_SW1 A1  ///< Inter-Wing Tank Inhibit
 #define GENTIE_SW1 4   ///< Gentie Switch
 #define DISP_SW1 A0  ///< Counter Measure Dispenser Switch
 
