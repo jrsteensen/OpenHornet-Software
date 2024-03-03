@@ -33,8 +33,9 @@
 /**
  * @file 1A6-SPIN_RCVY_PANEL.ino
  * @author Arribe
- * @date 02.28.2024
- * @version 0.0.2
+ * @date 03.02.2024
+ * @version 0.0.3
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the SPIN RCVY panel.
  *
  * @details
@@ -43,7 +44,7 @@
  *  * **Intended Board:** ABSIS ALE
  *  * **RS485 Bus Address:** 5
  * 
- * **Wiring diagram:**
+ * ##Wiring diagram:
  * PIN | Function
  * --- | ---
  * A3   | HMD Brightness
@@ -51,6 +52,13 @@
  * D2   | IR Override
  * D3   | Spin Recovery, with cover
  *
+ * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
+ * It also sets the address of this slave device. The slave address should be
+ * between 1 and 126 and must be unique among all devices on the same bus.
+ *
+ * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
+ *
+ *  #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
  */
 
 /**
@@ -59,9 +67,9 @@
  * 
  */
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define DCSBIOS_IRQ_SERIAL
+#define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
-#define DCSBIOS_DEFAULT_SERIAL
+#define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
 #endif
 
 #ifdef __AVR__
@@ -69,42 +77,24 @@
 #endif
 
 /**
- * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
- * It also sets the address of this slave device. The slave address should be
- * between 1 and 126 and must be unique among all devices on the same bus.
- *
- * @bug Currently does not work with the Pro Micro (32U4), Fails to compile
-*/
-//#define DCSBIOS_RS485_SLAVE 5
-
-/**
  * The Arduino pin that is connected to the
  * RE and DE pins on the RS-485 transceiver.
 */
-#define TXENABLE_PIN 5
-#define UART1_SELECT
+#define TXENABLE_PIN 5 ///< Sets TXENABLE_PIN to Arduino Pin 5
+#define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
-/**
- * DCS Bios library include.
- */
 #include "DcsBios.h"
 
-/**
- * @brief Define Control I/O for DCS-BIOS. 
- * 
- */
-const int hmdA = A3;
-const int irOff = A2;
-const int irOride = 2;
-const int spinRcvy = 3;
+// Define pins for DCS-BIOS per interconnect diagram.
+#define HMD_A A3 ///< HMD Brightness
+#define IR_OFF A2 ///< IR Off
+#define IR_ORIDE 2 ///< IR Override
+#define SPIN_RCVY 3 ///< Spin Recovery, with cover
 
-/**
- * @brief Connect switches to DCS-BIOS 
- * 
- */
-DcsBios::Potentiometer hmdOffBrt("HMD_OFF_BRT", hmdA);
-DcsBios::Switch3Pos irCoolSw("IR_COOL_SW", irOride, irOff);
-DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_COVER", spinRcvy);
+// Connect switches to DCS-BIOS 
+DcsBios::Potentiometer hmdOffBrt("HMD_OFF_BRT", HMD_A);
+DcsBios::Switch3Pos irCoolSw("IR_COOL_SW", IR_ORIDE, IR_OFF);
+DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_COVER", SPIN_RCVY);
 
 /**
 * Arduino Setup Function
