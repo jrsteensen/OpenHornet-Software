@@ -34,9 +34,11 @@
  * @file 1A3-L_DDI_AND_EWI.ino
  * @author Peter Sawka, OH Community, Arribe
  * @date 02.29.2024
- * @version u.0.0.3
+ * @version 0.0.3
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the left DDI & EWI module.
  * adapted from Peter Sawka's original Nano code
+ *
  * @details
  * 
  *  * **Reference Designator:** 1A3
@@ -57,7 +59,16 @@
  * 16  | LEWI Master Caution 
  * A9  | DDI Backlighting PWM 
  * 
- */
+ *
+ * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
+ * It also sets the address of this slave device. The slave address should be
+ * between 1 and 126 and must be unique among all devices on the same bus.
+ *
+ * @bug Currently does not work with the Pro Micro (32U4), Fails to compile
+ *
+ //#define DCSBIOS_RS485_SLAVE 2
+ *
+*/
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
@@ -74,14 +85,6 @@
 #include <avr/power.h>
 #endif
 
-/**
- * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
- * It also sets the address of this slave device. The slave address should be
- * between 1 and 126 and must be unique among all devices on the same bus.
- *
- * @bug Currently does not work with the Pro Micro (32U4), Fails to compile
-*/
-//#define DCSBIOS_RS485_SLAVE 2
 
 /**
  * The Arduino pin that is connected to the
@@ -90,57 +93,47 @@
 #define TXENABLE_PIN 5
 #define UART1_SELECT
 
-/**
- * DCS Bios library include
- */
+
+//DCS Bios library include
 #include "DcsBios.h"
 
-/**
-* @brief- Use library from @Balse on Discord - https://github.com/balzreber/TCA9534
-*
-*/
+//Uses library from @Balse on Discord - https://github.com/balzreber/TCA9534
 #include "TCA9534.h"
 
-/**
- * @brief Define Control I/O for DCS-BIOS 
- * 
- */
-#define LDDI_ROT_DAY A0
-#define LDDI_ROT_NIGHT A1
-#define LDDI_ROT_OFF A2
-#define LDDI_BRT_A A6
-#define LDDI_BRT_B 7
-#define LDDI_CONT_A 8
-#define LDDI_CONT_B A10
-#define LEWI_FIRE_SW 14
-#define LEWI_MC_SW 16
-#define DDI_BACK_LIGHT A9
+
+// Define pins per the OH Interconnect. 
+#define LDDI_ROT_DAY A0 ///< LDDI Rotary - Day
+#define LDDI_ROT_NIGHT A1 ///< LDDI Rotary - Night
+#define LDDI_ROT_OFF A2 ///< LDDI Rotary - Off
+#define LDDI_BRT_A A6 ///< LDDI Brightness Encoder A
+#define LDDI_BRT_B 7 ///< LDDI Brightness Encoder B
+#define LDDI_CONT_A 8 ///< LDDI Contrast Encoder A
+#define LDDI_CONT_B A10 ///< LDDI Contrast Encoder B
+#define LEWI_FIRE_SW 14 ///< LEWI Fire
+#define LEWI_MC_SW 16 ///< LEWI Master Caution
+#define DDI_BACK_LIGHT A9 ///< DDI Backlighting PWM
 
 /**
-* Setup the DDI Buttons as an array with indexes: Left = 0, Top = 1, Right = 2, Bottom = 3
+* TCA9534 Chip Array
+* Array for the 4 TCA9534 chips to read the DDI Buttons (indicies): Left = 0, Top = 1, Right = 2, Bottom = 3
 *
 */
 TCA9534 ddiButtons[4] = {
   TCA9534(0x23),  //Left Row
   TCA9534(0x20),  //Top Row
-  TCA9534(0x22),  //Right Row
-  TCA9534(0x21)   //Bottom Row
-};
+  TCA9534(0x22),  // Right Row
+  TCA9534(0x21)};   // Bottom Row
 
-/**
-* @brief Setup global variables for reading DDI button presses.  If output flickers increase debounceDelay.
-*
-*/
-bool lastBtnState[20];
-bool buttonState[20];
-uint8_t inputRegister[4];
-unsigned long lastDebounceTime[20];
-unsigned long debounceDelay = 10;  // the debounce time; increase if the output flickers
 
-/**
- * @brief Connect switches to DCS-BIOS 
- * 
- */
+
+// Setup global variables for reading DDI button presses. 
+bool lastBtnState[20]; ///< Array to hold the last state of the 20 DDI buttons.
+bool buttonState[20]; ///< Array to hold the current state of the 20 DDI buttons.
+uint8_t inputRegister[4]; ///< Input register for button read logic.
+unsigned long lastDebounceTime[20]; ///< Array to hold last time of DDI button update for debounce.
+unsigned long debounceDelay = 10;  ///< The debounce delay duration in ms, **increase if the output flickers**.
+
+//Connect switches to DCS-BIOS 
 DcsBios::RotaryEncoder leftDdiBrtCtl("LEFT_DDI_BRT_CTL", "-3200", "+3200", LDDI_BRT_A, LDDI_BRT_B);
 DcsBios::RotaryEncoder leftDdiContCtl("LEFT_DDI_CONT_CTL", "-3200", "+3200", LDDI_CONT_A, LDDI_CONT_B);
 DcsBios::Switch2Pos masterCautionResetSw("MASTER_CAUTION_RESET_SW", LEWI_MC_SW);
@@ -161,8 +154,7 @@ DcsBios::SwitchMultiPos leftDdiBrtSelect("LEFT_DDI_BRT_SELECT", leftDdiBrtSelect
  */
 void onInstrIntLtChange(unsigned int newValue) {
   analogWrite(DDI_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));
-}
-DcsBios::IntegerBuffer instrIntLtBuffer(0x7560, 0xffff, 0, onInstrIntLtChange);
+} DcsBios::IntegerBuffer instrIntLtBuffer(0x7560, 0xffff, 0, onInstrIntLtChange);
 
 /**
 * Arduino Setup Function
@@ -175,7 +167,7 @@ void setup() {
   // Run DCS Bios setup function
   DcsBios::setup();
 
-  /**
+/**
 * @brief Initialize last button state array to all 0's.
 *
 */
@@ -183,7 +175,7 @@ void setup() {
     lastBtnState[i] = 0;
   }
 
-  /**
+/**
 * @brief For each TCA9534 chip 'Begin', and set all of its DDI buttons to PinMode = INPUT
 *
 */
@@ -200,20 +192,22 @@ void setup() {
 *
 * Arduino standard Loop Function. Code who should be executed
 * over and over in a loop, belongs in this function.
+* 
+* @attention If DDI button output flickers increase debounceDelay.
 */
 void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
 
-  /**
+/**
 * Read all the DDI button states and send DCSBios Commands in the following TCA9534 order: Left, Top (buttons reversed), Right (buttons reversed), Bottom.
 *
 */
   for (int i = 0; i < sizeof(ddiButtons) / sizeof(ddiButtons[0]); i++) { // Left = 0, Top = 1, Right = 2, Bottom = 3
     inputRegister[i] = ddiButtons[i].ReadAll();
 
-    /**
+/**
 * @brief Fix button index for Top and Right buttons to be in the same order as Left and Bottom buttons.
 *
 */
