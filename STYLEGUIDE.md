@@ -48,6 +48,8 @@ This is a guide for writing clear examples that can be read by beginners and adv
 
 ## Commenting Your Code
 * All comments should use doxygen-compatible comments and tags.
+    * [Doxygen Docs on Code Comments](https://www.doxygen.nl/manual/docblocks.html)
+	
 ### Doxygen Tags
 * `@note` is the most generic tag, and is the one to use in most cases where you want the reader to "take notice" of the matter described in the section.
 * `@attention` tag can be used to highlight a particularly important note, one that you don't want the reader to overlook.
@@ -55,6 +57,7 @@ This is a guide for writing clear examples that can be read by beginners and adv
 * `@remark` and `@remarks` tags can be used for notes that have lesser importance. If you want to describe something in an "oh, by the way" sense, the remark tag is useful for that.
 * `@todo` tag is used differently than the others you listed. It is usually used to indicate that the code being described in the comment has one or more unfinished aspects. This alerts both code users and code writers that a feature or bug needs to be addressed in a later revision of the pertinent section of code. Doxygen has a cool feature where it will list all TODOs together in their own section in the generated output.
 * `@bug` tag also parses those comments into a separate buglist, much in a similar fashion to the `@todo` tag.
+* [Link to index of all Doxygen tags/special commands](https://www.doxygen.nl/manual/commands.html) - We use `@` prefix instead of `\` prefix.
 
 ### Variables, Constants, and Macros/Defines
 * Comment every variable or constant declaration with a description of what the variable does. Use trailing doxygen compatible comments unless it is complex enough to require a leading/trailing block comment. You may use markdown compatible comments within the doxygen comments.
