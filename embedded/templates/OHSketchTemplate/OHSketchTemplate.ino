@@ -68,9 +68,9 @@
  * 
  */
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define DCSBIOS_IRQ_SERIAL
+#define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
-#define DCSBIOS_DEFAULT_SERIAL
+#define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
 #endif
 
 #ifdef __AVR__
@@ -81,8 +81,8 @@
  * The Arduino pin that is connected to the
  * RE and DE pins on the RS-485 transceiver.
 */
-#define TXENABLE_PIN 5
-#define UART1_SELECT
+#define TXENABLE_PIN 5 ///< Sets TXENABLE_PIN to Arduino Pin 5
+#define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
 
