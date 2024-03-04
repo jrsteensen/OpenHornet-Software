@@ -23,7 +23,7 @@
  *   limitations under the License.
  *   ----------------------------------------------------------------------------------
  *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
- *   GitHub repository is released under the Creative Commons Atribution - 
+ *   GitHub repository is released under the Creative Commons Attribution -
  *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
  *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
@@ -50,7 +50,7 @@
  * A1  | Landing Gear Emergency Rotate and Pull
  * A2  | Landing Gear Down Lock Override Button
  * A3  | Landing Gear Warning Silence Button
- * 2   | Landing Gear Down Lock Soleniod
+ * 2   | Landing Gear Down Lock Solenoid
  * 3   | Landing Gear Limit Switch (handle raise / lower)
  * 4   | Landing Gear Lollipop LED
  *
@@ -92,7 +92,7 @@
 #define LG_EMERG A1 ///< Landing Gear Emergency Rotate and Pull
 #define LG_ORIDE A2 ///< Landing Gear Down Lock Override Button
 #define LG_WARN A3 ///< Landing Gear Warning Silence Button
-#define LG_LEVER_SOLENOID 2 ///< Landing Gear Down Lock Soleniod
+#define LG_LEVER_SOLENOID 2 ///< Landing Gear Down Lock Solenoid
 #define LG_LIMIT 3 ///< Landing Gear Limit Switch (handle raise / lower)
 #define LG_LED 4 ///< Landing Gear Lollipop LED
 
@@ -129,7 +129,7 @@ void onGearDownlockOverrideBtnChange(unsigned int newValue) {
 /**
 * Arduino Setup Function
 *
-* Code that should be executed only once at the programm start, belongs in this function.
+* Code that should be executed only once at the program start, belongs in this function.
 */
 void setup() {
 
@@ -153,23 +153,23 @@ void loop() {
 
 /**
 * ### Landing Gear Down Lock Logic
-*  -# If landing gear handle in down position and lock override pushed, then activate soleniod to **unlock** handle. \n
-*  -# If landing gear handle in down position and NO weight on wheels, then activate soleniod to **unlock** handle. \n
-*  -# IF landing gear handle is down and there is weight on at least one wheel, then turn off soleniod to **lock** handle down. \n
-*  -# If landing gear handle is up turn off soleniod, handle cannot physically be locked in up position. \n
+*  -# If landing gear handle in down position and lock override pushed, then activate solenoid to **unlock** handle. \n
+*  -# If landing gear handle in down position and NO weight on wheels, then activate solenoid to **unlock** handle. \n
+*  -# IF landing gear handle is down and there is weight on at least one wheel, then turn off solenoid to **lock** handle down. \n
+*  -# If landing gear handle is up turn off solenoid, handle cannot physically be locked in up position. \n
 *  \n
 * @remark Digital reads of switch state will allow the landing gear handle to operate using the downlock override button
 * without needing to have the sim running.
 */
   if (digitalRead(LG_LIMIT) == 1) {                              //Switch closed, gear handle is down
-    if (downLockOverride == true || !digitalRead(LG_ORIDE) == true) {  // Override switched pushed virually in sim or physcially in pit, turn on soleniod to unlock gear handle.
+    if (downLockOverride == true || !digitalRead(LG_ORIDE) == true) {  // Override switched pushed virtually in sim or physically in pit, turn on solenoid to unlock gear handle.
       digitalWrite(LG_LEVER_SOLENOID, HIGH);
-    } else if (wowLeft == wowRight == wowNose == false) {  //No weight on any wheel, turn on soleniod to unlock the gear handle
+    } else if (wowLeft == wowRight == wowNose == false) {  //No weight on any wheel, turn on solenoid to unlock the gear handle
       digitalWrite(LG_LEVER_SOLENOID, HIGH);
-    } else {  // gear handle is down and there is weight on at least one wheel, turn off soleniod to lock the handle down.
+    } else {  // gear handle is down and there is weight on at least one wheel, turn off solenoid to lock the handle down.
       digitalWrite(LG_LEVER_SOLENOID, LOW);
     }
-  } else {  //gear handle up, turn off soleniod
+  } else {  //gear handle up, turn off solenoid
     digitalWrite(LG_LEVER_SOLENOID, LOW);
   }
 }
