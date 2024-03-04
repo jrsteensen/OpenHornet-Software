@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/include/Arduino-Makefile" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/include/makeEspArduino" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/Adafruit_NeoPixel" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/Arduino_Boards" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/Servo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/arduino-esp32" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/libraries/dcs-bios-arduino-library" vcs="Git" />
+  </component>
+</project>
