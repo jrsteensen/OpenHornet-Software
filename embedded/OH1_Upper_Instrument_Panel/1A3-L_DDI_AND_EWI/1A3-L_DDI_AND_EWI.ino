@@ -23,7 +23,7 @@
  *   limitations under the License.
  *   ----------------------------------------------------------------------------------
  *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
- *   GitHub repository is released under the Creative Commons Atribution - 
+ *   GitHub repository is released under the Creative Commons Attribution -
  *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
  *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
