@@ -36,7 +36,7 @@
  * @date 03.03.2024
  * @version 0.0.1
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Controls the EXT LIGHTS panel, GEN TIE panel &amp; ECM DISP switch.
+ * @brief Controls the EXT LIGHTS panel, GEN TIE panel & ECM DISP switch.
  *
  * @details
  * 
