@@ -128,7 +128,7 @@ void onFuelDumpSwChange(unsigned int newValue) {
         break;
       case 1:
         if(wowLeft == wowRight == wowNose == false){
-        digitalWrite(DUMP_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overriden by bingo logic in loop.
+        digitalWrite(DUMP_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by bingo logic in loop.
         dumpHold = HIGH;               // set dumpHold flag to HIGH for bingo logic.
         }
         break;
@@ -157,7 +157,7 @@ void onExtWowRightChange(unsigned int newValue) {
 } DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
 
 /**
-* @brief Read the IFEI panel's Fuel state value when it's going down, and convert to int for fueldump logic.
+* @brief Read the IFEI panel's Fuel state value when it's going down, and convert to int for fuel dump logic.
 * @note Fuel dump logic doesn't care if the fuel quantity is going up.
 */
 void onIfeiFuelDownChange(char* newValue) {
@@ -168,7 +168,7 @@ void onIfeiFuelDownChange(char* newValue) {
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
   void setup() {
 

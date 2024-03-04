@@ -23,7 +23,7 @@
  *   limitations under the License.
  *   ----------------------------------------------------------------------------------
  *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
- *   GitHub repository is released under the Creative Commons Atribution - 
+ *   GitHub repository is released under the Creative Commons Attribution -
  *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
  *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
@@ -52,7 +52,7 @@
  * A2  | Position Lights Brightness
  * 3   | Strobe Bright
  * A1  | Inter-Wing Tank Inhibit
- * 4   | Gentie Switch
+ * 4   | Gen Tie Switch
  * A0  | Counter Measure Dispenser Switch
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
@@ -94,7 +94,7 @@
 #define POSI_A A2  ///< Position Lights Brightness
 #define STROBE_SW2 3   ///< Strobe Bright
 #define INTRW_SW1 A1  ///< Inter-Wing Tank Inhibit
-#define GENTIE_SW1 4   ///< Gentie Switch
+#define GENTIE_SW1 4   ///< Gen Tie Switch
 #define DISP_SW1 A0  ///< Counter Measure Dispenser Switch
 
 // Connect switches to DCS-BIOS 
@@ -109,7 +109,7 @@ DcsBios::Switch2Pos cmsdDispenseBtn("CMSD_DISPENSE_BTN", DISP_SW1);
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 

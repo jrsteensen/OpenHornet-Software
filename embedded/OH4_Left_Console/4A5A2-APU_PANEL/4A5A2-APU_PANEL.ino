@@ -23,7 +23,7 @@
  *   limitations under the License.
  *   ----------------------------------------------------------------------------------
  *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
- *   GitHub repository is released under the Creative Commons Atribution - 
+ *   GitHub repository is released under the Creative Commons Attribution -
  *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
  *   ----------------------------------------------------------------------------------
  *   This Project uses Doxygen as a documentation generator.
@@ -55,7 +55,7 @@
  * 8   | Circuit Breaker FCS Channel 2
  * 10  | Circuit Breaker Speed Break
  * 9   | Circuit Breaker Launch Bar
- * 2   | APU Swtich Magnet
+ * 2   | APU Switch Magnet
  * 3   | Engine Crank Magnet
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
@@ -100,7 +100,7 @@
 #define FCS_CH2 8        ///< Circuit Breaker FCS Channel 2
 #define LCSPDBRK 10      ///< Circuit Breaker Speed Break
 #define LCLBAR 9         ///< Circuit Breaker Launch Bar
-#define APU_SW_MAG 2     ///< APU Swtich Magnet
+#define APU_SW_MAG 2     ///< APU Switch Magnet
 #define ENG_CRANK_MAG 3  ///< Engine Crank Magnet
 
 
@@ -188,7 +188,7 @@ void onEngineCrankSwChange(unsigned int newValue) {
   } else {
     switch (newValue) {
       case 0:
-        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overriden by engine RPM logic in loop.
+        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by engine RPM logic in loop.
         engCrankHold = HIGH;                // set engCrankHold flag to HIGH for rpm logic.
         break;
       case 1:  // switch turned off disengage magnet.
@@ -196,7 +196,7 @@ void onEngineCrankSwChange(unsigned int newValue) {
         engCrankHold = LOW;
         break;
       case 2:
-        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overriden by engine RPM logic in loop.
+        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by engine RPM logic in loop.
         engCrankHold = HIGH;                // set engCrankHold flag to HIGH for rpm logic.
         break;
       default:
@@ -219,7 +219,7 @@ void onIfeiRpmRChange(char* newValue) {
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 
