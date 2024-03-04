@@ -150,8 +150,7 @@ void onApuReadyLtChange(unsigned int newValue) {
       break;
   }
   apuLightSate = newValue;
-}
-DcsBios::IntegerBuffer apuReadyLtBuffer(0x74c2, 0x0800, 11, onApuReadyLtChange);
+} DcsBios::IntegerBuffer apuReadyLtBuffer(0x74c2, 0x0800, 11, onApuReadyLtChange);
 
 /**
 * @brief DCSBios read back of APU switch position.  If the Switch is turned off virtually in the sim, then turn off the APU mag.
@@ -175,8 +174,7 @@ void onApuControlSwChange(unsigned int newValue) {
     }
   }
   apuState = newValue;
-}
-DcsBios::IntegerBuffer apuControlSwBuffer(0x74c2, 0x0100, 8, onApuControlSwChange);
+} DcsBios::IntegerBuffer apuControlSwBuffer(0x74c2, 0x0100, 8, onApuControlSwChange);
 
 /**
 * @brief DCSBios read back of Engine Crank switch position.  If the Switch is turned off virtually in the sim, 
@@ -206,19 +204,16 @@ void onEngineCrankSwChange(unsigned int newValue) {
     }
     engCrankState = newValue;
   }
-}
-DcsBios::IntegerBuffer engineCrankSwBuffer(0x74c2, 0x0600, 9, onEngineCrankSwChange);
+} DcsBios::IntegerBuffer engineCrankSwBuffer(0x74c2, 0x0600, 9, onEngineCrankSwChange);
 
 //Engine RPM needed for Engine Crank mag-switch
 void onIfeiRpmLChange(char* newValue) {
   rpmL = atoi(newValue);
-}
-DcsBios::StringBuffer<3> ifeiRpmLBuffer(0x749e, onIfeiRpmLChange);
+} DcsBios::StringBuffer<3> ifeiRpmLBuffer(0x749e, onIfeiRpmLChange);
 
 void onIfeiRpmRChange(char* newValue) {
   rpmR = atoi(newValue);
-}
-DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
+} DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
 
 /**
 * Arduino Setup Function
