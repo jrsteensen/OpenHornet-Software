@@ -115,13 +115,13 @@
 #define LBAR_RET 2    ///< Launch Bar Switch Mag
 #define HOOK_FIELD 3  ///< Hook Bypass Switch Mag
 #define LADG_SW 4 ///< Landing Taxi Light
-#define SJET_SW1 6 ///< Selector Jettision Position 1
-#define SJET_SW3 7 ///< Selector Jettision Position 3
-#define SJET_SW5 8 ///< Selector Jettision Position 8
+#define SJET_SW1 6 ///< Selector Jettison Position 1
+#define SJET_SW3 7 ///< Selector Jettison Position 3
+#define SJET_SW5 8 ///< Selector Jettison Position 8
 #define ASKID_SW 10 ///< Antiskid Switch
-#define SJET_SW2 14 ///< Selector Jettision Position 2
-#define SJET_PUSH 15 ///< Selector Jettision Push
-#define SJET_SW4 16 ///< Selector Jettision Position 4
+#define SJET_SW2 14 ///< Selector Jettison Position 2
+#define SJET_PUSH 15 ///< Selector Jettison Push
+#define SJET_SW4 16 ///< Selector Jettison Position 4
 
 //Declare variables for custom non-DCSBios logic for mag-switches
 bool hookBypassMagState = LOW;    ///< Initializing for correct cold/ground start position as switch releases on power off.
@@ -233,7 +233,7 @@ void onExtWowRightChange(unsigned int newValue) {
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 
@@ -267,7 +267,7 @@ void loop() {
 *  If the launch bar mag-switch is held in extend position, then: \n
 *  -# if no weight on wheels retract the launch bar. \n
 *  -# if the launch bar auto-retract is defined as true and both engines' RPM is >85 then retract launch bar. \n
-*   @note If launch bar auto-retract is true, when connecting to the catapault it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
+*   @note If launch bar auto-retract is true, when connecting to the catapult it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
 * 
 */
   if (launchBarMagState == HIGH) {
@@ -276,7 +276,7 @@ void loop() {
         //do nothing the state change method will retract the launch bar
         break;
       case 1:   //launch bar switch in extend
-        if (wowLeft == wowRight == wowNose == false){ // no wheight on wheels retract launch bar
+        if (wowLeft == wowRight == wowNose == false){ // no weight on wheels retract launch bar
           digitalWrite(LBAR_RET, LOW);
           launchBarMagState = LOW;  // mag is off
           break;
@@ -294,7 +294,7 @@ void loop() {
 *  If the hook bypass mag-switch is held in field position with no weight on wheels and hook lever is down, then: \n
 *  -# if hook lever state change time is longer than the hook delay, turn off hook bypass back to carrier. \n
 *  -# else continue until either the time is reached or the hook lever is raised prior to cancelling the hook bypass switch.
-*  @bug Potential bug, the hook bypass autocancel delay time varies when running sketch.  The sim's the autocancel delay is ~3.8 seconds.  In testing the sketch the autocancel will be at least 3.2 seconds, but can be as long as ~8 seconds.  This is likely due to delays in DCSBios sending state updates.
+*  @bug Potential bug, the hook bypass auto-cancel delay time varies when running sketch.  The sim's the auto-cancel delay is ~3.8 seconds.  In testing the sketch the auto-cancel will be at least 3.2 seconds, but can be as long as ~8 seconds.  This is likely due to delays in DCSBios sending state updates.
 * 
 */
   if ((hookBypassMagState == HIGH) && (wowLeft == wowRight == wowNose == false) && (hookLeverState == LOW)) {  // If the hook bypass mag is on, with weight off wheels, and the hook lever is down.
@@ -302,7 +302,7 @@ void loop() {
       digitalWrite(HOOK_FIELD, LOW);
       hookBypassMagState = LOW;
     } else {
-      //wait for time to pass to ensure hook lever isn't raised before the autocancel time is met.
+      //wait for time to pass to ensure hook lever isn't raised before the auto-cancel time is met.
     }
   }
 }

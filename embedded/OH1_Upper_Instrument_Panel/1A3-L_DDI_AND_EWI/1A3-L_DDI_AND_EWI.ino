@@ -110,7 +110,7 @@
 
 /**
 * TCA9534 Chip Array
-* Array for the 4 TCA9534 chips to read the DDI Buttons (indicies): Left = 0, Top = 1, Right = 2, Bottom = 3
+* Array for the 4 TCA9534 chips to read the DDI Buttons (indices): Left = 0, Top = 1, Right = 2, Bottom = 3
 *
 */
 TCA9534 ddiButtons[4] = {
@@ -135,7 +135,7 @@ DcsBios::Switch2Pos masterCautionResetSw("MASTER_CAUTION_RESET_SW", LEWI_MC_SW);
 DcsBios::SwitchWithCover2Pos leftFireBtn("LEFT_FIRE_BTN", "LEFT_FIRE_BTN_COVER", LEWI_FIRE_SW);
 
 /** 
-* @brief Initialize pin array for DCSBios multiposition switch call per BORT command reference.
+* @brief Initialize pin array for DCSBios multi-position switch call per BORT command reference.
 *
 */
 const byte leftDdiBrtSelectPins[3] = { LDDI_ROT_OFF, LDDI_ROT_NIGHT, LDDI_ROT_DAY };
@@ -155,7 +155,7 @@ void onInstrIntLtChange(unsigned int newValue) {
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 

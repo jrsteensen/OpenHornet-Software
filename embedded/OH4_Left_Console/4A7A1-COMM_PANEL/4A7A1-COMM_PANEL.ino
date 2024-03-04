@@ -189,7 +189,7 @@ DcsBios::Switch3Pos comIffMode4Sw("COM_IFF_MODE4_SW", MODE4_SW1, MODE4_SW2);
 DcsBios::Switch2Pos comIlsUfcManSw("COM_ILS_UFC_MAN_SW", ILSUFC_SW1);
 
 /**
-* @brief ILS Rotary pin assignements for DCSBios Multiposition Switch.
+* @brief ILS Rotary pin assignments for DCSBios Multi-position Switch.
 *
 */
 const byte comIlsChannelSwPins[20] = 
@@ -212,7 +212,7 @@ DcsBios::Switch3Pos iffAntSelectSw("IFF_ANT_SELECT_SW", IFFANT_SW1, IFFANT_SW2);
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 

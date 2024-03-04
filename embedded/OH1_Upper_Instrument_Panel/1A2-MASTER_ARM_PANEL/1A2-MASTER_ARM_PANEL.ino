@@ -106,7 +106,7 @@ DcsBios::Switch2Pos fireExtBtn("FIRE_EXT_BTN", READY_SW);
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 
