@@ -100,7 +100,7 @@ DcsBios::SwitchWithCover2Pos spinRecoverySw("SPIN_RECOVERY_SW", "SPIN_RECOVERY_C
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 

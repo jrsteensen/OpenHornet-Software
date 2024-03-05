@@ -122,7 +122,7 @@ DcsBios::Switch3Pos hudVideoControlSw("HUD_VIDEO_CONTROL_SW", WB_OFF, WB_WB);
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
+* only once at the program start, belongs in this function.
 */
 void setup() {
 

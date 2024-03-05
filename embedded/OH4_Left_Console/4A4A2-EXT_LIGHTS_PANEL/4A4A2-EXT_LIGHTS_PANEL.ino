@@ -31,37 +31,38 @@
  **************************************************************************************/
 
 /**
- * @file 1A2-MASTER_ARM_PANEL.ino
- * @author Sandra Carroll (<a href="mailto:smgvbest@gmail.com">smgvbest@gmail.com</a>), Arribe
- * @date 3.02.2024
- * @version 0.0.2
+ * @file 4A4A2-EXT_LIGHTS_PANEL.ino
+ * @author Arribe
+ * @date 03.03.2024
+ * @version 0.0.1
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Controls the MASTER ARM panel. 
+ * @brief Controls the EXT LIGHTS panel, GEN TIE panel & ECM DISP switch.
  *
- * @details This sketch is for the UIP Master Arm Panel.
+ * @details
  * 
- *  * **Reference Designator:** 1A2
+ *  * **Reference Designator:** 4A4A2
  *  * **Intended Board:** ABSIS ALE
- *  * **RS485 Bus Address:** 1
- *  
- * ###Wiring diagram:
+ *  * **RS485 Bus Address:** 4
  * 
+ * ### Wiring diagram:
  * PIN | Function
  * --- | ---
- * A1  | Emergency Jettison Switch
- * A2  | Air to Ground Select
- * A3  | Ready/Discharge Switch
- * D2  | Air to Air Select
- * D3  | Master Arm Switch
- *
- *  
+ * A3  | Formation Lights Brightness
+ * 2   | Strobe Dim
+ * A2  | Position Lights Brightness
+ * 3   | Strobe Bright
+ * A1  | Inter-Wing Tank Inhibit
+ * 4   | Gen Tie Switch
+ * A0  | Counter Measure Dispenser Switch
+ * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
- *   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
- */
+
+   #define DCSBIOS_RS485_SLAVE 4 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+*/
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
@@ -75,7 +76,7 @@
 #endif
 
 #ifdef __AVR__
- #include <avr/power.h> 
+#include <avr/power.h>
 #endif
 
 /**
@@ -87,22 +88,24 @@
 
 #include "DcsBios.h"
 
-//Declare pins for DCS-BIOS per interconnect diagram.
-#define E_JETT_SW     A1 ///< Emergency Jettison Switch
-#define AG_SW         A2 ///< Air to Ground Select
-#define READY_SW      A3 ///< Ready/Discharge Switch
-#define AA_SW         2 ///< Air to Air Select
-#define MSTR_ARM_SW   3 ///< Master Arm Switch
+// Define pins for DCS-BIOS per interconnect diagram.
+#define FORM_A A3  ///< Formation Lights Brightness
+#define STROBE_SW1 2   ///< Strobe Dim
+#define POSI_A A2  ///< Position Lights Brightness
+#define STROBE_SW2 3   ///< Strobe Bright
+#define INTRW_SW1 A1  ///< Inter-Wing Tank Inhibit
+#define GENTIE_SW1 4   ///< Gen Tie Switch
+#define DISP_SW1 A0  ///< Counter Measure Dispenser Switch
 
 // Connect switches to DCS-BIOS 
-DcsBios::Switch2Pos masterArmSw("MASTER_ARM_SW", MSTR_ARM_SW);
-DcsBios::Switch2Pos masterModeAa("MASTER_MODE_AA", AA_SW);
-DcsBios::Switch2Pos masterModeAg("MASTER_MODE_AG", AG_SW);
-DcsBios::Switch2Pos emerJettBtn("EMER_JETT_BTN", E_JETT_SW);
-DcsBios::Switch2Pos fireExtBtn("FIRE_EXT_BTN", READY_SW);
+DcsBios::Potentiometer formationDimmer("FORMATION_DIMMER", FORM_A);
+DcsBios::Switch2Pos intWngTankSw("INT_WNG_TANK_SW", INTRW_SW1);
+DcsBios::Potentiometer positionDimmer("POSITION_DIMMER", POSI_A);
+DcsBios::Switch3Pos strobeSw("STROBE_SW", STROBE_SW1, STROBE_SW2);
+DcsBios::SwitchWithCover2Pos genTieSw("GEN_TIE_SW", "GEN_TIE_COVER", GENTIE_SW1);
+DcsBios::Switch2Pos cmsdDispenseBtn("CMSD_DISPENSE_BTN", DISP_SW1);
 
 /**
- * @brief 
 * Arduino Setup Function
 *
 * Arduino standard Setup Function. Code who should be executed
@@ -112,11 +115,10 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
-
 }
 
 /**
-* @brief Arduino Loop Function
+* Arduino Loop Function
 *
 * Arduino standard Loop Function. Code who should be executed
 * over and over in a loop, belongs in this function.
@@ -125,5 +127,4 @@ void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
-
 }
