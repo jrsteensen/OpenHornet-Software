@@ -68,7 +68,6 @@
  * the landing gear has been oversped and the gear-bay doors damaged.  This is also not modeled in the logic, the LTD/R will hold.  Though in this scenario the sim won't
  * allow any A/G weapon deployments.
  *
- * @note The INS and RADAR rotary off positions are flakey at best.  If we want solid rotation movements, then the 'off' position pins need to be connected to the controller.
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
@@ -102,6 +101,7 @@
 #define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
+#include "5A7A1-SNSR_PANEL.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define FLIR_ON A3      ///< FLIR On
@@ -127,30 +127,17 @@ bool noseGearDown = true;        ///< Initialize nose landing gear state for the
 bool airToGroundLight = false;   ///< Initialize Air-to-Ground light for the LTD/R switch hold logic.
 bool ltdrArmMagEngaged = false;  ///< Initialize LTD/R mag-swtich for hold logic.
 
-const byte insSwPins[7] = { INS_CV, INS_GND, INS_NAV, INS_IFA, INS_GYRO, INS_GB, INS_TEST };  ///< Off position doesn't have a pin.
-const byte radarSwPins[3] = { RDR_STBY, RDR_OPR, RDR_EMERG };                                 ///< Off position doesn't have a pin.
-byte currentInsSwState[7];                                                                    ///< Array to hold the digital reads of the INS switch.
-byte insDebounceState[7];                                                                     ///< Array to hold the debounce state for the INS.
-byte lastInsSwState[8] = { LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW };                          ///< Array to hold last INS switch state, 'off' is in the last position.
-byte currentRadarSwSate[3];                                                                   ///< Array to hold the digital reads of the Radar switch.
-byte radarDebounceSate[3];                                                                    ///< Array to hold the debounce state for the radar.
-byte lastRadarSwState[4] = { LOW, LOW, LOW, LOW };                                            ///< Array to hold last radar switch state, 'off' is in the last position.
-const bool allOff[7] = { LOW, LOW, LOW, LOW, LOW, LOW, LOW };                                 ///< Array used to test if the rotary reads were all LOW.
-bool radarRotaryPulled = false;
-
-const unsigned int offDelay = 200;      ///< delay for the INS and Radar switches' logic to move to off position.
-const unsigned int debounceDelay = 10;  ///< debounce delay for the rotary swtichtes.
-unsigned long lastRadarTime = 0;        ///< last time Radar switch was updated.
-unsigned long radarDebounceTime[3];     ///< Array to hold the debounce times for each pin position.
-unsigned long lastInsTime = 0;          ///< last time INS switch was updated.
-unsigned long insDebounceTime[7];       ///< Array to hold the debounce times for each pin position.
-unsigned long now;                      //variable to hold current time.
+const byte insSwPins[8] = { DcsBios::PIN_NC, INS_CV, INS_GND, INS_NAV, INS_IFA, INS_GYRO, INS_GB, INS_TEST };  ///< Off position doesn't have a pin.
+const byte radarSwPins[4] = { DcsBios::PIN_NC, RDR_STBY, RDR_OPR, RDR_EMERG };                                 ///< Off position doesn't have a pin.
 
 // Connect switches to DCS-BIOS
 DcsBios::Switch3Pos flirSw("FLIR_SW", FLIR_ON, FLIR_OFF);
-DcsBios::Switch2Pos lstNflrSw("LST_NFLR_SW", LST_ON);
+DcsBios::Switch2Pos lstNflrSw("LST_NFLR_SW", LST_ON, true);
 DcsBios::Switch2Pos ltdRSw("LTD_R_SW", LTDR_ARM);
 
+///@todo If/When https://github.com/DCS-Skunkworks/dcs-bios-arduino-library/pull/56 is accepted by DCS Skunkworks change to DcsBios::SwitchMultiPos class.
+SwitchMultiPosDebounce insSw("INS_SW", insSwPins, 8, false, 100);
+SwitchRadar radarSw("RADAR_SW", "RADAR_SW_PULL", 3, radarSwPins, 4, false, 100);
 
 // DCSBios reads to save airplane state information.
 void onFlpLgLeftGearLtChange(unsigned int newValue) {
@@ -236,13 +223,7 @@ void setup() {
   // Run DCS Bios setup function
   DcsBios::setup();
 
-  for (int j = 0; j < 7; j++) {
-    pinMode(insSwPins[j], INPUT_PULLUP);
-  }
-
-  for (int j = 0; j < 3; j++) {
-    pinMode(radarSwPins[j], INPUT_PULLUP);
-  }
+  flirSw.resetThisState();
 
   pinMode(LTDR_ARM_MAG, OUTPUT);
   digitalWrite(LTDR_ARM_MAG, LOW);
@@ -254,112 +235,14 @@ void setup() {
 * Arduino standard Loop Function. Code who should be executed
 * over and over in a loop, belongs in this function.
 *
-* For the LTD/R switch to hold the A/G master mode needs to be on, and the landing gear raised.
-*
 */
 void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
 
-  /**
-* INS Switch Logic:
-* -# Loop over the INS pins, if the INS switch state changed from last read and is pointing at a non-off position send INS rotation update message.
-* -# Test if the INS rotary isn't pointing to any non-off position.  If longer than the off delay we deduce that the switch is pointing to off, send the INS rotation pointing to off message.
-*
-*/
-  for (int j = 0; j < 7; j++) {                         // loop over the INS pins.
-    currentInsSwState[j] = !digitalRead(insSwPins[j]);  // Read the INS rotary positions and hold to test if swtich is off.
-    now = millis();                                     // refresh now
+  radarSw.pollThisInput();
 
-    if (currentInsSwState[j] != insDebounceState[j]) {  // Test if the INS switch state changed.
-      insDebounceTime[j] = now;                         // save debounce time for this position.
-      insDebounceState[j] = currentInsSwState[j];       // set debounce state to current read.
-    }
-
-    if ((now - insDebounceTime[j]) >= debounceDelay) {               // If the debounceDelay has passed.
-      if (insDebounceState[j] != lastInsSwState[j]) {                // If the debounce state is not the same as the last state.
-        if (insDebounceState[j] == HIGH) {                           // if the swith is pointing to the position send DCS Bios message.
-          char positionName[3];                                      ///< string to hold the position name.
-          sprintf(positionName, "%01d", j + 1);                      // create position name: j + 1 because the off pin (position 0) isn't hooked up.
-          DcsBios::tryToSendDcsBiosMessage("INS_SW", positionName);  // send DCS Bios message to rotate the knob.
-        }
-        lastInsSwState[j] = insDebounceState[j];  // debounce conditions met, set last state = to debounce state.
-      }
-    }
-  }
-
-  now = millis();                                         // refresh time
-  if (memcmp(lastInsSwState, allOff, 7) == 0) {           // Determine INS rotary debounced reads were all LOW, to deduce if INS pointing to 'off' position
-    if (lastInsSwState[8] == LOW) {                       // INS rotary pointing to OFF, check if changing position in sim.
-      if ((now - lastInsTime) > offDelay) {               // Wait until the switch is certain to be in the OFF position.
-        DcsBios::tryToSendDcsBiosMessage("INS_SW", "0");  // Send INS off position to DCS.
-        lastInsSwState[8] = HIGH;                         // Update the INS Off position to indicate the rotary is pointing to off.
-      } else {
-        //do nothing wait for the off delay time to elapse to esure it wasn't caused from the rotating switch.
-      }
-    } else {
-      // INS off position already set, no change.
-    }
-  } else {                    // INS rotary pointing to something other than OFF.
-    lastInsSwState[8] = LOW;  // Set the INS off position state to LOW.
-    lastInsTime = now;        // Update the last INS update time to reset the time delta for calculating the time delta for moving to off.
-  }
-
-
-  /**
-* Radar Switch Logic:
-* -# Loop over the radar pins, if the radar switch state changed from last read and is pointing at a non-off position send radar rotation update message.
-* -# Test if the radar rotary isn't pointing to any non-off position.  If longer than the off delay we deduce that the rotary is pointing to off, send the radar rotation pointing to off message.
-*
-*/
-  for (int j = 0; j < 3; j++) {  // loop over the radar pins.
-
-    currentRadarSwSate[j] = !digitalRead(radarSwPins[j]);  // Read the radar rotary positions and hold to test if swtich is off.
-    now = millis();                                        // refresh the time.
-
-    if (currentRadarSwSate[j] != radarDebounceSate[j]) {  // Test if the radar switch state changed.
-      radarDebounceTime[j] = now;                         // set radar debounce time to now.
-      radarDebounceSate[j] = currentRadarSwSate[j];       // set the debounce state to current state.
-    }
-
-    if ((now - radarDebounceTime[j]) >= debounceDelay) {             // if the debounce delay was met.
-      if (radarDebounceSate[j] != lastRadarSwState[j]) {             // if the debounce state not the last state.
-        if (radarDebounceSate[j] == HIGH) {                          // if the swith is pointing to the position send DCS Bios message.
-          if (j == 2) {                                              // Pointing to Emer, need to send pull message first
-            DcsBios::tryToSendDcsBiosMessage("RADAR_SW_PULL", "1");  // pull the radar rotary.
-            radarRotaryPulled = true;                                // remember if the rotary is pulled.
-            delay(300);                                              // Delay determined via trial and error.  The rotation below has to be made after the slow pull animation is complete.
-          } else {
-            if (radarRotaryPulled == true) {
-              DcsBios::tryToSendDcsBiosMessage("RADAR_SW_PULL", "1");  // make sure radar knob isn't pulled, may be a DCS bug to pull again i.e. rotate mouse wheel back.
-              radarRotaryPulled = false;                               // remember that the rotary is NOT pulled.
-              delay(300);                                              // need to delay so the rotation below will work.
-            }
-          }
-          char positionName[3];                                        // string to hold the postion name.
-          sprintf(positionName, "%01d", j + 1);                        // set the postion name, j + 1 because the off pin (position 0) isn't hooked up.
-          DcsBios::tryToSendDcsBiosMessage("RADAR_SW", positionName);  // sent rotation message.
-        }
-        lastRadarSwState[j] = radarDebounceSate[j];  // debounce conditions complete save debounce state to last state.
-      }
-    }
-  }
-
-  now = millis();                                           // refresh time
-  if (memcmp(lastRadarSwState, allOff, 3) == 0) {           // Determine radar rotary debounced reads were all LOW, to deduce if radar pointing to 'off' position
-    if (lastRadarSwState[4] == LOW) {                       // radar rotary pointing to OFF, check if changing position in sim.
-      if ((now - lastRadarTime) > offDelay) {               // Wait until the switch is certain to be in the OFF position.
-        DcsBios::tryToSendDcsBiosMessage("RADAR_SW", "0");  // Send radar off position to DCS.
-        lastRadarSwState[4] = HIGH;                         // Update the radar Off position to indicate the rotary is pointing to off.
-      } else {
-        //do nothing wait for the off delay time to elapse to esure it wasn't caused from the rotating switch.
-      }
-    } else {
-      // radar off position already set, no change.
-    }
-  } else {                      // radar rotary pointing to something other than OFF.
-    lastRadarSwState[4] = LOW;  // Set the radar off position state to LOW.
-    lastRadarTime = now;        // Update the last radar update time to reset the time delta for calculating the time delta for moving to off.
-  }
+  ///@todo If/When https://github.com/DCS-Skunkworks/dcs-bios-arduino-library/pull/56 is accepted by DCS Skunkworks remove the insSw.pollThisInput(); call.
+  insSw.pollThisInput();
 }
