@@ -86,6 +86,7 @@
 #define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
+#include "Joystick.h"
 
 //Declare pins for DCS-BIOS per interconnect diagram.
 #define E_JETT_SW     A1 ///< Emergency Jettison Switch
@@ -94,13 +95,23 @@
 #define AA_SW         2 ///< Air to Air Select
 #define MSTR_ARM_SW   3 ///< Master Arm Switch
 
-// Connect switches to DCS-BIOS 
-DcsBios::Switch2Pos masterArmSw("MASTER_ARM_SW", MSTR_ARM_SW);
-DcsBios::Switch2Pos masterModeAa("MASTER_MODE_AA", AA_SW);
-DcsBios::Switch2Pos masterModeAg("MASTER_MODE_AG", AG_SW);
-DcsBios::Switch2Pos emerJettBtn("EMER_JETT_BTN", E_JETT_SW);
-DcsBios::Switch2Pos fireExtBtn("FIRE_EXT_BTN", READY_SW);
+bool inputsAsHID = false; ///< If false, initialize inputs as DCS-BIOS. If true, initialize them as joystick buttons.
+                          ///< This is not a #define because we may want to change to change it via serial or similar
+                          ///< in the future.
 
+if (inputsAsHID = false) {
+    // Connect switches to DCS-BIOS
+    DcsBios::Switch2Pos masterArmSw("MASTER_ARM_SW", MSTR_ARM_SW);
+    DcsBios::Switch2Pos masterModeAa("MASTER_MODE_AA", AA_SW);
+    DcsBios::Switch2Pos masterModeAg("MASTER_MODE_AG", AG_SW);
+    DcsBios::Switch2Pos emerJettBtn("EMER_JETT_BTN", E_JETT_SW);
+    DcsBios::Switch2Pos fireExtBtn("FIRE_EXT_BTN", READY_SW);
+} else {
+    // Initialize inputs as a joystick device
+    const int* inputPins[5]{ MASTR_ARM_SW, AA_SW, AG_SW, E_JETT_SW, READY_SW };
+
+
+}
 /**
  * @brief 
 * Arduino Setup Function
@@ -112,7 +123,9 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
-
+  // Initialize the joystick.
+  Joystick.begin();
+  // @todo while (!Serial) {inputsAsHID = false}; ///< Do not allow inputs as HID to be activated if USB is not connected.
 }
 
 /**
