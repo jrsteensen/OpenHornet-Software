@@ -1,10 +1,10 @@
 ifndef ESP_ROOT
 # Path to the ESP32 Arduino core.
-ESP_ROOT = $(dir $(realpath $(CURDIR)/..))libraries/arduino-esp32
+ESP_ROOT = $(ROOTDIR)/libraries/arduino-esp32
 endif
 
-LIBRARY_DIR        = $(dir $(realpath $(CURDIR)/..))libraries
-ESPMK_DIR          = $(dir $(realpath $(CURDIR)/..))include/makeEspArduino
+LIBRARY_DIR        = $(ROOTDIR)/libraries
+ESPMK_DIR          = $(ROOTDIR)/include/makeEspArduino
 # Include libraries from the libraries directory for linking.
 CUSTOM_LIBS        = $(LIBRARY_DIR)
 # Exclude platform libraries to avoid compilation and linking errors.
@@ -18,7 +18,7 @@ MAIN_NAME          = $(notdir $(CURDIR))
 # Override them so that the debug build output doesn't fail.
 BUILD_EXTRA_FLAGS  = -DARDUINO_HOST_OS=\"linux\" -DARDUINO_FQBN=\"esp32:esp32:esp32s2\"
 
-include $(dir $(realpath $(CURDIR)/..))include/openhornet.mk
+include $(ROOTDIR)/include/openhornet.mk
 include $(ESPMK_DIR)/makeEspArduino.mk
 
 
