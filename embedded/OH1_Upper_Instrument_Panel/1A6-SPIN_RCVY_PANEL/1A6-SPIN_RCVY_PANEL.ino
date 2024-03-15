@@ -44,6 +44,7 @@
  *  * **Intended Board:** ABSIS ALE
  *  * **RS485 Bus Address:** 5
  * 
+
  * ##Wiring diagram:
  * PIN | Function
  * --- | ---
