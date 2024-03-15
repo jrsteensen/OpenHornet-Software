@@ -2,11 +2,11 @@
 OBJDIR             = build
 # Set the compiled firmware filename to the directory name (OpenHornet component name)
 TARGET             = $(notdir $(CURDIR))
-ARDUINO_SKETCHBOOK = $(dir $(realpath $(CURDIR)/..))
-ARDMK_DIR          = $(dir $(realpath $(CURDIR)/..))include/Arduino-Makefile
+ARDUINO_SKETCHBOOK = $(ROOTDIR)
+ARDMK_DIR          = $(ROOTDIR)/include/Arduino-Makefile
 ARDUINO_LIBS       = $(LIBRARIES)
 
-include $(dir $(realpath $(CURDIR)/..))include/openhornet.mk
+include $(ROOTDIR)/include/openhornet.mk
 include $(ARDMK_DIR)/Arduino.mk
 
 release: all
