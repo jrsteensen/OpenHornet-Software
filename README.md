@@ -1,5 +1,6 @@
 # README
-![OH logo](https://raw.githubusercontent.com/jrsteensen/OpenHornet/master/images/Logo/open_hornet_horizontal_500x79.png)
+[TOC]
+![Logo](https://raw.githubusercontent.com/jrsteensen/OpenHornet-Software/225a887c08abd848a763da4956ea5762373f4505/docs/img/logos/oh_horiz.svg)
 
 ![Docs](https://github.com/jrsteensen/OpenHornet-Software/actions/workflows/pages/pages-build-deployment/badge.svg?branch=gh-pages)
 

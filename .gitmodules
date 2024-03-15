@@ -19,3 +19,9 @@
 [submodule "include/makeEspArduino"]
 	path = include/makeEspArduino
 	url = https://github.com/plerup/makeEspArduino.git
+[submodule "libraries/TCA9534"]
+	path = libraries/TCA9534
+	url = https://github.com/balzreber/TCA9534.git
+[submodule "libraries/ArduinoJoystickLibrary"]
+	path = libraries/ArduinoJoystickLibrary
+	url = https://github.com/MHeironimus/ArduinoJoystickLibrary.git

@@ -1,1 +1,1 @@
-RELEASE_DIR        = $(dir $(realpath $(CURDIR)/..))release
+RELEASE_DIR        = $(ROOTDIR)/release

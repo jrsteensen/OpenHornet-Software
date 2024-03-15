@@ -1,5 +1,6 @@
 # Style Guide
-This is a guide for writing clear examples that can be read by beginners and advanced users alike. You don't have to code this way, but it helps if you want your code to be clear to all levels of users. This is not a set of hard and fast rules, it's a set of guidelines. Some of these guidelines might even conflict with each other. Use your judgment on when they're best followed, and if you're not sure, ask someone who'll be learning from what you write what makes the most sense.
+[TOC]
+This is a guide for writing clear examples that can be read by beginners and advanced users alike. You should abide by this guide unless there is an ariticulable reason to deviate from this guide. This is not a set of hard and fast rules, it's a set of guidelines. Some of these guidelines might even conflict with each other. Use your judgment on when they're best followed, and if you're not sure, ask a project maintainer or fellow contributor.
 
 ## Writing Example Code
 * Efficiency is not paramount; readability is. 
@@ -9,13 +10,95 @@ This is a guide for writing clear examples that can be read by beginners and adv
 * Introduce concepts only when they are useful and try to minimize the number of new concepts you introduce in each example. For example, at the very beginning, you can explain simple functions with no variable types other than int, nor for consts to define pin numbers. On the other hand, in an intermediate example, you might want to introduce peripheral concepts as they become useful.
 * Concepts like using `const ints` to define pin numbers, choosing bytes over ints when you don't need more than 0 - 255, etc. are useful, but not central to getting started. So use them sparingly, and explain them when they're new to your lesson plan. 
 * Put your `setup()` and your `loop()` at the beginning of the program. They help beginners to get an overview of the program, since all other functions are called from those two. 
+* Use a verbose title block at the beginning of every sketch: 
+```        
+    /**
+     * @file 4A3A1-SELECT_JETT_PANEL.ino
+     * @author Arribe
+     * @date 03.01.2024
+     * @version 0.0.1
+     * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+     * @brief Controls the SELECT JETT panel.
+     *
+     * @details
+     * 
+     *  * **Reference Designator:** 4A3A1
+     *  * **Intended Board:** ABSIS ALE w/ Relay Module
+     *  * **RS485 Bus Address:** 2
+     * 
+     * ### Wiring diagram:
+     * PIN | Function
+     * --- | ---
+     * A0  | Hook Bypass Switch
+     * A1  | Launch Bar Switch
+     * A2  | Flaps Switch Position 2
+     * A3  | Flaps Switch Position 1
+     * 2   | Launch Bar Mag Switch
+     * 3   | Hook Bypass Mag Switch
+     * 4   | Landing Taxi Light
+     * 6   | Selector Jettison Position 1
+     * 7   | Selector Jettison Position 3
+     * 8   | Selector Jettison Position 8
+     * 10  | Antiskid Switch
+     * 14  | Selector Jettison Position 2
+     * 15  | Selector Jettison Push
+     * 16  | Selector Jettison Position 4
+    */
+```
 
-### Commenting Your Code
-* Comment every variable or constant declaration with a description of what the variable does. 
-* Comment every code block. Do it before the block if possible, so the reader knows what's coming 
-* Comment every for loop 
+## Commenting Your Code
+* All comments should use doxygen-compatible comments and tags.
+    * [Doxygen Docs on Code Comments](https://www.doxygen.nl/manual/docblocks.html)
+	
+### Doxygen Tags
+* `@note` is the most generic tag, and is the one to use in most cases where you want the reader to "take notice" of the matter described in the section.
+* `@attention` tag can be used to highlight a particularly important note, one that you don't want the reader to overlook.
+* `@warning` tag should be used instead of `@attention` when there may be negative consequences to consider if the reader isn't careful in how he uses the item being documented.
+* `@remark` and `@remarks` tags can be used for notes that have lesser importance. If you want to describe something in an "oh, by the way" sense, the remark tag is useful for that.
+* `@todo` tag is used differently than the others you listed. It is usually used to indicate that the code being described in the comment has one or more unfinished aspects. This alerts both code users and code writers that a feature or bug needs to be addressed in a later revision of the pertinent section of code. Doxygen has a cool feature where it will list all TODOs together in their own section in the generated output.
+* `@bug` tag also parses those comments into a separate buglist, much in a similar fashion to the `@todo` tag.
+* [Link to index of all Doxygen tags/special commands](https://www.doxygen.nl/manual/commands.html) - We use `@` prefix instead of `\` prefix.
+
+### Variables, Constants, and Macros/Defines
+* Comment every variable or constant declaration with a description of what the variable does. Use trailing doxygen compatible comments unless it is complex enough to require a leading/trailing block comment. You may use markdown compatible comments within the doxygen comments.
+    ```
+    /**
+    * @brief Pilots may want the launch bar to automatically release when the throttles advance to MIL power.
+    * The sim's version of the F/A-18 does *NOT* have this feature.  The define allows setting it as desired, default is *false*.
+    *
+    */
+    #define LBAR_SW_AUTORETRACT false
+
+    // Define pins for DCS-BIOS per interconnect diagram.
+    #define HOOKB_SW A0 ///< Hook Bypass Switch
+    #define LBAR_SW A1 ///< Launch Bar Switch
+    #define FLAPS_SW2 A2 ///< Flaps Switch Position 2
+    #define FLAPS_SW1 A3 ///< Flaps Switch Position 1
+    #define LBAR_RET 2    ///< Launch Bar Switch Mag
+
+    //Declare variables for custom non-DCSBios logic for mag-switches
+    bool hookLeverState = LOW;        ///< Initializing for correct cold/ground start position as switch releases on power off.
+    unsigned long hookLeverTime = 0;  ///< Initializing variable to hold time of last hook change.
+    bool wowLeft = true;              ///< Initializing weight-on-wheel value for cold/ground start.
+    ```
+
+### Code Blocks
+* Comment every code block. Do it before the block if possible, so the reader knows what's coming.
+    ```
+    /**
+    * @brief Need to save the hook lever state to test turning off the hook bypass mag-switch in the main loop.
+    *  
+    */
+    void onHookLeverChange(unsigned int newValue) {
+      hookLeverState = newValue;
+      hookLeverTime = millis();
+    } DcsBios::IntegerBuffer hookLeverBuffer(0x74a0, 0x0200, 9, onHookLeverChange);
+    ```
+* Comment every for loop
+
+### Code Logic
 * Use verbose if statements. For simplicity to the beginning reader, use the block format for everything, i.e. avoid this: 
-<br>`if (somethingIsTrue) doSomething;`
+<br><br>`if (somethingIsTrue) doSomething;`
 
     Instead, use this: 
     ```
@@ -23,14 +106,43 @@ This is a guide for writing clear examples that can be read by beginners and adv
        doSomething;
     }
     ```
+* Avoid pointers. They are confusing to novice programmers.
+* Example explaining logic before code:
+    ```
+	/**
+     ### Launch Bar Auto Retract Logic
+    *  If the launch bar mag-switch is held in extend position, then: \n
+    *  -# if no weight on wheels retract the launch bar. \n
+    *  -# if the launch bar auto-retract is defined as true and both engines' RPM is >85 then retract launch bar. \n
+    *   @note If launch bar auto-retract is true, when connecting to the catapault it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
+    * 
+    */
+      if (launchBarMagState == HIGH) {
+        switch (launchBarState) {
+          case LOW:  //launch bar switch in retract
+            //do nothing the state change method will retract the launch bar
+            break;
+          case 1:   //launch bar switch in extend
+            if (wowLeft == wowRight == wowNose == false){ // no wheight on wheels retract launch bar
+              digitalWrite(LBAR_RET, LOW);
+              launchBarMagState = LOW;  // mag is off
+              break;
+            }        
+            if ((LBAR_SW_AUTORETRACT == true) && (rpmL >= 85 && rpmR >= 85)) {  //If Launch bar auto retract on throttle is true and both engines over 80% rpm turn off mag
+              digitalWrite(LBAR_RET, LOW);
+              launchBarMagState = LOW;  // mag is off
+            }
+            break;
+        }
+      }
+    ```
 
-* Avoid pointers 
-* Avoid `#defines` 
+## Variables & Constants
 
 ### Variables
+* Use camelCase naming convention for variables.
 * Avoid single letter variable names. Make them descriptive 
 * Avoid variable names like `val` or `pin`. Be more descriptive, like `buttonState` or `switchPin` 
-* If you want to define pin names and other quantities which won't change, use const ints. They're less messy than #defines, yet still give you a way to teach the difference between a variable and a constant. 
 * Use the wiring/Processing-style variable types, e.g. boolean,char,byte,int,unsigned int,long,unsigned long,float,double,string,array,void when possible, rather than uint8_t, etc. The former are explained in the documentation, and less terse names. 
 * Avoid numbering schemes that confuse the user, e.g.: 
     ```
@@ -54,34 +166,27 @@ This is a guide for writing clear examples that can be read by beginners and adv
        delay(500);
     }
     ```
-
-* Use a verbose title block at the beginning of every sketch: 
-	
-    ```		
-    /*
-    	Sketch title
-		REF DESG: <Reference Designator of PCB>
-    
-    	Describe what it does in layman's terms.  Refer to the components
-    	attached to the various pins.
-    
-    	The circuit:
-        * list the components attached to each input
-    	* list the components attached to each output
-
-    	Created day month year
-    	By author's name
-    	Modified day month year
-    	By author's name
-
-    	http://url/of/online/tutorial.cc
-
-    */
+### Constants & Macros
+* Use all caps for constants & macro values.
+* If you want to define pin names and other quantities which won't change, use `#defines` or `const ints`. 
+* `#defines` are preferred for simple pin assignments or other simple constant assignment. `const` declarations are acceptable where required. Avoid using `#defines` when it could be result in a hard-to-diagnose unfavorable outcome. [See this Arduino forum post for more information.](https://forum.arduino.cc/t/when-to-use-const-int-int-or-define/668071)
     ```
-
-## Circuits
-* For digital input switches, the default is to use a pulldown resistor on the switch rather than a pullup. That way, the logic of a switch's interaction makes sense to the non-engineer. 
-* Keep your circuits simple. For example, bypass capacitors are handy, but most simple inputs will work without them. If a component is incidental, explain it later. 
+    // Define pins for DCS-BIOS per interconnect diagram.
+    #define HOOKB_SW A0 ///< Hook Bypass Switch
+    #define LBAR_SW A1 ///< Launch Bar Switch
+    #define FLAPS_SW2 A2 ///< Flaps Switch Position 2
+    #define FLAPS_SW1 A3 ///< Flaps Switch Position 1
+    #define LBAR_RET 2    ///< Launch Bar Switch Mag
+    #define HOOK_FIELD 3  ///< Hook Bypass Switch Mag
+    #define LADG_SW 4 ///< Landing Taxi Light
+    #define SJET_SW1 6 ///< Selector Jettison Position 1
+    #define SJET_SW3 7 ///< Selector Jettison Position 3
+    #define SJET_SW5 8 ///< Selector Jettison Position 8
+    #define ASKID_SW 10 ///< Anti-Skid Switch
+    #define SJET_SW2 14 ///< Selector Jettison Position 2
+    #define SJET_PUSH 15 ///< Selector Jettison Push
+    #define SJET_SW4 16 ///< Selector Jettison Position 
+    ```
 
 ## Writing tutorials or instructions
 * Write in the active voice. 
