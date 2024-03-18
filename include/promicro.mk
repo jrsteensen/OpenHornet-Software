@@ -1,5 +1,5 @@
 ifndef PROMICRO_DIR
-PROMICRO_DIR = $(dir $(realpath $(CURDIR)/..))libraries/Arduino_Boards/sparkfun
+PROMICRO_DIR = $(ROOTDIR)/libraries/Arduino_Boards/sparkfun
 endif
 
 ALTERNATE_CORE      = promicro
@@ -14,4 +14,4 @@ BOOTLOADER_FILE     = Caterina-promicro16.hex
 ISP_PROG            = usbasp
 USB_PID             = 0x9206
 
-include $(dir $(realpath $(CURDIR)/..))include/avr.mk
+include $(ROOTDIR)/include/avr.mk

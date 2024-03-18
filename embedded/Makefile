@@ -1,6 +1,9 @@
-MAKEFILES = $(wildcard **/Makefile)
+MAKEFILES = $(wildcard */*/Makefile)
 SKETCHES := $(dir $(MAKEFILES))
+ROOTDIR := $(abspath $(CURDIR)/..)
 RELEASE_DIR := $(abspath $(CURDIR)/../release)
+
+export
 
 all: $(SKETCHES)
 
