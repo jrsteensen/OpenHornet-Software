@@ -117,7 +117,7 @@ DcsBios::Switch2Pos rwrSpecialBtn("RWR_SPECIAL_BTN", SPECIAL);
 
 const byte rwrDisTypeSwPins[5] = { DcsBios::PIN_NC, RWR_DIS_I, RWR_DIS_A, RWR_DIS_U, RWR_DIS_F };
 /// @todo Replace with DCSBios version of DcsBios::SwitchMultiPos if/when fixed.
-SwitchMultiPosDebounce rwrDisTypeSw("RWR_DIS_TYPE_SW", rwrDisTypeSwPins, 5);
+SwitchMultiPosDebounce rwrDisTypeSw("RWR_DIS_TYPE_SW", rwrDisTypeSwPins, 5, false, 100);
 
 /**
 * Arduino Setup Function
@@ -141,4 +141,7 @@ void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
+
+   ///@todo If/When DCS Skunkworks fixes the multiposition switch remove the rwrDisTypeSw.pollThisInput(); call.
+   rwrDisTypeSw.pollThisInput();
 }
