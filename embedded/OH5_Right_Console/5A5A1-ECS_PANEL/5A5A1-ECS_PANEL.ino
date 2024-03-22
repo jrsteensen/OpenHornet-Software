@@ -36,7 +36,6 @@
  * @date 03.22.2024
  * @version 0.0.1
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
  * @brief Controls the ECS panel.
  *
  * @details
@@ -55,8 +54,8 @@
  * A1  | Cabin Pressure NORM
  * 4   | Cabin Pressure RAM
  * A0  | PITOT On
- * 15  | Engine AntiIce On
- * 6   | Engine AntiIce Test
+ * 15  | Engine Anti-Ice On
+ * 6   | Engine Anti-Ice Test
  * 14  | Bleed Air AUG - Pull
  * 7   | Bleed Air Right Off
  * 16  | Bleed Air Off
@@ -106,8 +105,8 @@
 #define CP_NORM A1     ///< Cabin Pressure NORM
 #define CP_RAM 4       ///< Cabin Pressure RAM
 #define PITOT_ON A0    ///< PITOT On
-#define ENG_ON 15      ///< Engine AntiIce On
-#define ENG_TEST 6     ///< Engine AntiIce Test
+#define ENG_ON 15      ///< Engine Anti-Ice On
+#define ENG_TEST 6     ///< Engine Anti-Ice Test
 #define BA_AUG 14      ///< Bleed Air AUG - Pull
 #define BA_ROFF 7      ///< Bleed Air Right Off
 #define BA_OFF 16      ///< Bleed Air Off
@@ -133,7 +132,7 @@ const byte bleedAirKnobPins[4] = { BA_LOFF, BA_OFF, BA_ROFF, DcsBios::PIN_NC };
 /** @todo Remove SwitchMultiPosDebounce if/When DCS-Skunkworks fixes the DcsBios::SwitchMultiPos to work with PIN_NC.
 *   @note You may want to play with the debounce delay to see if a longer period of time will work better for you or not.
 *   In tesing a longer delay could potentially reduce the bouncing back to the NORM position, but also made the knob feel less responsive or stuck in sim.
-*   @bug The Bleed Air knob rotation bounces to NORM when rotated, potentially needs a hardware resolution to connect the NORM position to a pin.
+*   @bug The Bleed Air knob rotation bounces to NORM when rotated, potentially needs a hardware resolution to connect the NORM position to an Arduino pin.
 */
 SwitchMultiPosDebounce bleedAirKnob("BLEED_AIR_KNOB", bleedAirKnobPins, 4, false, 100);
 
@@ -158,11 +157,11 @@ DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
 
 void onApuControlSwChange(unsigned int newValue) {
   apuSwitchOn = newValue;
-  if (apuSwitchOn == 0 && bleedAirAugState == 1) {
+  if (apuSwitchOn == 0 && bleedAirAugState == 1) { // If APU switch turned off and Bleed Air Augmentation up, then pull solenoid.
     bleedAirAugState = 0;
-    digitalWrite(BA_SOLENOID, HIGH);
+    digitalWrite(BA_SOLENOID, HIGH);  // pull down.
     delay(200);  //wait a moment
-    digitalWrite(BA_SOLENOID, LOW);
+    digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
   }
 }
 DcsBios::IntegerBuffer apuControlSwBuffer(0x74c2, 0x0100, 8, onApuControlSwChange);
@@ -172,15 +171,16 @@ void onBleedAirPullChange(unsigned int newValue) {
     bleedAirAugState = newValue;
     switch (newValue) {
       case 0:  // If BA pushed virtually within sim, pull down in pit
-        digitalWrite(BA_SOLENOID, HIGH);
+        digitalWrite(BA_SOLENOID, HIGH); // pull down.
         delay(200);  //wait a moment
-        digitalWrite(BA_SOLENOID, LOW);
+        digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
         break;
       case 1:
+        /// @note It's physically possible to overcome the solenoid by manually holding the bleed air knob up.
         if (apuSwitchOn == 0 || (wowLeft == wowRight == wowNose == 0)) {  //then pull down, ELSE do nothing.
-          digitalWrite(BA_SOLENOID, HIGH);
+          digitalWrite(BA_SOLENOID, HIGH); // pull down.
           delay(200);  //wait a moment
-          digitalWrite(BA_SOLENOID, LOW);
+          digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
         }
         break;
     }
@@ -251,9 +251,9 @@ void loop() {
 
   if (bleedAirAugState == 1) {                                                      // If bleed air aug is on...
     if ((rpmL >= 95 && rpmR >= 95) || (leftGenState == 0 && rightGenState == 0)) {  // If over 95% rpm or both generators off pull down on bleed air aug
-      digitalWrite(BA_SOLENOID, HIGH);
+      digitalWrite(BA_SOLENOID, HIGH); // pull down.
       delay(200);  //wait a moment
-      digitalWrite(BA_SOLENOID, LOW);
+      digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
       bleedAirAugState = 0;
     }
   }
