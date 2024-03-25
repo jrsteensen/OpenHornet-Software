@@ -91,7 +91,7 @@
 
 
 #include "DcsBios.h"
-#include "5A7A1-SNSR_PANEL.h"
+#include "2A4A1-RWR_CONTROL_PANEL.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define RWR_A_AUDIO A3  ///< RWR Audio Volume
