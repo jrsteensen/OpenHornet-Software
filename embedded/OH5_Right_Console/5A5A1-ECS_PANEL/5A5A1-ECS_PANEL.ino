@@ -95,7 +95,7 @@
 #define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
-#include "5A7A1-SNSR_PANEL.h"
+#include "5A5A1-ECS_PANEL.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define M_AUTO A3      ///< ECS Mode Auto
