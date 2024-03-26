@@ -36,7 +36,7 @@
  * @version u.0.0.1 (untested)
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
- * @brief Header file for the backlighting to split out code for panel specific lighting support.c:\Users\Thoma\Documents\Arduino\2A13-BACKLIGHT_CONTROLLER\OH_BL_PANELS\1A4_L_EWI.h
+ * @brief Header file for the backlighting to split out code for panel specific lighting support.
 */
 
 #include "DcsBios.h"
