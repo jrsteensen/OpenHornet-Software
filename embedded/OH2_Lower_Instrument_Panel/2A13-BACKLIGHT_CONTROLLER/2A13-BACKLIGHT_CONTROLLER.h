@@ -56,8 +56,8 @@
 
 Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800);
 
-#include "OH_BL_PANELS\1A2A1_MASTER_ARM_BL.h"
-#include "OH_BL_PANELS\1A4_L_EWI_BL.h"
+#include ".\OH_BL_PANELS\1A2A1_MASTER_ARM_BL.h"
+#include ".\OH_BL_PANELS\1A4_L_EWI_BL.h"
 
 namespace OpenHornet {
 void setup() {
