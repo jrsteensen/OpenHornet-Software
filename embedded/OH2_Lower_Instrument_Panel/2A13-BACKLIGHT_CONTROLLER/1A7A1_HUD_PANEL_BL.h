@@ -50,20 +50,20 @@
 #define HUD_BRT_START 6 + HUD_PANEL_START_INDEX       ///< Index 1st HUD BRT pixel
 #define HUD_BRT_COUNT 4                               ///< HUD BRT pixel count
 #define HUD_MODE_START 10 + HUD_PANEL_START_INDEX     ///< Index 1st HUD MODE pixel
-#define HUD_MODE_COUNT 5                              ///< HUD MODE pixel count
-#define BLK_LVL_START 15 + HUD_PANEL_START_INDEX      ///< Index 1st BLK LVL pixel
+#define HUD_MODE_COUNT 6                              ///< HUD MODE pixel count
+#define BLK_LVL_START 16 + HUD_PANEL_START_INDEX      ///< Index 1st BLK LVL pixel
 #define BLK_LVL_COUNT 6                               ///< BLK LVL pixel count
-#define WB_START 21 + HUD_PANEL_START_INDEX           ///< Index 1st WB pixel
+#define WB_START 22 + HUD_PANEL_START_INDEX           ///< Index 1st WB pixel
 #define WB_COUNT 5                                    ///< WB pixel count
-#define BAL_START 26 + HUD_PANEL_START_INDEX          ///< Index 1st BAL pixel
+#define BAL_START 27 + HUD_PANEL_START_INDEX          ///< Index 1st BAL pixel
 #define BAL_COUNT 5                                   ///< BAL pixel count.
-#define ATT_START 31 + HUD_PANEL_START_INDEX          ///< Index 1st ATT pixel
+#define ATT_START 32 + HUD_PANEL_START_INDEX          ///< Index 1st ATT pixel
 #define ATT_COUNT 6                                   ///< ATT pixel count.
-#define ALT_START 37 + HUD_PANEL_START_INDEX          ///< Index 1st ALT pixel
+#define ALT_START 38 + HUD_PANEL_START_INDEX          ///< Index 1st ALT pixel
 #define ALT_COUNT 7                                   ///< ALT pixel count.
-#define AOA_START 44 + HUD_PANEL_START_INDEX          ///< Index 1st AOA pixel
+#define AOA_START 45 + HUD_PANEL_START_INDEX          ///< Index 1st AOA pixel
 #define AOA_COUNT 5                                   ///< AOA pixel count
 #define HUD_PANEL_BL_START 0 + HUD_PANEL_START_INDEX  ///< Index of 1st pixel in the backlighting string
-#define HUD_PANEL_BL_LENGTH 50                        ///< Number of pixels in the backlighting string
+#define HUD_PANEL_BL_LENGTH 50                        ///< Number of pixels in the backlighting string, rev4 hardware has 50 LEDs, rev3 had 56.
 
 #endif

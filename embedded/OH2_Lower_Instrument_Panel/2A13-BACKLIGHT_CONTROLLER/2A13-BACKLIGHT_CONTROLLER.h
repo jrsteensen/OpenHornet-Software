@@ -57,9 +57,9 @@
 #define L_EWI_LED_COUNT 30 ///< L EWI panel has 30 pixels, no backlighting.
 
 #define HUD_PANEL_START_INDEX 59 ///< HUD_PANEL is the 3rd panel in the UIP BL Channel 1 string.
-#define HUD_PANEL_LED_COUNT 50 ///< HUD_PANEL had 50 pixels, all for backlighting.
+#define HUD_PANEL_LED_COUNT 50 ///< HUD_PANEL rev4 has 50 pixels, all for backlighting. If using an older revision may be 56.
 
-#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
+#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
 
 Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800);
 
@@ -112,7 +112,8 @@ void onInstPnlDimmerChange(unsigned int newValue) {
       uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), MA_BL_START, MA_BL_LENGTH);  ///< Set light to Green
       #endif
       #ifdef __HUD_PANEL_BL_H
-      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), HUD_PANEL_BL_START, HUD_PANEL_BL_LENGTH);  ///< Set light to Green
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), HUD_PANEL_BL_START, 56);  ///< Set light to Green
+      //uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), BAL_START, BAL_COUNT);  ///< Set light to Green
       #endif
       uipBLCh1.show();
       break;
