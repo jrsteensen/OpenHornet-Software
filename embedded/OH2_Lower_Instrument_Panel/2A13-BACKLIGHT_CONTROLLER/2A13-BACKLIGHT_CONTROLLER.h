@@ -36,7 +36,7 @@
  * @version u.0.0.1 (untested)
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
- * @brief Header file for the backlighting to split out code for panel specific lighting support.
+ * @brief Header file for the DCSBios backlighting to split out code for panel specific lighting support.
 */
 
 #include "DcsBios.h"
@@ -44,25 +44,68 @@
 
 /**
 * @brief UIP Backlights
-* @todo Add if defined statements here to test if the panels are included prior to including them in the main LED counts.
+*
+* The Panels are listed in the order they appear according to the interconnect guide.
+* If any panels are not connected, change the associtated LED COUNT to 0, comment out its header, 
+* and adjust the other panels' start index accordingly.
+*
 */
-#define MASTER_ARM_LED_START_INDEX 0
-#define MA_LED_COUNT 29
+#define MASTER_ARM_LED_START_INDEX 0 ///< Master Arm panel is the first in the UIP BL Channel 1 string.
+#define MA_LED_COUNT 29 ///< Master Arm panel has 29 pixels.
 
-#define L_EWI_LED_START_INDEX 29
-#define L_EWI_LED_COUNT 30
+#define L_EWI_LED_START_INDEX 29 ///< L_EWI is the second panel in the UIP BL Channel 1 string.
+#define L_EWI_LED_COUNT 30 ///< L EWI panel has 30 pixels.
 
-#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT
+#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
 
 Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800);
 
+// Include the connected panels.  If any panel not connected comment out its header.
 #include "1A2A1_MASTER_ARM_BL.h"
 #include "1A4_L_EWI_BL.h"
 
+/**
+* @brief LIP Backlights
+* @todo all the backlight code / headers.
+*/
+
+#define LIP_LED_COUNT 10 ///< place holder, replace with actual count method similar to above.
+
+Adafruit_NeoPixel lipBLCh1 = Adafruit_NeoPixel(LIP_LED_COUNT, LIP_BL_CH1, NEO_GRB + NEO_KHZ800);
+
+/// @todo If we don't want the namespace rename the setup function and use it in 2A13-BACKLIGHT_CONTROLLER.ino's setup loop, as there can only be one setup per Arduino skectch.
 namespace OpenHornet {
 void setup() {
   uipBLCh1.begin();
-  uipBLCh1.show();
+  uipBLCh1.show(); // Clear the LEDs
   uipBLCh1.setBrightness(BRIGHTNESS);
+
+  lipBLCh1.begin();
+  lipBLCh1.show(); // Clear the LEDs
+  lipBLCh1.setBrightness(BRIGHTNESS);
 }
 }
+
+/**
+* This is the DcsBios hook into the Internal Light panel's Instrument Panel Dimmer pot.
+* The use of headers and ifdefs should help avoid users from having to manually update the code for any unconnected panels if the associated headers are commented out above.
+*
+* @todo Add all the backlighting channels and associated panels that run off the onInstPnlDimmerChange pot to light up all the connected panels' backlighting pixels.
+*/
+void onInstPnlDimmerChange(unsigned int newValue) {
+  switch (newValue) {
+    case 0:
+      #ifdef __MASTER_ARM_BL_H
+      uipBLCh1.fill(0, MA_BL_START, MA_BL_LENGTH);  ///< Off
+      #endif
+      uipBLCh1.show();
+      break;
+    default:
+      #ifdef __MASTER_ARM_BL_H
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), MA_BL_START, MA_BL_LENGTH);  ///< Set light to Green
+      #endif
+      uipBLCh1.show();
+      break;
+  }
+}
+DcsBios::IntegerBuffer instPnlDimmerBuffer(0x7546, 0xffff, 0, onInstPnlDimmerChange);

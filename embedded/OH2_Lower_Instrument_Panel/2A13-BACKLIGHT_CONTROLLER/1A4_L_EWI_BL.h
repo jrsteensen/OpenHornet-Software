@@ -39,6 +39,9 @@
  * @brief Header file for the Left EWI panel annunciators to split out code for panel specific lighting support.
 */
 
+#ifndef __L_EWI_BL_H
+#define __L_EWI_BL_H
+
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
@@ -251,3 +254,5 @@ void onLhAdvXmitChange(unsigned int newValue) {
   }
 }
 DcsBios::IntegerBuffer lhAdvXmitBuffer(0x740a, 0x0004, 2, onLhAdvXmitChange);
+
+#endif

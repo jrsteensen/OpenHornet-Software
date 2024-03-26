@@ -39,6 +39,9 @@
  * @brief Header file for the Master Arm panel backlighting /w annunciators to split out code for panel specific lighting support.
 */
 
+#ifndef __MASTER_ARM_BL_H
+#define __MASTER_ARM_BL_H
+
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
@@ -50,8 +53,8 @@
 #define MM_AG_COUNT 2
 #define MM_AA_START 27 + MASTER_ARM_LED_START_INDEX
 #define MM_AA_COUNT 2
-#define BL_START 4 + MASTER_ARM_LED_START_INDEX
-#define BL_LENGTH 21
+#define MA_BL_START 4 + MASTER_ARM_LED_START_INDEX
+#define MA_BL_LENGTH 21
 
 /**
 * @brief Setup maserArmPanel's neopixel and then set the DCS Bios methods to read sim state and set
@@ -115,16 +118,4 @@ void onMasterModeAaLtChange(unsigned int newValue) {
 }
 DcsBios::IntegerBuffer masterModeAaLtBuffer(0x740c, 0x0200, 9, onMasterModeAaLtChange);
 
-void onInstPnlDimmerChange(unsigned int newValue) {
-  switch (newValue) {
-    case 0:
-      uipBLCh1.fill(0, MASTER_ARM_LED_START_INDEX + BL_START, BL_LENGTH);  ///< Off
-      uipBLCh1.show();
-      break;
-    default:
-      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), MASTER_ARM_LED_START_INDEX + BL_START, BL_LENGTH);  ///< Set light to Green
-      uipBLCh1.show();
-      break;
-  }
-}
-DcsBios::IntegerBuffer instPnlDimmerBuffer(0x7546, 0xffff, 0, onInstPnlDimmerChange);
+#endif
