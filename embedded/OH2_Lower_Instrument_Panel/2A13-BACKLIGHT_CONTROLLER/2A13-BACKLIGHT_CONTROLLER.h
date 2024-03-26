@@ -73,7 +73,7 @@ Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GR
 
 Adafruit_NeoPixel lipBLCh1 = Adafruit_NeoPixel(LIP_LED_COUNT, LIP_BL_CH1, NEO_GRB + NEO_KHZ800);
 
-/// @todo If we don't want the namespace rename the setup function and use it in 2A13-BACKLIGHT_CONTROLLER.ino's setup loop, as there can only be one setup per Arduino skectch.
+/// @todo If we don't want the namespace rename the setup function and use it in 2A13-BACKLIGHT_CONTROLLER.ino's setup loop, so there is only be one setup per Arduino skectch.
 namespace OpenHornet {
 void setup() {
   uipBLCh1.begin();
