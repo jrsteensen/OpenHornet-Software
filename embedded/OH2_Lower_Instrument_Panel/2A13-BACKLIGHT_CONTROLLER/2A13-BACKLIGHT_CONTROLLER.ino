@@ -104,7 +104,7 @@
 //#define 4   ///< J11 NC
 #define SIMPWR_BLM_A 24  ///< J14 SIMPWR_BLM_A
 #define SIMPWR_BLM_B 23  ///< J14 SIMPWR_BLM_B
-#define SIMPWR_PUSH 22   ///< J14 SIMPWR_PUSHc:\Users\Thoma\Documents\Arduino\2A13-BACKLIGHT_CONTROLLER\OH_BL_PANELS\1A2A1_MASTER_ARM_BL.h
+#define SIMPWR_PUSH 22   ///< J14 SIMPWR_PUSH
 //#define SDA | TEMP SNSR
 //#define SCL | TEMP SNSR
 #define COOLING_FANS 2  ///< J12 & J13 Cooling fan headers.
