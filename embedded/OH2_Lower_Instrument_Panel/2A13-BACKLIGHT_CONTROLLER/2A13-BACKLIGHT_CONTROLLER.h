@@ -61,7 +61,7 @@
 
 #define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
 
-Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800); ///< Setup the UIP BL Ch1 string.
 
 // Include the connected panels.  If any panel not connected comment out its header.
 #include "1A2A1_MASTER_ARM_BL.h" 
@@ -75,11 +75,12 @@ Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GR
 
 #define LIP_LED_COUNT 10 ///< place holder, replace with actual count method similar to above.
 
-Adafruit_NeoPixel lipBLCh1 = Adafruit_NeoPixel(LIP_LED_COUNT, LIP_BL_CH1, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel lipBLCh1 = Adafruit_NeoPixel(LIP_LED_COUNT, LIP_BL_CH1, NEO_GRB + NEO_KHZ800); ///< Setup the LIP BL Ch1 string.
 
-/// @todo If we don't want the namespace rename the setup function and use it in 2A13-BACKLIGHT_CONTROLLER.ino's setup loop, so there is only be one setup per Arduino skectch.
-namespace OpenHornet {
-void setup() {
+
+namespace OpenHornet { 
+/// @todo If we don't want the namespace rename the setup function and use it in 2A13-BACKLIGHT_CONTROLLER.ino's setup loop, so there is only one setup() per Arduino skectch.
+void setup() { 
   uipBLCh1.begin();
   uipBLCh1.show(); // Clear the LEDs
   uipBLCh1.setBrightness(BRIGHTNESS);
