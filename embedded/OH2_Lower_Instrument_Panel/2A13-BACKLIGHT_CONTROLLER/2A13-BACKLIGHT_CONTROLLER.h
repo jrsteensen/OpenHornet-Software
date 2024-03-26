@@ -112,8 +112,7 @@ void onInstPnlDimmerChange(unsigned int newValue) {
       uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), MA_BL_START, MA_BL_LENGTH);  ///< Set light to Green
       #endif
       #ifdef __HUD_PANEL_BL_H
-      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), HUD_PANEL_BL_START, 56);  ///< Set light to Green
-      //uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), BAL_START, BAL_COUNT);  ///< Set light to Green
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), HUD_PANEL_BL_START, HUD_PANEL_BL_LENGTH);  ///< Set light to Green
       #endif
       uipBLCh1.show();
       break;
