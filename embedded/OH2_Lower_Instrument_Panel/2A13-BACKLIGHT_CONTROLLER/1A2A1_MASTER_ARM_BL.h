@@ -42,7 +42,7 @@
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
-#define READY_START 0 + MASTER_ARM_LED_START_INDEX
+#define READY_START 0 + MASTER_ARM_LED_START_INDEXd:\OpenHornet-Software\embedded\OH2_Lower_Instrument_Panel\2A13-BACKLIGHT_CONTROLLER\OH_BL_PANELS\1A4_L_EWI_BL.h
 #define READY_COUNT 2
 #define DISCH_START 2 + MASTER_ARM_LED_START_INDEX
 #define DISCH_COUNT 2
