@@ -45,32 +45,32 @@
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
-#define FIRE_START 0 + L_EWI_LED_START_INDEX
-#define FIRE_COUNT 4
-#define MC_START 4 + L_EWI_LED_START_INDEX
-#define MC_COUNT 4
-#define GO_START 8 + L_EWI_LED_START_INDEX
-#define GO_COUNT 2
-#define NO_GO_START 10 + L_EWI_LED_START_INDEX
-#define NO_GO_COUNT 2
-#define R_BLEED_START 12 + L_EWI_LED_START_INDEX
-#define R_BLEED_COUNT 2
-#define L_BLEED_START 14 + L_EWI_LED_START_INDEX
-#define L_BLEED_COUNT 2
-#define SPD_BRK_START 16 + L_EWI_LED_START_INDEX
-#define SPD_BRK_COUNT 2
-#define STBY_START 18 + L_EWI_LED_START_INDEX
-#define STBY_COUNT 2
-#define REC_START 20 + L_EWI_LED_START_INDEX
-#define REC_COUNT 2
-#define L_BAR1_START 22 + L_EWI_LED_START_INDEX
-#define L_BAR1_COUNT 2
-#define L_BAR2_START 24 + L_EWI_LED_START_INDEX
-#define L_BAR2_COUNT 2
-#define XMIT_START 26 + L_EWI_LED_START_INDEX
-#define XMIT_COUNT 2
-#define ASPJ_ON_START 28 + L_EWI_LED_START_INDEX
-#define ASPJ_ON_COUNT 2
+#define FIRE_START 0 + L_EWI_LED_START_INDEX      ///< Starting index of the pixel string, FIRE push button switch
+#define FIRE_COUNT 4                              ///< Number of pixels under the Fire push button.
+#define MC_START 4 + L_EWI_LED_START_INDEX        ///< Index for pixel for Master Caution pushbutton switch.
+#define MC_COUNT 4                                ///< Number of pixels under the Master Caution pushbutton.
+#define GO_START 8 + L_EWI_LED_START_INDEX        ///< Index for 1st Go pixel
+#define GO_COUNT 2                                ///< Go pixel count
+#define NO_GO_START 10 + L_EWI_LED_START_INDEX    ///< Index for 1st No_Go pixel
+#define NO_GO_COUNT 2                             ///< No Go pixel count
+#define R_BLEED_START 12 + L_EWI_LED_START_INDEX  ///< Index for 1st R Bleed pixel
+#define R_BLEED_COUNT 2                           ///< R Bleed pixel count
+#define L_BLEED_START 14 + L_EWI_LED_START_INDEX  ///< Index for 1st L Bleed pixel
+#define L_BLEED_COUNT 2                           ///< L Bleed pixel count
+#define SPD_BRK_START 16 + L_EWI_LED_START_INDEX  ///< Index for 1st SPD BRK pixel
+#define SPD_BRK_COUNT 2                           ///< SPD BRK pixel count
+#define STBY_START 18 + L_EWI_LED_START_INDEX     ///< Index for 1st STBY pixel
+#define STBY_COUNT 2                              ///< SBY pixel count
+#define REC_START 20 + L_EWI_LED_START_INDEX      ///< Index for 1st REC pixel
+#define REC_COUNT 2                               ///< REC pixel count
+#define L_BAR1_START 22 + L_EWI_LED_START_INDEX   ///< Index for 1st L_BAR1 pixel
+#define L_BAR1_COUNT 2                            ///< L_BAR1 pixel count
+#define L_BAR2_START 24 + L_EWI_LED_START_INDEX   ///< Index for 1st LBAR2 pixel
+#define L_BAR2_COUNT 2                            ///< L_BAR2 pixel count
+#define XMIT_START 26 + L_EWI_LED_START_INDEX     ///< Index for 1st XMIT pixel
+#define XMIT_COUNT 2                              ///< XMIT pixel count.
+#define ASPJ_ON_START 28 + L_EWI_LED_START_INDEX  /// Index for 1st ASPJ_ON pixel
+#define ASPJ_ON_COUNT 2                           ///< ASPJ_ON pixel count.
 
 
 void onFireLeftLtChange(unsigned int newValue) {

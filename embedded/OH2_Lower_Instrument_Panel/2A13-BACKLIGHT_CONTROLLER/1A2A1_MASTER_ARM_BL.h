@@ -45,16 +45,16 @@
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
-#define READY_START 0 + MASTER_ARM_LED_START_INDEX
-#define READY_COUNT 2
-#define DISCH_START 2 + MASTER_ARM_LED_START_INDEX
-#define DISCH_COUNT 2
-#define MM_AG_START 25 + MASTER_ARM_LED_START_INDEX
-#define MM_AG_COUNT 2
-#define MM_AA_START 27 + MASTER_ARM_LED_START_INDEX
-#define MM_AA_COUNT 2
-#define MA_BL_START 4 + MASTER_ARM_LED_START_INDEX
-#define MA_BL_LENGTH 21
+#define READY_START 0 + MASTER_ARM_LED_START_INDEX   ///< Index 1st READY pixel
+#define READY_COUNT 2                                ///< READY pixel count
+#define DISCH_START 2 + MASTER_ARM_LED_START_INDEX   ///< Index 1st DISCH pixel
+#define DISCH_COUNT 2                                ///< DISCH pixel count
+#define MM_AG_START 25 + MASTER_ARM_LED_START_INDEX  ///< Index 1st A/G pixel
+#define MM_AG_COUNT 2                                ///< A/G pixel count
+#define MM_AA_START 27 + MASTER_ARM_LED_START_INDEX  ///< Index 1st A/A pixel
+#define MM_AA_COUNT 2                                ///< A/A pixel count
+#define MA_BL_START 4 + MASTER_ARM_LED_START_INDEX   ///< Indes for 1st Master Arm panel backlight pixel
+#define MA_BL_LENGTH 21                              ///< Master Arm panel backlight pixel count
 
 /**
 * @brief Setup maserArmPanel's neopixel and then set the DCS Bios methods to read sim state and set
@@ -111,8 +111,7 @@ void onMasterModeAaLtChange(unsigned int newValue) {
       uipBLCh1.show();
       break;
     case 1:
-      uipBLCh1.fill(uipBLCh1.Color(0, 255, 0), MM_AA_START, MM_AA_COUNT);  ///< Set light to Greend:\OpenHornet-Software\embedded\OH2_Lower_Instrument_Panel\2A13-BACKLIGHT_CONTROLLER\OH_BL_PANELS\1A4_L_EWI_BL.h
-      uipBLCh1.show();
+      uipBLCh1.fill(uipBLCh1.Color(0, 255, 0), MM_AA_START, MM_AA_COUNT);  ///< Set light to Green
       break;
   }
 }
