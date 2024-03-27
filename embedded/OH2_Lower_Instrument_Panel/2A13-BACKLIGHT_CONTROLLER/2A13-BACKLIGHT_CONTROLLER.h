@@ -45,6 +45,9 @@
 /// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
 #define HUD_PANEL_REV3
 
+/// @todo remove ifdef for SPN_RCVY_REV3 as it's for my ease of testing
+#define SPN_RCVY_REV3
+
 /**
 * @brief UIP Backlights
 *
@@ -77,7 +80,21 @@
 
 #define R_EWI_LED_COUNT 30 ///< R EWI panel has 30 pixels, no backlighting.
 
-#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT + R_EWI_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
+/// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
+#ifdef HUD_PANEL_REV3 
+#define SPN_RCVY_LED_START_INDEX 145  ///< SPN RCVY is the 5th and final panel in the UIP BL Channel 1 string.
+#else
+
+#define SPN_RCVY_LED_START_INDEX 139  ///< SPN RCVY is the 5th and final panel in the UIP BL Channel 1 string.
+#endif
+/// @todo remove ifdef for SPN_RCVY_REV3 as it's for my ease of testing
+#ifdef SPN_RCVY_REV3
+#define SPN_RCVY_LED_COUNT 63 ///< SPN RCVY rev3 panel had 63 pixels with backlighting.
+#else
+#define SPN_RCVY_LED_COUNT 52 ///< SPN RCVY panel has 52 pixels with backlighting.
+#endif
+
+#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT + R_EWI_LED_COUNT + SPN_RCVY_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
 
 Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800); ///< Setup the UIP BL Ch1 string.
 
@@ -86,6 +103,7 @@ Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GR
 #include "1A4_L_EWI_BL.h"
 #include "1A7A1_HUD_PANEL_BL.h"
 #include "1A5_R_EWI_BL.h"
+#include "1A6A1_SPN_RCVY_BL.h"
 
 /**
 * @brief LIP Backlights
@@ -133,6 +151,11 @@ void onInstPnlDimmerChange(unsigned int newValue) {
       #endif
       #ifdef __HUD_PANEL_BL_H
       uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), HUD_PANEL_BL_START, HUD_PANEL_BL_LENGTH);  ///< Set light to Green
+      #endif
+      #ifdef __SPN_RCVY_BL_H
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), SPN_RCVY_BL_START, SPN_RCVY_LENGTH);  ///< Set light to Green
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), SPN_RCVY2_BL_START, SPN_RCVY2_LENGTH);  ///< Set light to Green
+      uipBLCh1.fill(uipBLCh1.Color(0, map(newValue, 0, 65535, 0, 255), 0), SPN_RCVY3_BL_START, SPN_RCVY3_LENGTH);  ///< Set light to Green
       #endif
       uipBLCh1.show();
       break;
