@@ -64,6 +64,12 @@
 #define AOA_START 45 + HUD_PANEL_START_INDEX          ///< Index 1st AOA pixel
 #define AOA_COUNT 5                                   ///< AOA pixel count
 #define HUD_PANEL_BL_START 0 + HUD_PANEL_START_INDEX  ///< Index of 1st pixel in the backlighting string
+
+/// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
+#ifdef HUD_PANEL_REV3 
+#define HUD_PANEL_BL_LENGTH 56                        ///< Number of pixels in the backlighting string, rev4 hardware has 50 LEDs, rev3 had 56.
+#else
 #define HUD_PANEL_BL_LENGTH 50                        ///< Number of pixels in the backlighting string, rev4 hardware has 50 LEDs, rev3 had 56.
+#endif
 
 #endif

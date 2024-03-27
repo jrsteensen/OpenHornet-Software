@@ -42,6 +42,9 @@
 #include "DcsBios.h"
 #include "Adafruit_NeoPixel.h"
 
+/// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
+#define HUD_PANEL_REV3
+
 /**
 * @brief UIP Backlights
 *
@@ -57,16 +60,32 @@
 #define L_EWI_LED_COUNT 30 ///< L EWI panel has 30 pixels, no backlighting.
 
 #define HUD_PANEL_START_INDEX 59 ///< HUD_PANEL is the 3rd panel in the UIP BL Channel 1 string.
-#define HUD_PANEL_LED_COUNT 50 ///< HUD_PANEL rev4 has 50 pixels, all for backlighting. If using an older revision may be 56.
 
-#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
+/// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
+#ifdef HUD_PANEL_REV3 
+#define HUD_PANEL_LED_COUNT 56 ///< HUD_PANEL rev4 has 50 pixels, all for backlighting. If using an older revision may be 56.
+#else
+#define HUD_PANEL_LED_COUNT 50 ///< HUD_PANEL rev4 has 50 pixels, all for backlighting. If using an older revision may be 56.
+#endif
+
+/// @todo remove ifdef for HUD_PANEL_REV3 as it's for my ease of testing
+#ifdef HUD_PANEL_REV3 
+#define R_EWI_LED_START_INDEX 115 ///< R_EWI is the 4th panel in the UIP BL Channel 1 string.
+#else
+#define R_EWI_LED_START_INDEX 109 ///< R_EWI is the 4th panel in the UIP BL Channel 1 string.
+#endif
+
+#define R_EWI_LED_COUNT 30 ///< R EWI panel has 30 pixels, no backlighting.
+
+#define UIP_LED_COUNT MA_LED_COUNT + L_EWI_LED_COUNT + HUD_PANEL_LED_COUNT + R_EWI_LED_COUNT ///< add up the connected panels pixel count for the Adafruit_NeoPixel string.
 
 Adafruit_NeoPixel uipBLCh1 = Adafruit_NeoPixel(UIP_LED_COUNT, UIP_BL_CH1, NEO_GRB + NEO_KHZ800); ///< Setup the UIP BL Ch1 string.
 
-// Include the connected panels.  If any panel not connected comment out its header.
+// Include the connected panels.  If any panel not connected comment out its header, and change its LED count above along with updating downstream panel(s)' start index.
 #include "1A2A1_MASTER_ARM_BL.h" 
 #include "1A4_L_EWI_BL.h"
 #include "1A7A1_HUD_PANEL_BL.h"
+#include "1A5_R_EWI_BL.h"
 
 /**
 * @brief LIP Backlights
