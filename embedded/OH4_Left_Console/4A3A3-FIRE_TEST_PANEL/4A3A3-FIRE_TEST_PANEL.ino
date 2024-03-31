@@ -117,7 +117,7 @@ Adafruit_NeoPixel breakPressureLight = Adafruit_NeoPixel(LED_COUNT, BRKP_DIN, NE
 
 Stepper stepperBreakPressure(STEPS, BPKP_M1, BPKP_M2, BPKP_M3, BPKP_M4);  ///< Break pressure stepper initializaiton
 
-//Declare variables for custom non-DCS logic <update comment as needed>
+//Declare variables for custom non-DCS Bios logic
 byte breakState = 1;  ///< breakState = 1:Park, 2:Emergency, or 0:Off
 
 int breakPressureValue = 0;  ///< Used to hold the value from DCS as read during stepping logic.
