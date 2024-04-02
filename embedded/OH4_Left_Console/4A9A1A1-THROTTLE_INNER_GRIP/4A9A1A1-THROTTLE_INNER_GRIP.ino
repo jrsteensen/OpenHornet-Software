@@ -92,6 +92,8 @@
 *
 * Joins I2C bus with address #49, registering requestEvent()
 *
+* @todo Add error handling as needed.
+*
 */
 void setup() {
   Wire.begin(49);                // join i2c bus with address #49
