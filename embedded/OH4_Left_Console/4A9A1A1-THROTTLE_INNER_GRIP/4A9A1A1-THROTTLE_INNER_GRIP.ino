@@ -92,6 +92,9 @@ int buttonMap[11] = { CAGE_UNCAGE, SPEEDBREAK_RETRACT, SPEEDBREAK_EXTEND, COUNTE
 *
 * Arduino standard Setup Function. Code who should be executed
 * only once at the programm start, belongs in this function.
+*
+* Joins I2C bus with address #49, registering requestEvent()
+*
 */
 void setup() {
   Wire.begin(49);                // join i2c bus with address #49
