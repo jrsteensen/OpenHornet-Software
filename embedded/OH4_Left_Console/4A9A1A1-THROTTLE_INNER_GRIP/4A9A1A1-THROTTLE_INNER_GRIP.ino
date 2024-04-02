@@ -84,9 +84,6 @@
 #define B 11                   ///< B - coms switch
 #define A 10                   ///< A - coms switch
 
-/// array of button pins for looping through to get button state
-int buttonMap[11] = { CAGE_UNCAGE, SPEEDBREAK_RETRACT, SPEEDBREAK_EXTEND, COUNTERMEASURES_AFT, COUNTERMEASURES_FWD, D, C, B, A, PUSH, JOY_SW };
-
 /**
 * Arduino Setup Function
 *
