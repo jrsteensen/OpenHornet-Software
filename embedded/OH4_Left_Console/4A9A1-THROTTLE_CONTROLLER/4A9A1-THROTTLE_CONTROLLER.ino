@@ -43,6 +43,8 @@
  * 
  * @attention Uses Simple FOC libraries with license avialable here: https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
  *
+ * @todo Extract just the code for MT6935 hall sensors from the Simple FOC library.
+ *
  *  * **Reference Designator:** 4A9A1
  *  * **Intended Board:** CONTROLLER_Throttle
  *  * **RS485 Bus Address:** NA
