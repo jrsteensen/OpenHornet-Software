@@ -86,11 +86,11 @@
 #define DCSBIOS_DEFAULT_SERIAL
 
 #include <Wire.h>
-#include "Joystick_ESP32S2.h"
 #include "SimpleFOC.h"
 #include "SimpleFOCDrivers.h"
 #include "encoders/mt6835/MagneticSensorMT6835.h"
 #include "DcsBios.h"
+#include "Joystick_ESP32S2.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define OUTBD_CSX 12         ///< J2 OUTBD_CSx
