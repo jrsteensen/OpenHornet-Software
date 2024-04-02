@@ -68,7 +68,7 @@
 *
 * ## Hall Sensor Zero via #define SET_THROTTLE_ZERO
 * It may be helpful to zero the hall sensors when both throttles are at ground idle position.
-* If the Hall sensors are not zeroed out the reads my increase when advancing the throttles forward, and then loop around to a 
+* If the Hall sensors are not zeroed out the reads may increase when advancing the throttles forward, and then loop around to a 
 * lower value which is confusing for the Window's game controller and its calibration utility.
 * 
 * ## Disabling the max limit switches via #define DISABLE_MAX_LIMIT_SWITCHES 1
