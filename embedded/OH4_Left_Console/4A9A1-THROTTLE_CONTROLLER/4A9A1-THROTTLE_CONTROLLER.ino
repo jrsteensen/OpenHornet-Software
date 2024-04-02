@@ -86,6 +86,7 @@
 #define DCSBIOS_DEFAULT_SERIAL
 
 #include <Wire.h>
+#include <SPI.h>
 #include "SimpleFOC.h"
 #include "SimpleFOCDrivers.h"
 #include "encoders/mt6835/MagneticSensorMT6835.h"
