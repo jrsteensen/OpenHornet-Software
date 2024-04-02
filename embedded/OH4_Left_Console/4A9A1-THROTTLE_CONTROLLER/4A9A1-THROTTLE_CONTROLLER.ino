@@ -42,6 +42,7 @@
  * @details
  * 
  * @attention Uses Simple FOC libraries with license avialable here: https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
+ * @todo Review Simple FOC library MIT copyright for compatibility.  Update copy right notice above as needed for the usage as a git-submodule.
  *
  * @todo Extract just the code for MT6935 hall sensors from the Simple FOC library.
  *
