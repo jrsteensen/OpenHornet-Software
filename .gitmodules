@@ -25,3 +25,12 @@
 [submodule "libraries/ArduinoJoystickLibrary"]
 	path = libraries/ArduinoJoystickLibrary
 	url = https://github.com/MHeironimus/ArduinoJoystickLibrary.git
+[submodule "libraries/Joystick_ESP32S2"]
+	path = libraries/Joystick_ESP32S2
+	url = https://github.com/schnoog/Joystick_ESP32S2.git
+[submodule "libraries/Arduino-FOC"]
+	path = libraries/Arduino-FOC
+	url = https://github.com/simplefoc/Arduino-FOC.git
+[submodule "libraries/Arduino-FOC-drivers"]
+	path = libraries/Arduino-FOC-drivers
+	url = https://github.com/simplefoc/Arduino-FOC-drivers.git
