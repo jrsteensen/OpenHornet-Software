@@ -131,24 +131,36 @@ void loop() {
 * The Wire library only sends one byte at a time.  The analog read values need to be split into low and high bytes
 * so the controller can properly reassemble the 2 byte numeric value.
 *
+* Passes inner grip reads to throttle controller in this order: 
+* CAGE_UNCAGE, SPEEDBREAK_RETRACT, SPEEDBREAK_EXTEND, COUNTERMEASURES_AFT, COUNTERMEASURES_FWD, D, C, B, A, PUSH, JOY_SW,
+* JOY_X, JOY_Y, ANTENNA_ELEVATION
+*
 *  @note There is minimal logic for the inner grip pro-mini given the extra steps for reprogramming.
 */
 
 void requestEvent() {
-  /// Loop through all of the digital reads and write value to the controller.
-  for (int i = 0; i < 11; i++) {
-    Wire.write(!digitalRead(buttonMap[i]));  //write state of buttons
-  }
+
+  Wire.write(!digitalRead(CAGE_UNCAGE));
+  Wire.write(!digitalRead(SPEEDBREAK_RETRACT));
+  Wire.write(!digitalRead(SPEEDBREAK_EXTEND));
+  Wire.write(!digitalRead(COUNTERMEASURES_AFT));
+  Wire.write(!digitalRead(COUNTERMEASURES_FWD));
+  Wire.write(!digitalRead(D));
+  Wire.write(!digitalRead(C));
+  Wire.write(!digitalRead(B));
+  Wire.write(!digitalRead(A));
+  Wire.write(!digitalRead(PUSH));
+  Wire.write(!digitalRead(JOY_SW));
 
   int temp = analogRead(JOY_X);  // get the analog read of the TDC X azis.
-  Wire.write(lowByte(temp)); // write out the low byte to the controller
-  Wire.write(highByte(temp)); // write out the high byte to the controller
+  Wire.write(lowByte(temp));     // write out the low byte to the controller
+  Wire.write(highByte(temp));    // write out the high byte to the controller
 
-  temp = analogRead(JOY_Y); // get the analog read of the TDC Y azis.
-  Wire.write(lowByte(temp)); // write out the low byte to the controller
-  Wire.write(highByte(temp)); // write out the high byte to the controller
+  temp = analogRead(JOY_Y);    // get the analog read of the TDC Y azis.
+  Wire.write(lowByte(temp));   // write out the low byte to the controller
+  Wire.write(highByte(temp));  // write out the high byte to the controller
 
-  temp = analogRead(ANTENNA_ELEVATION); // get the analog read of the Antenna Elevation azis.
-  Wire.write(lowByte(temp)); // write out the low byte to the controller
-  Wire.write(highByte(temp)); // write out the high byte to the controller
+  temp = analogRead(ANTENNA_ELEVATION);  // get the analog read of the Antenna Elevation azis.
+  Wire.write(lowByte(temp));             // write out the low byte to the controller
+  Wire.write(highByte(temp));            // write out the high byte to the controller
 }
