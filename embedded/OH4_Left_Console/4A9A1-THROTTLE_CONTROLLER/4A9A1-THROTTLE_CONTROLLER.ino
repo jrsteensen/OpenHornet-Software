@@ -81,10 +81,10 @@
 *
 */
 
-#define DISABLE_MAX_SOL_SIG         ///< If defined the solenoid will be disabled in code, comment out line if the solenoid is used
-#define DISABLE_IDLE_SOL_SIG        ///< If defined the solenoid will be disabled in code, comment out line if the solenoid is used
+#define DISABLE_MAX_SOL_SIG   ///< If defined the solenoid will be disabled in code, comment out line if the solenoid is used
+#define DISABLE_IDLE_SOL_SIG  ///< If defined the solenoid will be disabled in code, comment out line if the solenoid is used
 #define SET_THROTTLE_ZERO           ///< Define to determine if code should allow the hall sensors to set its zero position based on initial position
-//#define DISABLE_MAX_LIMIT_SWITCHES  ///< disables the max limit switches, comment out line if the max limit switches should be used
+#define DISABLE_MAX_LIMIT_SWITCHES   ///< disables the max limit switches, comment out line if the max limit switches should be used
 
 #define DCSBIOS_DISABLE_SERVO  ///< So the code will compile with an ESP32
 #define DCSBIOS_DEFAULT_SERIAL
@@ -242,9 +242,9 @@ void setup() {
   digitalWrite(IDLE_SOL_SIG, LOW);
   digitalWrite(MAX_SOL_SIG, LOW);
 
-  Joystick.setXAxisRange(0, 1024);    // TDC X-axis
-  Joystick.setYAxisRange(0, 1024);    // TDC Y-axis
-  Joystick.setZAxisRange(0, 1024);    // Radar Elevation
+  Joystick.setXAxisRange(0, 1024);   // TDC X-axis
+  Joystick.setYAxisRange(0, 1024);   // TDC Y-axis
+  Joystick.setZAxisRange(0, 1024);   // Radar Elevation
   Joystick.setRxAxisRange(0, 65535);  // Outboard Throttle Arm
   Joystick.setRyAxisRange(0, 65535);  // Inboard Throttle Arm
   Joystick.begin();
@@ -282,26 +282,26 @@ void loop() {
 
   uint32_t temp;  // temp value to hold the analog reads in preparation of doing logic.
 
-  outboardThrottle.update();                                     // update the outboard hall sensor to prep for read.
-  temp = outboardThrottle.readRawAngle21();                      // read outboard hall sensor
+  outboardThrottle.update();                          // update the outboard hall sensor to prep for read.
+  temp = outboardThrottle.readRawAngle21();           // read outboard hall sensor
   Joystick.setRxAxis(mapHallSensor(temp, 0, 750000, 0, 65535));  //0 and 750000 came from reading the Serial Monitor for the min/max values to then plug into this line.
   // Uncomment the code below if you wish to pass the outboard throttle's raw values to the serial monitor
   //Serial.print("outbThrottle: ");
   //Serial.print(temp);
 
-  inboardThrottle.update();                                      // update the inboard hall sensor to prep for read
-  temp = inboardThrottle.readRawAngle21();                       // read inboard hall sensor
+  inboardThrottle.update();                           // update the inboard hall sensor to prep for read
+  temp = inboardThrottle.readRawAngle21();            // read inboard hall sensor
   Joystick.setRyAxis(mapHallSensor(temp, 0, 750000, 0, 65535));  //0 and 740000 came from reading the Serial Monitor for the min/max values to then plug into this line.
-// Uncomment the code below if you wish to pass the inboard throttle's raw values to the serial monitor
-//Serial.print("  inbThrottle: ");
-//Serial.print(temp);
-//Serial.print("\n");
+  // Uncomment the code below if you wish to pass the inboard throttle's raw values to the serial monitor
+  //Serial.print("  inbThrottle: ");
+  //Serial.print(temp);
+  //Serial.print("\n");
 
-// determine if max limit switches are included or not
-#ifndef DISABLE_MAX_LIMIT_SWITCHES
+  // determine if max limit switches are included or not
+  #ifndef DISABLE_MAX_LIMIT_SWITCHES
   Joystick.setButton(0, !digitalRead(OUTBD_MAX_LIMIT));
   Joystick.setButton(1, !digitalRead(INBD_MAX_LIMIT));
-#endif
+  #endif
 
   Joystick.setButton(2, !digitalRead(OUTBD_IDLE_LIMIT));
   Joystick.setButton(3, !digitalRead(INBD_IDLE_LIMIT));
@@ -309,69 +309,37 @@ void loop() {
   Joystick.setButton(5, !digitalRead(RAID_FLIR));
   Joystick.setButton(6, !digitalRead(ATC_ENGAGE));
 
-  int index = 0;  // Initialize the index to keep track of which inner grip button we're reading
-  byte tempLow;   //variable for holding low byte of inner grip's analog reads
-  byte tempHi;    //variable for holding high byte of inner grip's analog reads
-
+  int index = 0;             // Initialize the index to keep track of which inner grip button we're reading
   Wire.requestFrom(49, 17);  // request inner grip pro-mini return current button state info
 
-  while (Wire.available()) {  // While something to read from the inner grip
-    switch (index) {
-      case CAGE_UNCAGE:
-        Joystick.setButton(7, Wire.read());
-        break;
-      case SPEEDBREAK_RETRACT:
-        Joystick.setButton(8, Wire.read());
-        break;
-      case SPEEDBREAK_EXTEND:
-        Joystick.setButton(9, Wire.read());
-        break;
-      case COUNTERMEASURES_AFT:
-        Joystick.setButton(10, Wire.read());
-        break;
-      case COUNTERMEASURES_FWD:
-        Joystick.setButton(11, Wire.read());
-        break;
-      case D:
-        Joystick.setButton(12, Wire.read());
-        break;
-      case C:
-        Joystick.setButton(13, Wire.read());
-        break;
-      case B:
-        Joystick.setButton(14, Wire.read());
-        break;
-      case A:
-        Joystick.setButton(15, Wire.read());
-        break;
-      case PUSH:
-        Joystick.setButton(16, Wire.read());
-        break;
-      case JOY_SW:
-        Joystick.setButton(17, Wire.read());
-        break;
-      case JOY_X:
-        tempLow = Wire.read();      // read low byte
-        tempHi = Wire.read();       // read high byte
-        temp = (tempHi << 8) + tempLow;  //rebuild the TDC X-axis value
-        Joystick.setXAxis(map(temp, 0, 65000, 0, 1024));
-        break;
-      case JOY_Y:
-        tempLow = Wire.read();      // read low byte
-        tempHi = Wire.read();       // read high byte
-        temp = (tempHi << 8) + tempLow;  //rebuild the TDC Y-axis value
-        Joystick.setYAxis(map(temp, 0, 65000, 0, 1024));
-        break;
-      case ANTENNA_ELEVATION:
-        tempLow = Wire.read();                       // read low byte
-        tempHi = Wire.read();                        // read high byte
-        temp = (tempHi << 8) + tempLow;                   //rebuild the Antenna axis value
-        Joystick.setZAxis(map(temp, 754, 978, 0, 1024));  // mapped values determined by reading the retured elevation on the serial monitor
-        // enable the lines below to see the Elevation knob's analog read values.
-        //Serial.print(" Elevation: ");
-        //Serial.print((tempHi << 8) + tempLow);
-        //Serial.print("\n");
-        break;
+
+
+  while (Wire.available()) {                       // While something to read from the inner grip
+    if (index < JOY_X) {                              // The first sets of values are button presses until we get to axis values
+      Joystick.setButton(index + 7, Wire.read());  // inner throttle's digital button reads, set as joystick button state
+    }
+    // Remaining Index values are inner grip analog reads
+    else if (index == JOY_X) {            // TDC X-axis
+      byte tempLow = Wire.read();      // read low byte
+      byte tempHi = Wire.read();       // read high byte
+      temp = (tempHi << 8) + tempLow;  //rebuild the TDC X-axis value
+      Joystick.setXAxis(map(temp, 0, 65000, 0, 1024));
+
+    } else if (index == JOY_Y) {          // TDC Y-axis
+      byte tempLow = Wire.read();      // read low byte
+      byte tempHi = Wire.read();       // read high byte
+      temp = (tempHi << 8) + tempLow;  //rebuild the TDC Y-axis value
+      Joystick.setYAxis(map(temp, 0, 65000, 0, 1024));
+
+    } else if (index == ANTENNA_ELEVATION) {
+      byte tempLow = Wire.read();                       // read low byte
+      byte tempHi = Wire.read();                        // read high byte
+      temp = (tempHi << 8) + tempLow;                   //rebuild the Antenna axis value
+      Joystick.setZAxis(map(temp, 754, 978, 0, 1024));  // mapped values determined by reading the retured elevation on the serial monitor
+      // enable the lines below to see the Elevation knob's analog read values.
+      //Serial.print(" Elevation: ");
+      //Serial.print((tempHi << 8) + tempLow);
+      //Serial.print("\n");
     }
     index++;  // increment the index for the next iteration through the while loop
   }
@@ -400,12 +368,13 @@ void loop() {
 */
 
 long mapHallSensor(unsigned long long x, unsigned long long in_min, unsigned long long in_max, unsigned long long out_min, unsigned long long out_max) {
-  const unsigned long long run = in_max - in_min;
-  if (run == 0) {
-    log_e("map(): Invalid input range, min == max");
-    return -1;  // AVR returns -1, SAM returns 0
-  }
-  const unsigned long long rise = out_max - out_min;
-  const unsigned long long delta = x - in_min;
-  return (delta * rise) / run + out_min;
+    const unsigned long long run = in_max - in_min;
+    if(run == 0){
+        log_e("map(): Invalid input range, min == max");
+        return -1; // AVR returns -1, SAM returns 0
+    }
+    const unsigned long long  rise = out_max - out_min;
+    const unsigned long long delta = x - in_min;
+    return (delta * rise) / run + out_min;
 }
+
