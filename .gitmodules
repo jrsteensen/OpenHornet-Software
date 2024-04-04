@@ -34,3 +34,6 @@
 [submodule "libraries/Arduino-FOC-drivers"]
 	path = libraries/Arduino-FOC-drivers
 	url = https://github.com/simplefoc/Arduino-FOC-drivers.git
+[submodule "libraries/ArduinoCore-avr"]
+	path = libraries/ArduinoCore-avr
+	url = https://github.com/arduino/ArduinoCore-avr
