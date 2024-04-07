@@ -63,7 +63,8 @@
 */
 
 //#include <SPI.h>
-#include <Wire.h>
+//#include <Wire.h>
+#include <Ardhino.h>
 
 /**
 * Arduino Setup Function
