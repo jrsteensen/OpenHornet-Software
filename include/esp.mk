@@ -1,14 +1,14 @@
-#ifndef ESP_ROOT
+ifndef ESP_ROOT
 # Path to the ESP32 Arduino core.
-#ESP_ROOT = $(ROOTDIR)/libraries/arduino-esp32
-#endif
+ESP_ROOT = $(ROOTDIR)/libraries/arduino-esp32
+endif
 
 LIBRARY_DIR        = $(ROOTDIR)/libraries
 ESPMK_DIR          = $(ROOTDIR)/include/makeEspArduino
 # Include libraries from the libraries directory for linking.
 CUSTOM_LIBS        = $(LIBRARY_DIR)
 # Exclude platform libraries to avoid compilation and linking errors.
-EXCLUDE_DIRS	   = $(LIBRARY_DIR)/Servo|$(LIBRARY_DIR)/Arduino_Boards
+EXCLUDE_DIRS	   = $(LIBRARY_DIR)/Servo|$(LIBRARY_DIR)/Arduino_Boards|$(ESP_ROOT)
 CHIP			   = esp32
 BUILD_ROOT         = build
 BUILD_DIR          = build
