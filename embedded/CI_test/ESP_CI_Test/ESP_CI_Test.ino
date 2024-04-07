@@ -62,9 +62,10 @@
    #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
 */
 
+#include <Arduino.h>
 //#include <SPI.h>
 #include <Wire.h>
-#include <Arduino.h>
+
 
 /**
 * Arduino Setup Function
