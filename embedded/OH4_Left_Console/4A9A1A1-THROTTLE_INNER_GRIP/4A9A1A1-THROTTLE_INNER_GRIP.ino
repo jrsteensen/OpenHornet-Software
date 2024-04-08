@@ -48,8 +48,8 @@
  * PIN | Function
  * --- | ---
  * 2   | CAGE_UNCAGE
- * 3   | SPEEDBREAK_RETRACT
- * 4   | SPEEDBREAK_EXTEND
+ * 3   | SPEEDBRAKE_RETRACT
+ * 4   | SPEEDBRAKE_EXTEND
  * 7   | COUNTERMEASURES_AFT
  * 8   | COUNTERMEASURES_FWD
  * 9   | PUSH - coms switch
@@ -70,8 +70,8 @@
 
 // Define pins inner grip pro-mini
 #define CAGE_UNCAGE 2          ///< CAGE_UNCAGE
-#define SPEEDBREAK_RETRACT 3   ///< SPEEDBREAK_RETRACT
-#define SPEEDBREAK_EXTEND 4    ///< SPEEDBREAK_EXTEND
+#define SPEEDBRAKE_RETRACT 3   ///< SPEEDBRAKE_RETRACT
+#define SPEEDBRAKE_EXTEND 4    ///< SPEEDBRAKE_EXTEND
 #define COUNTERMEASURES_AFT 7  ///< COUNTERMEASURES_AFT
 #define COUNTERMEASURES_FWD 8  ///< COUNTERMEASURES_FWD
 #define PUSH 9                 ///< PUSH - coms switch
@@ -101,8 +101,8 @@ void setup() {
 
 
   pinMode(CAGE_UNCAGE, INPUT_PULLUP);
-  pinMode(SPEEDBREAK_RETRACT, INPUT_PULLUP);
-  pinMode(SPEEDBREAK_EXTEND, INPUT_PULLUP);
+  pinMode(SPEEDBRAKE_RETRACT, INPUT_PULLUP);
+  pinMode(SPEEDBRAKE_EXTEND, INPUT_PULLUP);
   pinMode(COUNTERMEASURES_AFT, INPUT_PULLUP);
   pinMode(COUNTERMEASURES_FWD, INPUT_PULLUP);
   pinMode(ANTENNA_ELEVATION, INPUT_PULLUP);
@@ -134,7 +134,7 @@ void loop() {
 * so the controller can properly reassemble the 2 byte numeric value.
 *
 * Passes inner grip reads to throttle controller in this order: 
-* CAGE_UNCAGE, SPEEDBREAK_RETRACT, SPEEDBREAK_EXTEND, COUNTERMEASURES_AFT, COUNTERMEASURES_FWD, D, C, B, A, PUSH, JOY_SW,
+* CAGE_UNCAGE, SPEEDBRAKE_RETRACT, SPEEDBRAKE_EXTEND, COUNTERMEASURES_AFT, COUNTERMEASURES_FWD, D, C, B, A, PUSH, JOY_SW,
 * JOY_X, JOY_Y, ANTENNA_ELEVATION
 *
 *  @note There is minimal logic for the inner grip pro-mini given the extra steps for reprogramming.
@@ -143,8 +143,8 @@ void loop() {
 void requestEvent() {
 
   Wire.write(!digitalRead(CAGE_UNCAGE));
-  Wire.write(!digitalRead(SPEEDBREAK_RETRACT));
-  Wire.write(!digitalRead(SPEEDBREAK_EXTEND));
+  Wire.write(!digitalRead(SPEEDBRAKE_RETRACT));
+  Wire.write(!digitalRead(SPEEDBRAKE_EXTEND));
   Wire.write(!digitalRead(COUNTERMEASURES_AFT));
   Wire.write(!digitalRead(COUNTERMEASURES_FWD));
   Wire.write(!digitalRead(D));
