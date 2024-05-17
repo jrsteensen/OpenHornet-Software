@@ -54,7 +54,7 @@
  * 10  | HDG -
  * 4   | CRS +
  * 7   | CRS -
- *
+ * 6   | AMPCD IRQ Pin
  * 
  *
  * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
@@ -91,6 +91,7 @@
 #define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
+#include "Wire.h"
 #include "TCA9534.h"
 
 // Define pins per the OH Interconnect.
@@ -101,8 +102,7 @@
 #define CRS_P 4              ///< CRS +
 #define CRS_M 7              ///< CRS -
 #define AMPCD_BACK_LIGHT A9  ///< DDI Backlighting PWM
-
-
+#define AMPCD_IRQ 6 ///< AMPCD IRQ Pin
 
 /**
 * TCA9534 Chip Array
@@ -116,14 +116,14 @@ TCA9534 ampcdButtons[4] = {
   TCA9534(0x21)
 };  // Bottom Row
 
-
-
 // Setup global variables for reading DDI button presses.
 bool lastBtnState[28];               ///< Array to hold the last state of the 20 AMPCD buttons, and 4 rocker switches.
 bool buttonState[28];                ///< Array to hold the current state of the 20 AMPCD buttons, and 4 rocker switches.
 uint8_t inputRegister[4];            ///< Input register for button read logic.
 unsigned long lastDebounceTime[28];  ///< Array to hold last time of AMPCD button update for debounce.
 unsigned long debounceDelay = 10;    ///< The debounce delay duration in ms, **increase if the output flickers**.
+
+int index;
 
 /// DCS Bios Messages for the 4 AMPCD rocker switches.
 char *AMPCD_Btns[] = { "AMPCD_GAIN_SW",
@@ -159,6 +159,10 @@ void setup() {
   // Run DCS Bios setup function
   DcsBios::setup();
 
+  pinMode(AMPCD_IRQ, OUTPUT);
+
+  pinMode(AMPCD_BACK_LIGHT, OUTPUT); // set backlight pinmode to output
+  analogWrite(AMPCD_BACK_LIGHT, 0); // turn-off backlighting
   /**
 * @brief Initialize last button state array to all 0's.
 *
@@ -206,7 +210,7 @@ void loop() {
 */
     for (int j = 0; j < 7; j++) {
 
-      int index = j + (7 * i);
+      index = j + (7 * i);
 
       bool btnState = (inputRegister[i] >> (6 - j)) & 1;
 
