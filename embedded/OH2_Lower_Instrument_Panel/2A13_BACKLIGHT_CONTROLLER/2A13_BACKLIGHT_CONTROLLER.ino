@@ -132,4 +132,12 @@ void setup() {
 */
 void loop() {
   DcsBios::loop();      //Run DCS-BIOS loop
+
+  // ***RAINBOW EFFECT CODE***
+  checkButtonPress();
+
+  if (isUnicornSick) {
+    makeUnicornVomit();
+  }
+  // ***RAINBOW EFFECT CODE***
 }
