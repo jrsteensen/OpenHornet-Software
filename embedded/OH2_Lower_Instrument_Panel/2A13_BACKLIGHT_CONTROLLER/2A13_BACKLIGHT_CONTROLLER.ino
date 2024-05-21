@@ -78,11 +78,11 @@
  * Check if we're on a Mega328 or Mega2560 and define the correct
  * serial interface
 */
-//#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL ///< This enables iterrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
-//#else
-//#define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
-//#endif
+#else
+#define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+#endif
 
 #ifdef __AVR__
 #include <avr/power.h>

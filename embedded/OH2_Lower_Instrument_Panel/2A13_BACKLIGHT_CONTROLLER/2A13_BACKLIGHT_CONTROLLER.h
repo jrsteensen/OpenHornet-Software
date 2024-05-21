@@ -70,14 +70,34 @@
 #define FUEL_LED_START_INDEX 203                ///< Fuel panel is the seventh in the LC BL Channel 1 string.
 #define FP_LED_COUNT 32
 
+#define APU_LED_START_INDEX 0                   ///< APU panel is the first in the LC BL Channel 2 string.
+#define AP_LED_COUNT 0
 
+#define FCS_LED_START_INDEX 0                   ///< FCS panel is the second in the LC BL Channel 2 string.
+#define FC_LED_COUNT 23
+
+#define COMM_LED_START_INDEX 23                 ///< Comm panel is the third in the LC BL Channel 2 string.
+#define CP_LED_COUNT 109
+
+#define ANT_SEL_LED_START_INDEX 132             ///< Ant Sel panel is the fourth in the LC BL Channel 2 string.
+#define AS_LED_COUNT 17
+
+#define OBOGS_LED_START_INDEX 149               ///< Obogs panel is the fifth in the LC BL Channel 2 string.
+#define OB_LED_COUNT 16
+
+#define MC_HYD_ISOL_LED_START_INDEX 165         ///< MC/HYD Isol panel is the sixth in the LC BL Channel 2 string.
+#define HI_LED_COUNT 24
 
 #define LC_BL_CH1 9                             ///< Define the pin for Channel 1
 
-#define LC_START_INDEX 0                        ///< Define the start of Channel 1
-#define LC_LED_COUNT LG_LED_COUNT + SJ_LED_COUNT + FT_LED_COUNT + SP_LED_COUNT + GT_LED_COUNT + EL_LED_COUNT + FP_LED_COUNT ///< The total number of LEDs in Channel 1
+#define LC1_START_INDEX 0                       ///< Define the start of Channel 1
+#define LC1_LED_COUNT LG_LED_COUNT + SJ_LED_COUNT + FT_LED_COUNT + SP_LED_COUNT + GT_LED_COUNT + EL_LED_COUNT + FP_LED_COUNT      ///< The total number of LEDs in Channel 1
 
-Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
+#define LC2_START_INDEX 0                       ///< Define the pin for Channel 2
+#define LC2_LED_COUNT AP_LED_COUNT + FC_LED_COUNT + CP_LED_COUNT + AS_LED_COUNT + OB_LED_COUNT + HI_LED_COUNT                     ///< The total number of LEDs in Channel 2
+
+Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC1_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
+Adafruit_NeoPixel lcBLCh2 = Adafruit_NeoPixel(LC2_LED_COUNT, LC_BL_CH2, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 2 string.
 
 /**
 * @brief LC Variables
@@ -88,8 +108,12 @@ unsigned int consoleIntLt = 0;              ///< Track the internal lights statu
 namespace OpenHornet {
   void setup() {
     lcBLCh1.begin();
-    lcBLCh1.fill(lcBLCh1.Color(0, 0, 0), LC_START_INDEX, LC_LED_COUNT);                         ///< Initialize LEDs Off
+    lcBLCh1.fill(lcBLCh1.Color(0, 0, 0), LC1_START_INDEX, LC1_LED_COUNT);                         ///< Initialize LEDs Off
     lcBLCh1.show();
+
+    lcBLCh2.begin();
+    lcBLCh2.fill(lcBLCh2.Color(0, 0, 0), LC2_START_INDEX, LC2_LED_COUNT);                         ///< Initialize LEDs Off
+    lcBLCh2.show();
   }
 }
 
@@ -98,11 +122,18 @@ namespace OpenHornet {
 * This function controls the brightness of the panels backlight
 */
 void setBacklightBrightness(uint8_t brtns) {
-  uint32_t consoleIntLt = lcBLCh1.Color(0, brtns, 0);
-  for (int i = 0; i < LC_LED_COUNT; i++) {
-    lcBLCh1.setPixelColor(i, consoleIntLt);
+  uint32_t consoleIntLt1 = lcBLCh1.Color(0, brtns, 0);
+  uint32_t consoleIntLt2 = lcBLCh1.Color(0, brtns, 0);
+
+  for (int i = 0; i < LC1_LED_COUNT; i++) {
+    lcBLCh1.setPixelColor(i, consoleIntLt1);
   }
   lcBLCh1.show();
+
+  for (int i = 0; i < LC2_LED_COUNT; i++) {
+    lcBLCh2.setPixelColor(i, consoleIntLt2);
+  }
+  lcBLCh2.show();
 }
 
 /**
