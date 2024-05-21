@@ -100,33 +100,16 @@
 Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC1_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
 Adafruit_NeoPixel lcBLCh2 = Adafruit_NeoPixel(LC2_LED_COUNT, LC_BL_CH2, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 2 string.
 
-// ***RAINBOW EFFECT CODE***
-int feelingOff = 20;
-int knackered = 15;
-int crook = 10;
-int flatLikeALizardDrinking = 7;
-int laidUp = 4;
-int stuffed = 2;
-int onDeathDoor = 0.5;
-// ***RAINBOW EFFECT CODE***
-
 /**
 * @brief LC Variables
 * The variables are defined here
 */
 unsigned int consoleIntLt = 0;              ///< Track the internal lights status
-// ***RAINBOW EFFECT CODE***
-unsigned long buttonPressStartTime = 0;
-bool isUnicornSick = false;
-int howSickIsMyUnicorn = onDeathDoor;
-// ***RAINBOW EFFECT CODE***
 
 namespace OpenHornet {
   void setup() {
     lcBLCh1.begin();
-    // ***RAINBOW EFFECT CODE***
-    pinMode(SIMPWR_PUSH, INPUT_PULLUP);
-    // ***RAINBOW EFFECT CODE***
+
     lcBLCh1.fill(lcBLCh1.Color(0, 0, 0), LC1_START_INDEX, LC1_LED_COUNT);                         ///< Initialize LEDs Off
     lcBLCh1.show();
 
@@ -154,32 +137,6 @@ void setBacklightBrightness(uint8_t brtns) {
   }
   lcBLCh2.show();
 }
-
-// ***RAINBOW EFFECT CODE***
-void makeUnicornVomit() {
-  for (long firstPixelHue = 0; firstPixelHue < 5 * 65536; firstPixelHue += 256) {
-    for (int i = 0; i < lcBLCh1.numPixels(); i++) {
-      int pixelHue = firstPixelHue + (i * 65536L / lcBLCh1.numPixels());
-      lcBLCh1.setPixelColor(i, lcBLCh1.gamma32(lcBLCh1.ColorHSV(pixelHue)));
-    }
-    lcBLCh1.show();
-    delay(howSickIsMyUnicorn);
-  }
-}
-
-void checkButtonPress() {
-  if (digitalRead(SIMPWR_PUSH) == LOW) {
-    if (buttonPressStartTime == 0) {
-      buttonPressStartTime = millis();
-    } else if (millis() - buttonPressStartTime >= 4000) {
-      isUnicornSick = true;
-    }
-  } else {
-    buttonPressStartTime = 0;
-    isUnicornSick = false;
-  }
-}
-// ***RAINBOW EFFECT CODE***
 
 /**
 * @brief DCS Bios Backlight Hook
