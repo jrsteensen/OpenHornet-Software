@@ -89,11 +89,12 @@
 #define HI_LED_COUNT 24
 
 #define LC_BL_CH1 9                             ///< Define the pin for Channel 1
+#define LC_BL_CH2 10                            ///< Define the pin for Channel 2
 
 #define LC1_START_INDEX 0                       ///< Define the start of Channel 1
 #define LC1_LED_COUNT LG_LED_COUNT + SJ_LED_COUNT + FT_LED_COUNT + SP_LED_COUNT + GT_LED_COUNT + EL_LED_COUNT + FP_LED_COUNT      ///< The total number of LEDs in Channel 1
 
-#define LC2_START_INDEX 0                       ///< Define the pin for Channel 2
+#define LC2_START_INDEX 0                       ///< Define the start of Channel 2
 #define LC2_LED_COUNT AP_LED_COUNT + FC_LED_COUNT + CP_LED_COUNT + AS_LED_COUNT + OB_LED_COUNT + HI_LED_COUNT                     ///< The total number of LEDs in Channel 2
 
 Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC1_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
