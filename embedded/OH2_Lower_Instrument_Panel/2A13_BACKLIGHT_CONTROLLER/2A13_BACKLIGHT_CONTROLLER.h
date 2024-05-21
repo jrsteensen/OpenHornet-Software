@@ -71,25 +71,25 @@
 #define FP_LED_COUNT 32
 
 #define APU_LED_START_INDEX 0                   ///< APU panel is the first in the LC BL Channel 2 string.
-#define AP_LED_COUNT 0
+#define AP_LED_COUNT 19
 
-#define FCS_LED_START_INDEX 0                   ///< FCS panel is the second in the LC BL Channel 2 string.
+#define FCS_LED_START_INDEX 19                   ///< FCS panel is the second in the LC BL Channel 2 string.
 #define FC_LED_COUNT 23
 
-#define COMM_LED_START_INDEX 23                 ///< Comm panel is the third in the LC BL Channel 2 string.
+#define COMM_LED_START_INDEX 42                 ///< Comm panel is the third in the LC BL Channel 2 string.
 #define CP_LED_COUNT 109
 
-#define ANT_SEL_LED_START_INDEX 132             ///< Ant Sel panel is the fourth in the LC BL Channel 2 string.
+#define ANT_SEL_LED_START_INDEX 151             ///< Ant Sel panel is the fourth in the LC BL Channel 2 string.
 #define AS_LED_COUNT 17
 
-#define OBOGS_LED_START_INDEX 149               ///< Obogs panel is the fifth in the LC BL Channel 2 string.
+#define OBOGS_LED_START_INDEX 168               ///< Obogs panel is the fifth in the LC BL Channel 2 string.
 #define OB_LED_COUNT 16
 
-#define MC_HYD_ISOL_LED_START_INDEX 165         ///< MC/HYD Isol panel is the sixth in the LC BL Channel 2 string.
+#define MC_HYD_ISOL_LED_START_INDEX 184         ///< MC/HYD Isol panel is the sixth in the LC BL Channel 2 string.
 #define HI_LED_COUNT 24
 
 #define LC_BL_CH1 9                             ///< Define the pin for Channel 1
-#define LC_BL_CH2 8                            ///< Define the pin for Channel 2
+#define LC_BL_CH2 8                             ///< Define the pin for Channel 2
 
 #define LC1_START_INDEX 0                       ///< Define the start of Channel 1
 #define LC1_LED_COUNT LG_LED_COUNT + SJ_LED_COUNT + FT_LED_COUNT + SP_LED_COUNT + GT_LED_COUNT + EL_LED_COUNT + FP_LED_COUNT      ///< The total number of LEDs in Channel 1
