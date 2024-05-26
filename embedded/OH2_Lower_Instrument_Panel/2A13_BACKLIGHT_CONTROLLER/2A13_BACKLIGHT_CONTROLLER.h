@@ -38,8 +38,10 @@
  * @brief Header file for the Sim Pit panel backlighting.
  */
 
-#include "DcsBios.h"
-#include "Adafruit_NeoPixel.h"
+#include <DcsBios.h>
+//#include "Adafruit_NeoPixel.h"
+#include <RotaryEncoder.h>
+#include <FastLED.h>
 
 /**
 * @brief LC Backlights
@@ -97,25 +99,41 @@
 #define LC2_START_INDEX 0                       ///< Define the start of Channel 2
 #define LC2_LED_COUNT AP_LED_COUNT + FC_LED_COUNT + CP_LED_COUNT + AS_LED_COUNT + OB_LED_COUNT + HI_LED_COUNT                     ///< The total number of LEDs in Channel 2
 
-Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC1_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
-Adafruit_NeoPixel lcBLCh2 = Adafruit_NeoPixel(LC2_LED_COUNT, LC_BL_CH2, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 2 string.
+extern Adafruit_NeoPixel lcBLCh1;
+extern Adafruit_NeoPixel lcBLCh2;
+
+RotaryEncoder encoder(SIMPWR_BLM_A, SIMPWR_BLM_B, RotaryEncoder::LatchMode::TWO03);
+
+#define LED_PIN1 LC_BL_CH1
+#define LED_PIN2 LC_BL_CH2
+#define NUM_LEDS1 LC1_LED_COUNT                 ///< Number of LC Channel 1 LEDs
+#define NUM_LEDS2 LC2_LED_COUNT                 ///< Number of LC Channel 2 LEDs
+
+CRGB leds1[NUM_LEDS1];                          ///< LED array for LC Channel 1
+CRGB leds2[NUM_LEDS2];                          ///< LED array for LC Channel 2
 
 /**
 * @brief LC Variables
 * The variables are defined here
 */
-unsigned int consoleIntLt = 0;              ///< Track the internal lights status
+int currentMode = 5;
+int brtns;
+
+const int modeCount = 7; // Update this as you add more modes
+
+void setBacklightBrightness(uint8_t brtns);
+void checkButtonPress();
+void applyMode(int mode);
 
 namespace OpenHornet {
   void setup() {
     lcBLCh1.begin();
-
-    lcBLCh1.fill(lcBLCh1.Color(0, 0, 0), LC1_START_INDEX, LC1_LED_COUNT);                         ///< Initialize LEDs Off
-    lcBLCh1.show();
-
     lcBLCh2.begin();
-    lcBLCh2.fill(lcBLCh2.Color(0, 0, 0), LC2_START_INDEX, LC2_LED_COUNT);                         ///< Initialize LEDs Off
-    lcBLCh2.show();
+    pinMode(SIMPWR_PUSH, INPUT_PULLUP);
+    encoder.setPosition(0);
+    fill_solid(leds1, NUM_LEDS1, CRGB::Green); // Initialize LEDs ON
+    fill_solid(leds2, NUM_LEDS2, CRGB::Green);
+    FastLED.show();
   }
 }
 
@@ -124,18 +142,224 @@ namespace OpenHornet {
 * This function controls the brightness of the panels backlight
 */
 void setBacklightBrightness(uint8_t brtns) {
-  uint32_t consoleIntLt1 = lcBLCh1.Color(0, brtns, 0);
-  uint32_t consoleIntLt2 = lcBLCh1.Color(0, brtns, 0);
+  FastLED.setBrightness(brtns);
+  FastLED.show();
+}
 
-  for (int i = 0; i < LC1_LED_COUNT; i++) {
-    lcBLCh1.setPixelColor(i, consoleIntLt1);
+void dynamicRainbow() {
+  static uint8_t hue = 0;
+  for (int i = 0; i < NUM_LEDS1; i++) {
+    leds1[i] = CHSV(hue + (i * 10), 255, 255);
   }
-  lcBLCh1.show();
+  for (int i = 0; i < NUM_LEDS2; i++) {
+    leds2[i] = CHSV(hue + (i * 10), 255, 255);
+  }
+  FastLED.show();
+  hue++;
+  delay(1); // Adjust to control the speed of the rainbow
+}
 
-  for (int i = 0; i < LC2_LED_COUNT; i++) {
-    lcBLCh2.setPixelColor(i, consoleIntLt2);
+void confetti() {
+  fadeToBlackBy(leds1, NUM_LEDS1, 10);
+  int pos = random16(NUM_LEDS1);
+  leds1[pos] += CHSV(random8(), 200, 255);
+
+  fadeToBlackBy(leds2, NUM_LEDS2, 10);
+  pos = random16(NUM_LEDS2);
+  leds2[pos] += CHSV(random8(), 200, 255);
+
+  FastLED.show();
+}
+
+void sinelon() {
+  fadeToBlackBy(leds1, NUM_LEDS1, 20);
+  int pos = beatsin16(13, 0, NUM_LEDS1 - 1);
+  leds1[pos] += CHSV(0, 255, 192);
+
+  fadeToBlackBy(leds2, NUM_LEDS2, 20);
+  pos = beatsin16(13, 0, NUM_LEDS2 - 1);
+  leds2[pos] += CHSV(0, 255, 192);
+
+  FastLED.show();
+}
+
+
+void juggle() {
+    fadeToBlackBy(leds1, NUM_LEDS1, 20);
+    for (int i = 0; i < 8; i++) {
+        leds1[beatsin16(i + 7, 0, NUM_LEDS1 - 1)] |= CHSV(i * 32, 200, 255);
+    }
+
+    fadeToBlackBy(leds2, NUM_LEDS2, 20);
+    for (int i = 0; i < 8; i++) {
+        leds2[beatsin16(i + 7, 0, NUM_LEDS2 - 1)] |= CHSV(i * 32, 200, 255);
+    }
+
+    FastLED.show();
+}
+
+void sequentialBootUpTest() {
+  // Sequentially light up each LED
+  for (int i = 0; i < NUM_LEDS1; i++) {
+    leds1[i] = CRGB::Green;
+    FastLED.show();
+    delay(50); // Adjust delay for desired speed
   }
-  lcBLCh2.show();
+  for (int i = 0; i < NUM_LEDS2; i++) {
+    leds2[i] = CRGB::Green;
+    FastLED.show();
+    delay(5); // Adjust delay for desired speed
+  }
+  delay(50); // Hold for a moment
+
+  // Turn off all LEDs
+  fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+  fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+  FastLED.show();
+}
+
+void pulseWaveTest() {
+  for (int j = 0; j < 3; j++) { // Repeat the pulse three times
+    for (int brightness = 0; brightness <= 255; brightness += 5) {
+      fill_solid(leds1, NUM_LEDS1, CRGB(brightness, brightness, brightness));
+      fill_solid(leds2, NUM_LEDS2, CRGB(brightness, brightness, brightness));
+      FastLED.show();
+      delay(30);
+    }
+    for (int brightness = 255; brightness >= 0; brightness -= 5) {
+      fill_solid(leds1, NUM_LEDS1, CRGB(brightness, brightness, brightness));
+      fill_solid(leds2, NUM_LEDS2, CRGB(brightness, brightness, brightness));
+      FastLED.show();
+      delay(3);
+    }
+  }
+}
+
+void rapidFlashTest() {
+  for (int i = 0; i < 5; i++) {
+    fill_solid(leds1, NUM_LEDS1, CRGB::White);
+    fill_solid(leds2, NUM_LEDS2, CRGB::White);
+    FastLED.show();
+    delay(100);
+    fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+    fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+    FastLED.show();
+    delay(100);
+  }
+}
+
+void strobeLightEffect() {
+  const int strobeDuration = 100; // Total duration of the strobe effect in milliseconds
+  const int strobeInterval = 50;  // Interval between strobe flashes in milliseconds
+  const int strobeCycles = strobeDuration / strobeInterval;
+  const int delayBetweenStrobes = 3000; // Delay between strobe repetitions in milliseconds
+
+  for (int repeat = 0; repeat < 3; repeat++) { // Repeat 3 times
+    for (int i = 0; i < strobeCycles; i++) {
+      // Turn on all LEDs to white
+      fill_solid(leds1, NUM_LEDS1, CRGB::White);
+      fill_solid(leds2, NUM_LEDS2, CRGB::White);
+      FastLED.show();
+      delay(strobeInterval);
+
+      // Turn off all LEDs
+      fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+      fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+      FastLED.show();
+      delay(strobeInterval);
+    }
+    delay(delayBetweenStrobes); // Delay between repetitions
+  }
+  setBacklightBrightness(brtns);
+  applyMode(0);
+}
+
+void fluorescentEffect() {
+  const int flashCount = 4; // Number of random flashes
+  const int minFlashDuration = 20; // Minimum duration of a flash in milliseconds
+  const int maxFlashDuration = 200; // Maximum duration of a flash in milliseconds
+  const int steadyDuration = 3000; // Duration for steady light in milliseconds
+
+  // Random flashes
+  for (int i = 0; i < flashCount; i++) {
+    int flashDuration = random(minFlashDuration, maxFlashDuration);
+    
+    // Turn on all LEDs to white
+    fill_solid(leds1, NUM_LEDS1, CRGB::Green);
+    fill_solid(leds2, NUM_LEDS2, CRGB::Green);
+    FastLED.show();
+    delay(flashDuration);
+
+    // Turn off all LEDs
+    fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+    fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+    FastLED.show();
+    delay(flashDuration);
+  }
+
+  // Steady light
+  fill_solid(leds1, NUM_LEDS1, CRGB::Green);
+  fill_solid(leds2, NUM_LEDS2, CRGB::Green);
+  FastLED.show();
+  delay(steadyDuration);
+
+  // Turn off all LEDs
+  fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+  fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+  FastLED.show();
+}
+
+void checkButtonPress() {
+  static bool buttonWasPressed = false;
+  bool buttonPressed = digitalRead(SIMPWR_PUSH) == LOW;
+  if (buttonPressed && !buttonWasPressed) {
+    applyMode(0);
+    setBacklightBrightness(50);
+    encoder.setPosition(0);
+  }
+  buttonWasPressed = buttonPressed;
+}
+
+void checkRotaryEncoder() {
+  static int lastPos = -1;
+  int newPos = encoder.getPosition();
+  if (newPos != lastPos) {
+    if (newPos > lastPos) {
+      currentMode = (currentMode + 1) % modeCount;
+    } else {
+      currentMode = (currentMode - 1 + modeCount) % modeCount;
+    }
+    applyMode(currentMode);
+    lastPos = newPos;
+  }
+}
+
+void applyMode(int mode) {
+  switch (mode) {
+    case 0:
+      fill_solid(leds1, NUM_LEDS1, CRGB::Green); // Default green mode
+      fill_solid(leds2, NUM_LEDS2, CRGB::Green);
+      FastLED.show();
+      break;
+    case 1:
+      // Dynamic Rainbow mode handled in loop()
+      break;
+    case 2:
+      confetti(); // Confetti mode
+      break;
+    case 3:
+      sinelon(); // Sinelon mode
+      break;
+    case 4:
+      juggle(); // Juggle mode
+      break;
+    // Add more cases as you implement additional modes
+    case 5:
+      fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+      fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+      FastLED.show();
+      break;
+  }
 }
 
 /**
@@ -143,12 +367,17 @@ void setBacklightBrightness(uint8_t brtns) {
 * This callback function monitors DCS Bios for the backlight value
 */
 void onConsoleIntLtChange(unsigned int newValue) {
-  uint8_t brtns = map(newValue, 0, 65535, 0, 255); // Map the DCS-BIOS value to 0-255 range
+  brtns = map(newValue, 0, 65535, 0, 255); // Map the DCS-BIOS value to 0-255 range
   setBacklightBrightness(brtns);
+
+  if (brtns > 0 && currentMode == 5) {
+    currentMode = 0;
+    applyMode(currentMode);
+  }
 }
 
 /**
 * @brief Initialize DCS Bios buffers
 */
 DcsBios::IntegerBuffer consoleIntLtBuffer(0x7558, 0xffff, 0, onConsoleIntLtChange);
-DcsBios::RotaryEncoder consolesDimmer("CONSOLES_DIMMER", "-4047", "+4047", SIMPWR_BLM_A, SIMPWR_BLM_B);
+// DcsBios::RotaryEncoder consolesDimmer("CONSOLES_DIMMER", "-4047", "+4047", SIMPWR_BLM_A, SIMPWR_BLM_B);

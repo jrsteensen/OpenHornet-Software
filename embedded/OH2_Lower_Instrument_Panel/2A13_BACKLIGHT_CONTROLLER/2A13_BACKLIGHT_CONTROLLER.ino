@@ -113,6 +113,9 @@
 
 #include "2A13_BACKLIGHT_CONTROLLER.h"
 
+Adafruit_NeoPixel lcBLCh1 = Adafruit_NeoPixel(LC1_LED_COUNT, LC_BL_CH1, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 1 string.
+Adafruit_NeoPixel lcBLCh2 = Adafruit_NeoPixel(LC2_LED_COUNT, LC_BL_CH2, NEO_GRB + NEO_KHZ800);    ///< Setup the LC BL Channel 2 string.
+
 /**
 * Arduino Setup Function
 *
@@ -122,6 +125,17 @@
 void setup() {
   DcsBios::setup();     // Initialize DCS-BIOS
   OpenHornet::setup();  // Initialize OpenHornet from header
+  FastLED.addLeds<NEOPIXEL, LED_PIN1>(leds1, NUM_LEDS1);
+  FastLED.addLeds<NEOPIXEL, LED_PIN2>(leds2, NUM_LEDS2);
+  
+  FastLED.setBrightness(BRIGHTNESS);
+
+  strobeLightEffect();
+
+  FastLED.setBrightness(brtns);
+
+  //currentMode = 5;
+  //applyMode(currentMode);         // Initialize in the default mode
 }
 
 /**
@@ -132,4 +146,31 @@ void setup() {
 */
 void loop() {
   DcsBios::loop();      //Run DCS-BIOS loop
+  encoder.tick();
+  checkRotaryEncoder();
+  checkButtonPress();
+
+  if (currentMode == 5 && brtns > 0) {
+    checkButtonPress();
+  }
+
+  switch (currentMode) {
+        case 1:
+            dynamicRainbow();
+            break;
+        case 2:
+            confetti();
+            break;
+        case 3:
+            sinelon();
+            break;
+        case 4:
+            juggle();
+            break;
+        case 5:
+            fill_solid(leds1, NUM_LEDS1, CRGB::Black);
+            fill_solid(leds2, NUM_LEDS2, CRGB::Black);
+            FastLED.show();
+            break;
+    }
 }
