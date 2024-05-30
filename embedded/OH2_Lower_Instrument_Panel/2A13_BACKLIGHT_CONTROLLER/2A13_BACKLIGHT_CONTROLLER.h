@@ -314,7 +314,11 @@ void checkButtonPress() {
   bool buttonPressed = digitalRead(SIMPWR_PUSH) == LOW;
   if (buttonPressed && !buttonWasPressed) {
     applyMode(0);
-    setBacklightBrightness(50);
+    if (brtns > 0) {
+      setBacklightBrightness(brtns);
+    } else if (brtns = 0) {
+      setBacklightBrightness(50);
+    }
     encoder.setPosition(0);
   }
   buttonWasPressed = buttonPressed;
