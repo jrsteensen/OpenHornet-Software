@@ -94,6 +94,7 @@
 #define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
+#include "Wire.h"
 #include "TCA9534.h"
 
 // Define pins per the OH Interconnect. 
@@ -107,6 +108,7 @@
 #define REWI_FIRE_SW 14 ///< REWI Fire
 #define REWI_MC_SW 16 ///< REWI Master Caution
 #define DDI_BACK_LIGHT A9 ///< DDI Backlighting PWM
+#define DDI_IRQ 6 ///< DDI Interrupt Pin
 
 /**
 * TCA9534 Chip Array
@@ -127,6 +129,8 @@ bool buttonState[20]; ///< Array to hold the current state of the 20 DDI buttons
 uint8_t inputRegister[4]; ///< Input register for button read logic.
 unsigned long lastDebounceTime[20]; ///< Array to hold last time of DDI button update for debounce.
 unsigned long debounceDelay = 10;  ///< The debounce delay duration in ms, **increase if the output flickers**.
+
+int index;
 
 //Connect switches to DCS-BIOS 
 DcsBios::RotaryEncoder rightDdiBrtCtl("RIGHT_DDI_BRT_CTL", "-3200", "+3200", RDDI_BRT_A, RDDI_BRT_B);
@@ -161,6 +165,11 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
+
+  pinMode(DDI_BACK_LIGHT, OUTPUT); // set backlighting pin mode to output
+  analogWrite(DDI_BACK_LIGHT, 0); // turn off backlighting
+  
+  pinMode(DDI_IRQ, OUTPUT);  // Set IRQ pinmode to match sample code to avoid controls becomming unresponsive issue
 
 /**
 * @brief Initialize last button state array to all 0's.
@@ -207,7 +216,7 @@ void loop() {
 *
 */
     for (int j = 0; j < 5; j++) {
-      int index;
+
       if (i == 1 || i == 2) {  //button order reversed, adjust the index accordingly.
         index = ((4 - j) + 5 * i);
       } else {
