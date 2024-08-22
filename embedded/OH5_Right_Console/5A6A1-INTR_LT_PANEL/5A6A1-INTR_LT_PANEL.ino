@@ -52,9 +52,9 @@
  * 3   | Day Mode
  * A2  | Warning / Caution Brightness
  * A1  | Chart Brightness
- * 6   | Console Brightness
+ * A7   | Console Brightness
  * 8   | Intrument Panel Brightness
- * 10  | Flood Brightness
+ * A10  | Flood Brightness
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
