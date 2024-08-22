@@ -95,9 +95,9 @@
 #define DAY 3        ///< Day Mode
 #define WAR_CAUT A2  ///< Warning / Caution Brightness
 #define CHART A1     ///< Chart Brightness
-#define CONSOLES 6   ///< Console Brightness
+#define CONSOLES A7   ///< Console Brightness
 #define INST_PNL 8   ///< Intrument Panel Brightness
-#define FLOOD 10     ///< Flood Brightness
+#define FLOOD A10     ///< Flood Brightness
 
 // Connect switches to DCS-BIOS
 DcsBios::Potentiometer chartDimmer("CHART_DIMMER", CHART);
