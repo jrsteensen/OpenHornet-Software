@@ -52,9 +52,9 @@
  * 3   | Day Mode
  * A2  | Warning / Caution Brightness
  * A1  | Chart Brightness
- * 6   | Console Brightness
+ * A7   | Console Brightness
  * 8   | Intrument Panel Brightness
- * 10  | Flood Brightness
+ * A10  | Flood Brightness
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
@@ -95,9 +95,9 @@
 #define DAY 3        ///< Day Mode
 #define WAR_CAUT A2  ///< Warning / Caution Brightness
 #define CHART A1     ///< Chart Brightness
-#define CONSOLES 6   ///< Console Brightness
+#define CONSOLES A7   ///< Console Brightness
 #define INST_PNL 8   ///< Intrument Panel Brightness
-#define FLOOD 10     ///< Flood Brightness
+#define FLOOD A10     ///< Flood Brightness
 
 // Connect switches to DCS-BIOS
 DcsBios::Potentiometer chartDimmer("CHART_DIMMER", CHART);
