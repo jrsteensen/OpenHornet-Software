@@ -169,6 +169,8 @@ This is a guide for writing clear examples that can be read by beginners and adv
 ### Constants & Macros
 * Use all caps for constants & macro values.
 * If you want to define pin names and other quantities which won't change, use `#defines` or `const ints`. 
+  * All pins requiring a digital pin functionality should be defined by their numeric digital pin notation.
+  * All pins requiring an analog pin functionality should be defined by the `A<numeric pin>' notation.
 * `#defines` are preferred for simple pin assignments or other simple constant assignment. `const` declarations are acceptable where required. Avoid using `#defines` when it could be result in a hard-to-diagnose unfavorable outcome. [See this Arduino forum post for more information.](https://forum.arduino.cc/t/when-to-use-const-int-int-or-define/668071)
     ```
     // Define pins for DCS-BIOS per interconnect diagram.

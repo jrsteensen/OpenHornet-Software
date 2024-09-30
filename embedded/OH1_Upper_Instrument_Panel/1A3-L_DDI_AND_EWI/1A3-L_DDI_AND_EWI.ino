@@ -58,6 +58,7 @@
  * 14  | LEWI Fire
  * 16  | LEWI Master Caution 
  * A9  | DDI Backlighting PWM 
+ * 6   | DDI IRQ
  * 
  *
  * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
@@ -94,6 +95,7 @@
 #define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
+#include "Wire.h"
 #include "TCA9534.h"
 
 // Define pins per the OH Interconnect. 
@@ -107,6 +109,7 @@
 #define LEWI_FIRE_SW 14 ///< LEWI Fire
 #define LEWI_MC_SW 16 ///< LEWI Master Caution
 #define DDI_BACK_LIGHT A9 ///< DDI Backlighting PWM
+#define DDI_IRQ 6 ///< DDI controller interrupt
 
 /**
 * TCA9534 Chip Array
@@ -127,6 +130,8 @@ bool buttonState[20]; ///< Array to hold the current state of the 20 DDI buttons
 uint8_t inputRegister[4]; ///< Input register for button read logic.
 unsigned long lastDebounceTime[20]; ///< Array to hold last time of DDI button update for debounce.
 unsigned long debounceDelay = 10;  ///< The debounce delay duration in ms, **increase if the output flickers**.
+
+int index; ///< Index to track the button press states
 
 //Connect switches to DCS-BIOS 
 DcsBios::RotaryEncoder leftDdiBrtCtl("LEFT_DDI_BRT_CTL", "-3200", "+3200", LDDI_BRT_A, LDDI_BRT_B);
@@ -161,6 +166,11 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
+
+  pinMode(DDI_BACK_LIGHT, OUTPUT); // set backlight pinmode to output
+  analogWrite(DDI_BACK_LIGHT, 0); // turn off backlighting
+
+  pinMode(DDI_IRQ, OUTPUT); // Set IRQ pin mode to output to match sample code, and avoid random control unresponsiveness
 
 /**
 * @brief Initialize last button state array to all 0's.
@@ -207,7 +217,7 @@ void loop() {
 *
 */
     for (int j = 0; j < 5; j++) {
-      int index;
+      
       if (i == 1 || i == 2) {  //button order reversed, adjust the index accordingly.
         index = ((4 - j) + 5 * i);
       } else {
