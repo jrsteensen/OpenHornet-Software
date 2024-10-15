@@ -57,7 +57,7 @@
  * A10 | LDDI Contrast Encoder B
  * 14  | LEWI Fire
  * 16  | LEWI Master Caution 
- * A9  | DDI Backlighting PWM 
+ * 9   | DDI Backlighting PWM, pin must be defined as digital #
  * 6   | DDI IRQ
  * 
  *
@@ -108,7 +108,7 @@
 #define LDDI_CONT_B A10 ///< LDDI Contrast Encoder B
 #define LEWI_FIRE_SW 14 ///< LEWI Fire
 #define LEWI_MC_SW 16 ///< LEWI Master Caution
-#define DDI_BACK_LIGHT A9 ///< DDI Backlighting PWM
+#define DDI_BACK_LIGHT 9 ///< DDI Backlighting PWM, pin must be defined as digital #
 #define DDI_IRQ 6 ///< DDI controller interrupt
 
 /**
@@ -149,8 +149,6 @@ DcsBios::SwitchMultiPos leftDdiBrtSelect("LEFT_DDI_BRT_SELECT", leftDdiBrtSelect
 /**
  * @brief Setup DCS-BIOS control for DDI backlighting
  *
- * @bug Potential bug with backlighting, the lights are either full on when DCSBios reports the intensity >50% or full off <50%. May be an electrical / PCB issue.
- * 
  */
 void onInstrIntLtChange(unsigned int newValue) {
   analogWrite(DDI_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));
