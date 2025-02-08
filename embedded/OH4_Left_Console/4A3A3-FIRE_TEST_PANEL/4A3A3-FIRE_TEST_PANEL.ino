@@ -107,8 +107,8 @@
 #define FIRE_SW1 4      ///< Fire Switch 1
 #define FIRE_SW2 A0     ///< Fire Switch 2
 #define BRKH_SECURE 15  ///< Brake Handle Secure, pushed in
-#define BRKH_EMERG 14   ///< Brake Handle Emerg
-#define BRKH_PARK 6     ///< Brake Handle Park
+#define BRKH_EMERG 6   ///< Brake Handle Emerg
+#define BRKH_PARK 14     ///< Brake Handle Park
 
 #define LED_COUNT 1    ///< Number of backlighting pixels for the brake pressure gauge.
 #define BRIGHTNESS 50  ///< Brightness of the LED
