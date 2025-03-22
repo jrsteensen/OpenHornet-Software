@@ -54,6 +54,7 @@
  * 10  | HDG -
  * 4   | CRS +
  * 7   | CRS -
+ * 9   | DDI Backlighting PWM, must be defined as digital pin #
  * 6   | AMPCD IRQ Pin
  * 
  *
@@ -101,7 +102,7 @@
 #define HDG_M 10             ///< HDG -
 #define CRS_P 4              ///< CRS +
 #define CRS_M 7              ///< CRS -
-#define AMPCD_BACK_LIGHT A9  ///< DDI Backlighting PWM
+#define AMPCD_BACK_LIGHT 9  ///< DDI Backlighting PWM, must be defined as digital pin #
 #define AMPCD_IRQ 6 ///< AMPCD IRQ Pin
 
 /**
@@ -140,8 +141,6 @@ DcsBios::Switch3Pos leftDdiHdgSw("LEFT_DDI_HDG_SW", HDG_P, HDG_M);
 /**
  * @brief Setup DCS-BIOS control for DDI backlighting
  *
- * @bug Potential bug with backlighting, the lights are either full on when DCSBios reports the intensity >50% or full off <50%. May be an electrical / PCB issue.
- * 
  */
 void onInstrIntLtChange(unsigned int newValue) {
   analogWrite(AMPCD_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));

@@ -57,7 +57,8 @@
  * A10 | RDDI Contrast Encoder B
  * 14  | REWI Fire
  * 16  | REWI Master Caution 
- * A9  | DDI Backlighting PWM 
+ * 9   | DDI Backlighting PWM, pin must be defined as digital #
+ * 6   | DDI Interrupt Pin 
  * 
  *
  * @brief following #define tells DCS-BIOS that this is a RS-485 slave device.
@@ -107,7 +108,7 @@
 #define RDDI_CONT_B A10 ///< RDDI Contrast Encoder B
 #define REWI_FIRE_SW 14 ///< REWI Fire
 #define REWI_MC_SW 16 ///< REWI Master Caution
-#define DDI_BACK_LIGHT A9 ///< DDI Backlighting PWM
+#define DDI_BACK_LIGHT 9 ///< DDI Backlighting PWM, pin must be defined as digital #
 #define DDI_IRQ 6 ///< DDI Interrupt Pin
 
 /**
@@ -148,8 +149,6 @@ DcsBios::SwitchMultiPos rightDdiBrtSelect("RIGHT_DDI_BRT_SELECT", rightDdiBrtSel
 /**
  * @brief Setup DCS-BIOS control for DDI backlighting
  *
- * @bug Potential bug with backlighting, the lights are either full on when DCSBios reports the intensity >50% or full off <50%. May be an electrical / PCB issue.
- * 
  */
 void onInstrIntLtChange(unsigned int newValue) {
   analogWrite(DDI_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));

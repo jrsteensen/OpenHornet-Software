@@ -61,7 +61,7 @@
  * 16  | VR MAN
  * 8   | VR Auto
  * 10  | VR LDDI - switch in sim is 3 position
- * 9   | VR IFEI Brightness
+ * A9   | VR IFEI Brightness
  * 
  * @todo When Video Record panel's two remaining 3 positon switches are incorporated into OpenHornet, the sketch should be updated to include them.  Currently VR LDDI not programmed.
  * 
@@ -113,7 +113,7 @@
 #define VR_MAN 16    ///< VR MAN
 #define VR_AUTO 8    ///< VR Auto
 #define VR_LDDI 10   ///< VR LDDI - Switch in SIM is 3 position
-#define VR_A_IFEI 9  ///< VR IFEI Brightness
+#define VR_A_IFEI A9  ///< VR IFEI Brightness
 
 // Connect switches to DCS-BIOS
 DcsBios::Potentiometer ifei("IFEI", VR_A_IFEI);
