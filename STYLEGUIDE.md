@@ -1,6 +1,6 @@
 # Style Guide
 [TOC]
-This is a guide for writing clear examples that can be read by beginners and advanced users alike. You should abide by this guide unless there is an ariticulable reason to deviate from this guide. This is not a set of hard and fast rules, it's a set of guidelines. Some of these guidelines might even conflict with each other. Use your judgment on when they're best followed, and if you're not sure, ask a project maintainer or fellow contributor.
+This is a guide for writing clear examples that can be read by beginners and advanced users alike. You should abide by this guide unless there is an articulable reason to deviate from this guide. This is not a set of hard and fast rules, it's a set of guidelines. Some of these guidelines might even conflict with each other. Use your judgment on when they're best followed, and if you're not sure, ask a project maintainer or fellow contributor.
 
 ## Writing Example Code
 * Efficiency is not paramount; readability is. 
@@ -60,7 +60,7 @@ This is a guide for writing clear examples that can be read by beginners and adv
 * [Link to index of all Doxygen tags/special commands](https://www.doxygen.nl/manual/commands.html) - We use `@` prefix instead of `\` prefix.
 
 ### Variables, Constants, and Macros/Defines
-* Comment every variable or constant declaration with a description of what the variable does. Use trailing doxygen compatible comments unless it is complex enough to require a leading/trailing block comment. You may use markdown compatible comments within the doxygen comments.
+* Comment every variable or constant declaration with a description of what the variable does. Use trailing Doxygen compatible comments unless it is complex enough to require a leading/trailing block comment. You may use markdown compatible comments within the Doxygen comments.
     ```
     /**
     * @brief Pilots may want the launch bar to automatically release when the throttles advance to MIL power.
@@ -114,7 +114,7 @@ This is a guide for writing clear examples that can be read by beginners and adv
     *  If the launch bar mag-switch is held in extend position, then: \n
     *  -# if no weight on wheels retract the launch bar. \n
     *  -# if the launch bar auto-retract is defined as true and both engines' RPM is >85 then retract launch bar. \n
-    *   @note If launch bar auto-retract is true, when connecting to the catapault it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
+    *   @note If launch bar auto-retract is true, when connecting to the catapult it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
     * 
     */
       if (launchBarMagState == HIGH) {
@@ -123,7 +123,7 @@ This is a guide for writing clear examples that can be read by beginners and adv
             //do nothing the state change method will retract the launch bar
             break;
           case 1:   //launch bar switch in extend
-            if (wowLeft == wowRight == wowNose == false){ // no wheight on wheels retract launch bar
+            if (wowLeft == wowRight == wowNose == false){ // no weight on wheels retract launch bar
               digitalWrite(LBAR_RET, LOW);
               launchBarMagState = LOW;  // mag is off
               break;
@@ -189,6 +189,9 @@ This is a guide for writing clear examples that can be read by beginners and adv
     #define SJET_PUSH 15 ///< Selector Jettison Push
     #define SJET_SW4 16 ///< Selector Jettison Position 
     ```
+
+### Addressing
+* Whenever referencing an address, mask or shift, user should reference them using [addresses.h of DCS-BIOS.](https://github.com/DCS-Skunkworks/dcs-bios/wiki/Addresses.h)
 
 ## Writing tutorials or instructions
 * Write in the active voice. 
