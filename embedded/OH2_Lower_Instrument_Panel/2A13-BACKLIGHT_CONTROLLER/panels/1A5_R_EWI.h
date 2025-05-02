@@ -74,91 +74,108 @@ const LedInfo rEwiLedIndicesTable[R_EWI_LED_COUNT] PROGMEM = {
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class REwiPanel : public Panel<REwiPanel> {
+class REwiPanel : public Panel {
 public:
-    // No need for instance declaration or getInstance() - they're now in the base class
+    static REwiPanel* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
+        if (!instance) {
+            instance = new REwiPanel(startIndex, ledArray);
+        }
+        return instance;
+    }
+
+    // Implementation of pure virtual methods
+    virtual int getStartIndex() const override { return panelStartIndex; }
+    virtual int getLedCount() const override { return ledCount; }
+    virtual const LedInfo* getLedIndicesTable() const override { return rEwiLedIndicesTable; }
+    virtual CRGB* getLedArray() const override { return leds; }
 
 private:
-    // Constructor now just needs to set up the panel-specific data
-    REwiPanel(int startIndex, CRGB* ledArray) : Panel(startIndex, ledArray) {
-        ledIndicesTable = rEwiLedIndicesTable;
+    // Private constructor
+    REwiPanel(int startIndex, CRGB* ledArray) {
+        panelStartIndex = startIndex;
+        leds = ledArray;
         ledCount = R_EWI_LED_COUNT;
     }
 
     // Static callback functions for DCS-BIOS
     static void onInstrIntLtChange(unsigned int newValue) {
-        instance->setBacklights(newValue);
+        if (instance) instance->setBacklights(newValue);
     }
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
 
     static void onFireRightLtChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_R_FIRE, newValue ? COLOR_RED : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_R_FIRE, newValue ? COLOR_RED : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer fireRightLtBuffer{0x740c, 0x0010, 4, onFireRightLtChange};
 
     static void onFireApuLtChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_APU_FIRE, newValue ? COLOR_RED : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_APU_FIRE, newValue ? COLOR_RED : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer fireApuLtBuffer{0x740c, 0x0004, 2, onFireApuLtChange};
 
     static void onRhAdvAaaChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_AAA, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AAA, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvAaaBuffer{0x740a, 0x0800, 11, onRhAdvAaaChange};
 
     static void onRhAdvAiChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_AI, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AI, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvAiBuffer{0x740a, 0x0400, 10, onRhAdvAiChange};
 
     static void onRhAdvCwChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_CW, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CW, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvCwBuffer{0x740a, 0x1000, 12, onRhAdvCwChange};
 
     static void onRhAdvDispChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_DISP, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_DISP, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvDispBuffer{0x740a, 0x0100, 8, onRhAdvDispChange};
 
     static void onRhAdvRcdrOnChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_RCDRON, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RCDRON, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvRcdrOnBuffer{0x740a, 0x0080, 7, onRhAdvRcdrOnChange};
 
     static void onRhAdvSamChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_SAM, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SAM, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSamBuffer{0x740a, 0x0200, 9, onRhAdvSamChange};
 
     static void onRhAdvSpareRh1Change(unsigned int newValue) {
-        instance->setIndicatorColor(LED_BLANK1, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK1, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh1Buffer{0x740a, 0x2000, 13, onRhAdvSpareRh1Change};
 
     static void onRhAdvSpareRh2Change(unsigned int newValue) {
-        instance->setIndicatorColor(LED_BLANK2, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK2, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh2Buffer{0x740a, 0x4000, 14, onRhAdvSpareRh2Change};
 
     static void onRhAdvSpareRh3Change(unsigned int newValue) {
-        instance->setIndicatorColor(LED_BLANK3, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK3, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh3Buffer{0x740a, 0x8000, 15, onRhAdvSpareRh3Change};
 
     static void onRhAdvSpareRh4Change(unsigned int newValue) {
-        instance->setIndicatorColor(LED_BLANK4, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK4, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh4Buffer{0x740c, 0x0001, 0, onRhAdvSpareRh4Change};
 
     static void onRhAdvSpareRh5Change(unsigned int newValue) {
-        instance->setIndicatorColor(LED_BLANK5, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK5, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh5Buffer{0x740c, 0x0002, 1, onRhAdvSpareRh5Change};
 
-    // Configuration data
-    int panelStartIndex;                            // The starting index of the panel's LEDs
-    int ledCount;                                   // Number of LEDs in the panel
+    // Instance data
+    static REwiPanel* instance;
+    int panelStartIndex;
+    int ledCount;
+    CRGB* leds;
 };
+
+// Initialize static instance pointer
+REwiPanel* REwiPanel::instance = nullptr;
 
 #endif

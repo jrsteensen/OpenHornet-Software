@@ -80,30 +80,48 @@ const LedInfo spnRcvyLedIndicesTable[SPN_RCVY_LED_COUNT] PROGMEM = {
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class SpnRcvyPanel : public Panel<SpnRcvyPanel> {
+class SpnRcvyPanel : public Panel {
 public:
-    // No need for instance declaration or getInstance() - they're now in the base class
+    static SpnRcvyPanel* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
+        if (!instance) {
+            instance = new SpnRcvyPanel(startIndex, ledArray);
+        }
+        return instance;
+    }
+
+    // Implementation of pure virtual methods
+    virtual int getStartIndex() const override { return panelStartIndex; }
+    virtual int getLedCount() const override { return ledCount; }
+    virtual const LedInfo* getLedIndicesTable() const override { return spnRcvyLedIndicesTable; }
+    virtual CRGB* getLedArray() const override { return leds; }
 
 private:
-    // Constructor now just needs to set up the panel-specific data
-    SpnRcvyPanel(int startIndex, CRGB* ledArray) : Panel(startIndex, ledArray) {
-        ledIndicesTable = spnRcvyLedIndicesTable;
+    // Private constructor
+    SpnRcvyPanel(int startIndex, CRGB* ledArray) {
+        panelStartIndex = startIndex;
+        leds = ledArray;
         ledCount = SPN_RCVY_LED_COUNT;
     }
 
     // Static callback functions for DCS-BIOS
     static void onInstrIntLtChange(unsigned int newValue) {
-        instance->setBacklights(newValue);
+        if (instance) instance->setBacklights(newValue);
     }
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
 
     static void onSpinLtChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_SPIN, newValue ? COLOR_RED : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPIN, newValue ? COLOR_RED : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer spinLtBuffer{0x742a, 0x0800, 11, onSpinLtChange};
 
-    // Configuration data
-    int panelStartIndex;                            // The starting index of the panel's LEDs
+    // Instance data
+    static SpnRcvyPanel* instance;
+    int panelStartIndex;
+    int ledCount;
+    CRGB* leds;
 };
+
+// Initialize static instance pointer
+SpnRcvyPanel* SpnRcvyPanel::instance = nullptr;
 
 #endif

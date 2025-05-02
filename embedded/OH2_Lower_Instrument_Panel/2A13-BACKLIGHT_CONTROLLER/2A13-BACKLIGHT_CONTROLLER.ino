@@ -13,7 +13,7 @@
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
- *
+ * 
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
@@ -118,13 +118,13 @@ CRGB RC_2[380];
  ********************************************************************************************************************/
 void setup() {
   // Initialize FastLED
-  FastLED.addLeds<NEOPIXEL, pin_LIP_CH1>(LIP_1, 100);
-  FastLED.addLeds<NEOPIXEL, pin_LIP_CH2>(LIP_2, 120);
-  FastLED.addLeds<NEOPIXEL, pin_UIP_CH1>(UIP_1, 210);
-  FastLED.addLeds<NEOPIXEL, pin_LC_CH1>(LC_1, 200);
-  FastLED.addLeds<NEOPIXEL, pin_LC_CH2>(LC_2, 233);
-  FastLED.addLeds<NEOPIXEL, pin_RC_CH1>(RC_1, 250);
-  FastLED.addLeds<NEOPIXEL, pin_RC_CH2>(RC_2, 380);
+  FastLED.addLeds<WS2812B, pin_LIP_CH1, GRB>(LIP_1, 100);
+  FastLED.addLeds<WS2812B, pin_LIP_CH2, GRB>(LIP_2, 120);
+  FastLED.addLeds<WS2812B, pin_UIP_CH1, GRB>(UIP_1, 210);
+  FastLED.addLeds<WS2812B, pin_LC_CH1, GRB>(LC_1, 200);
+  FastLED.addLeds<WS2812B, pin_LC_CH2, GRB>(LC_2, 233);
+  FastLED.addLeds<WS2812B, pin_RC_CH1, GRB>(RC_1, 250);
+  FastLED.addLeds<WS2812B, pin_RC_CH2, GRB>(RC_2, 380);
 
   // Initialize panels in order on UIP_1
   int currentIndex = 0;

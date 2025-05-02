@@ -75,46 +75,65 @@ const LedInfo masterArmLedIndicesTable[MASTER_ARM_LED_COUNT] PROGMEM = {
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class MasterArmPanel : public Panel<MasterArmPanel> {
+class MasterArmPanel : public Panel {
 public:
-    // No need for instance declaration or getInstance() - they're now in the base class
+    static MasterArmPanel* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
+        if (!instance) {
+            instance = new MasterArmPanel(startIndex, ledArray);
+        }
+        return instance;
+    }
+
+    // Implementation of pure virtual methods
+    virtual int getStartIndex() const override { return panelStartIndex; }
+    virtual int getLedCount() const override { return ledCount; }
+    virtual const LedInfo* getLedIndicesTable() const override { return masterArmLedIndicesTable; }
+    virtual CRGB* getLedArray() const override { return leds; }
 
 private:
-    // Constructor now just needs to set up the panel-specific data
-    MasterArmPanel(int startIndex, CRGB* ledArray) : Panel(startIndex, ledArray) {
-        ledIndicesTable = masterArmLedIndicesTable;
+    // Private constructor
+    MasterArmPanel(int startIndex, CRGB* ledArray) {
+        panelStartIndex = startIndex;
+        leds = ledArray;
         ledCount = MASTER_ARM_LED_COUNT;
     }
 
+
     // Static callback functions for DCS-BIOS
     static void onInstrIntLtChange(unsigned int newValue) {
-        instance->setBacklights(newValue);
+        if (instance) instance->setBacklights(newValue);
     }
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    
 
     static void onMcReadyChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_READY, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_READY, newValue ? COLOR_YELLOW : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer mcReadyBuffer{0x740c, 0x8000, 15, onMcReadyChange};
 
     static void onMcDischChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_DISCH, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_DISCH, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer mcDischBuffer{0x740c, 0x4000, 14, onMcDischChange};
 
     static void onMasterModeAgLtChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_AG, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AG, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer masterModeAgLtBuffer{0x740c, 0x0400, 10, onMasterModeAgLtChange};
 
     static void onMasterModeAaLtChange(unsigned int newValue) {
-        instance->setIndicatorColor(LED_AA, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AA, newValue ? COLOR_GREEN : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer masterModeAaLtBuffer{0x740c, 0x0200, 9, onMasterModeAaLtChange};
 
-    // Configuration data
-    int panelStartIndex;                            // The starting index of the panel's LEDs
-    int ledCount;                                   // Number of LEDs in the panel
+    // Instance data
+    static MasterArmPanel* instance;
+    int panelStartIndex;
+    int ledCount;
+    CRGB* leds;
 };
+
+// Initialize static instance pointer
+MasterArmPanel* MasterArmPanel::instance = nullptr;
 
 #endif

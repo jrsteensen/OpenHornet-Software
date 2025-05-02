@@ -80,49 +80,28 @@ struct LedInfo {
  *         - Panel-specific DCS-BIOS callback methods
  *         The specific panel classes then may use the static methods herein to set the backlight and indicator colors.
  *********************************************************************************************************************/
-template<typename T>
 class Panel {
 public:
-    /******************************************************************************************************************
-     * @brief Get the singleton instance, or create it if it doesn't exist.
-     * @param startIndex The starting index of the panel's LEDs
-     * @param ledArray Pointer to the LED array
-     * @return Pointer to the singleton instance
-     *****************************************************************************************************************/
-    static T* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
-        if (!instance) {
-            instance = new T(startIndex, ledArray);
-        }
-        return instance;
-    }
-
-    /******************************************************************************************************************
-     * @brief Virtual getter methods that the specific panel classes need to implement.
-     *****************************************************************************************************************/
-    virtual int getStartIndex() const { return panelStartIndex; }
-    virtual int getLedCount() const { return ledCount; }
+    // Pure virtual methods that derived classes must implement
+    virtual int getStartIndex() const = 0;
+    virtual int getLedCount() const = 0;
+    virtual const LedInfo* getLedIndicesTable() const = 0;
+    virtual CRGB* getLedArray() const = 0;
 
 protected:
-    // Debouncing variables
-    static const unsigned long DEBOUNCE_DELAY = 50;    // 50ms debounce delay
-    uint8_t last_brightness = 255;
-    unsigned long lastInstrDebounceTime = 0;
+    // Protected constructor to prevent direct instantiation
+    Panel() {}
 
-    // Protected constructor to enforce singleton pattern
-    Panel(int startIndex, CRGB* ledArray) {
-        panelStartIndex = startIndex;
-        leds = ledArray;
-    }
-
-    /******************************************************************************************************************
-     * @brief Protected methods that specific panels inherit to control their LEDs.
-     * @details These methods use the panel's own data members (leds, ledIndicesTable, etc.)
-     *****************************************************************************************************************/
+    // Protected methods that derived classes can use
     void setBacklights(int newValue) {
         // Safety checks
-        if (!leds || !ledIndicesTable) return;
+        if (!getLedArray() || !getLedIndicesTable()) return;
 
         // Add time-based debouncing
+        static unsigned long lastInstrDebounceTime = 0;
+        static const unsigned long DEBOUNCE_DELAY = 50;    // 50ms debounce delay
+        static uint8_t last_brightness = 255;
+
         unsigned long currentMillis = millis();
         if (currentMillis - lastInstrDebounceTime < DEBOUNCE_DELAY) return;
         lastInstrDebounceTime = currentMillis;
@@ -139,10 +118,10 @@ protected:
         // Read LED info from PROGMEM for each LED, check LED type is BACKLIGHT and set color
         for (int i = 0; i < getLedCount(); i++) {
             LedInfo info;
-            memcpy_P(&info, &ledIndicesTable[i], sizeof(LedInfo));
+            memcpy_P(&info, &getLedIndicesTable()[i], sizeof(LedInfo));
             uint16_t ledIndex = info.index + getStartIndex();
             if (info.type == LED_BACKLIGHT) {
-                leds[ledIndex] = color;
+                getLedArray()[ledIndex] = color;
             }
         }
         FastLED.show();
@@ -150,32 +129,19 @@ protected:
 
     void setIndicatorColor(LedType type, const CRGB& color) {
         // Safety checks
-        if (!leds || !ledIndicesTable) return;
+        if (!getLedArray() || !getLedIndicesTable()) return;
 
         // Read LED info from PROGMEM for each LED, check LED type is specified type and set color
         for (int i = 0; i < getLedCount(); i++) {
             LedInfo info;
-            memcpy_P(&info, &ledIndicesTable[i], sizeof(LedInfo));
+            memcpy_P(&info, &getLedIndicesTable()[i], sizeof(LedInfo));
             uint16_t ledIndex = info.index + getStartIndex();
             if (info.type == type) {
-                leds[ledIndex] = color;
+                getLedArray()[ledIndex] = color;
             }
         }
         FastLED.show();
     }
-
-    // Protected data members that specific panels need to set
-    CRGB* leds;                              // The array of LEDs representing the strip the panel is a member of
-    const LedInfo* ledIndicesTable;          // The table with LED indices and types (now const since it's in PROGMEM)
-    int panelStartIndex;                     // The starting index of the panel's LEDs
-    int ledCount;                            // Number of LEDs in the panel
-
-protected:
-    static T* instance;  // Singleton instance
 };
-
-// Initialize the static instance pointer
-template<typename T>
-T* Panel<T>::instance = nullptr;
 
 #endif 

@@ -56,19 +56,43 @@ const LedInfo hudRev3LedIndicesTable[HUD_PANEL_REV3_LED_COUNT] PROGMEM = {
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class HudPanelRev3 : public Panel<HudPanelRev3> {
+class HudPanelRev3 : public Panel {
+public:
+    static HudPanelRev3* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
+        if (!instance) {
+            instance = new HudPanelRev3(startIndex, ledArray);
+        }
+        return instance;
+    }
+
+    // Implementation of pure virtual methods
+    virtual int getStartIndex() const override { return panelStartIndex; }
+    virtual int getLedCount() const override { return ledCount; }
+    virtual const LedInfo* getLedIndicesTable() const override { return hudRev3LedIndicesTable; }
+    virtual CRGB* getLedArray() const override { return leds; }
+
 private:
-    // Constructor now just needs to set up the panel-specific data
-    HudPanelRev3(int startIndex, CRGB* ledArray) : Panel(startIndex, ledArray) {
-        ledIndicesTable = hudRev3LedIndicesTable;
+    // Private constructor
+    HudPanelRev3(int startIndex, CRGB* ledArray) {
+        panelStartIndex = startIndex;
+        leds = ledArray;
         ledCount = HUD_PANEL_REV3_LED_COUNT;
     }
 
     // Static callback functions for DCS-BIOS
     static void onInstrIntLtChange(unsigned int newValue) {
-        instance->setBacklights(newValue);
+        if (instance) instance->setBacklights(newValue);
     }
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+
+    // Instance data
+    static HudPanelRev3* instance;
+    int panelStartIndex;
+    int ledCount;
+    CRGB* leds;
 };
+
+// Initialize static instance pointer
+HudPanelRev3* HudPanelRev3::instance = nullptr;
 
 #endif 
