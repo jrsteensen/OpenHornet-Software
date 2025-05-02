@@ -83,18 +83,13 @@ public:
         return instance;
     }
 
-    // Implementation of pure virtual methods
-    virtual int getStartIndex() const override { return panelStartIndex; }
-    virtual int getLedCount() const override { return ledCount; }
-    virtual const LedInfo* getLedIndicesTable() const override { return lEwiLedIndicesTable; }
-    virtual CRGB* getLedArray() const override { return leds; }
-
 private:
     // Private constructor
     EwiPanel(int startIndex, CRGB* ledArray) {
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = L_EWI_LED_COUNT;
+        ledIndicesTable = lEwiLedIndicesTable;
     }
 
     // Static callback functions for DCS-BIOS
@@ -170,9 +165,6 @@ private:
 
     // Instance data
     static EwiPanel* instance;
-    int panelStartIndex;
-    int ledCount;
-    CRGB* leds;
 };
 
 // Initialize static instance pointer

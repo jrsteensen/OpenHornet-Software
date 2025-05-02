@@ -63,18 +63,13 @@ public:
         return instance;
     }
 
-    // Implementation of pure virtual methods
-    virtual int getStartIndex() const override { return panelStartIndex; }
-    virtual int getLedCount() const override { return ledCount; }
-    virtual const LedInfo* getLedIndicesTable() const override { return hudRev4LedIndicesTable; }
-    virtual CRGB* getLedArray() const override { return leds; }
-
 private:
     // Private constructor
     HudPanelRev4(int startIndex, CRGB* ledArray) {
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = HUD_PANEL_REV4_LED_COUNT;
+        ledIndicesTable = hudRev4LedIndicesTable;
     }
 
     // Static callback functions for DCS-BIOS
@@ -85,9 +80,6 @@ private:
 
     // Instance data
     static HudPanelRev4* instance;
-    int panelStartIndex;
-    int ledCount;
-    CRGB* leds;
 };
 
 // Initialize static instance pointer

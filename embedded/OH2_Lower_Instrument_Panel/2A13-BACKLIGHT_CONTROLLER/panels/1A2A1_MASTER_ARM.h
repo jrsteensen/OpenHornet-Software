@@ -84,20 +84,14 @@ public:
         return instance;
     }
 
-    // Implementation of pure virtual methods
-    virtual int getStartIndex() const override { return panelStartIndex; }
-    virtual int getLedCount() const override { return ledCount; }
-    virtual const LedInfo* getLedIndicesTable() const override { return masterArmLedIndicesTable; }
-    virtual CRGB* getLedArray() const override { return leds; }
-
 private:
     // Private constructor
     MasterArmPanel(int startIndex, CRGB* ledArray) {
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = MASTER_ARM_LED_COUNT;
+        ledIndicesTable = masterArmLedIndicesTable;
     }
-
 
     // Static callback functions for DCS-BIOS
     static void onInstrIntLtChange(unsigned int newValue) {
@@ -105,7 +99,6 @@ private:
     }
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
     
-
     static void onMcReadyChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_READY, newValue ? COLOR_YELLOW : COLOR_BLACK);
     }
@@ -128,9 +121,6 @@ private:
 
     // Instance data
     static MasterArmPanel* instance;
-    int panelStartIndex;
-    int ledCount;
-    CRGB* leds;
 };
 
 // Initialize static instance pointer

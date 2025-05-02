@@ -89,18 +89,13 @@ public:
         return instance;
     }
 
-    // Implementation of pure virtual methods
-    virtual int getStartIndex() const override { return panelStartIndex; }
-    virtual int getLedCount() const override { return ledCount; }
-    virtual const LedInfo* getLedIndicesTable() const override { return spnRcvyLedIndicesTable; }
-    virtual CRGB* getLedArray() const override { return leds; }
-
 private:
     // Private constructor
     SpnRcvyPanel(int startIndex, CRGB* ledArray) {
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = SPN_RCVY_LED_COUNT;
+        ledIndicesTable = spnRcvyLedIndicesTable;
     }
 
     // Static callback functions for DCS-BIOS
@@ -116,9 +111,6 @@ private:
 
     // Instance data
     static SpnRcvyPanel* instance;
-    int panelStartIndex;
-    int ledCount;
-    CRGB* leds;
 };
 
 // Initialize static instance pointer

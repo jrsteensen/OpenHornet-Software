@@ -23,7 +23,7 @@
 #include <Arduino.h>
 #include <string.h>
 #include "FastLED.h"
-#include <avr/pgmspace.h>
+#include <avr/pgmspace.h> 
 
 /**********************************************************************************************************************
  * @brief LED type enumeration: lists all different LED types; LED info structure: bundles the index and type of an LED
@@ -83,16 +83,22 @@ struct LedInfo {
 class Panel {
 public:
     // Pure virtual methods that derived classes must implement
-    virtual int getStartIndex() const = 0;
-    virtual int getLedCount() const = 0;
-    virtual const LedInfo* getLedIndicesTable() const = 0;
-    virtual CRGB* getLedArray() const = 0;
+    virtual int getStartIndex() const { return panelStartIndex; }
+    virtual int getLedCount() const { return ledCount; }
+    virtual const LedInfo* getLedIndicesTable() const { return ledIndicesTable; }
+    virtual CRGB* getLedArray() const { return leds; }
 
 protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
         last_brightness = 255;
     }
+
+    // Protected member variables that derived classes must set
+    int panelStartIndex;
+    int ledCount;
+    const LedInfo* ledIndicesTable;
+    CRGB* leds;
 
     // Instance variable for tracking brightness
     uint8_t last_brightness;
