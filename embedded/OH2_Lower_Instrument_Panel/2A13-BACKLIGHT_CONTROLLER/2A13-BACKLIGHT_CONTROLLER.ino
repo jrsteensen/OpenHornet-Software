@@ -10,7 +10,7 @@
  *   ----------------------------------------------------------------------------------
  *   Copyright 2016-2024 OpenHornet
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");d:\OpenHornet-Software\embedded\OH2_Lower_Instrument_Panel\2A13-BACKLIGHT_CONTROLLER\1A6A1_SPN_RCVY_BL.h
+ *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
@@ -31,111 +31,129 @@
  **************************************************************************************/
 /**
  * @file 2A13-BACKLIGHT_CONTROLLER.ino
- * @author Arribe
- * @date 03.25.2024
- * @version u.0.0.1 (untested)
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
- * @brief Controls the backlighting (and some annunciators) for the entire pit.
- *
- * @Ttodo
- *
+ * @author Arribe, Ulukaii, Higgins
+ * @date May 01, 2025
+ * @version V 0.1 (tested)
+ * @warning This sketch is based on OH-Interconnect. You may need to adapt it to your actual wiring and panel versions.
+ * @brief Controls backlights & most annunciators of the cockpit. Coded for Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
  * @details
+ * **Wiring Diagram:** 
  * 
- *  * **Reference Designator:** 2A13
- *  * **Intended Board:** ABSIS BACKLIGHT CONTROLLER
- *  * **RS485 Bus Address:** NA
- * 
- *  * **Intended Board:**
- * ABSIS BACKLIGHT CONTROLLER
- * 
- *  * ** Processor **
- *  Arduino Mega + Backlight Shield
- * 
- * **Wiring diagram:**
- * 
- * PIN | Function
- * --- | ---
- * 13  | J2 LIP_BL_CH1
- * 12  | J3 LIP_BL_CH2
- * 11  | J4 UIP_BL_CH1
- * 10  | J5 UIP_BL_CH2
- * 9   | J6 LC_BL_CH1
- * 8   | J7 LC_BL_CH2
- * 7   | J8 RC_BL_CH1
- * 6   | J9 RC_BL_CH2
- * 5   | J10 NC
- * 4   | J11 NC
- * 24  | J14 SIMPWR_BLM_A
- * 23  | J14 SIMPWR_BLM_B
- * 22  | J14 SIMPWR_PUSH
- * SDA | TEMP SNSR
- * SCL | TEMP SNSR
- * 2   | J12 & J13 Cooling fan headers.
+ * | Pin | Function                      |
+ * |-----|-------------------------------|
+ * | 13  | J2 LIP_CH1                    |
+ * | 12  | J3 LIP_CH2                    |
+ * | 11  | J4 UIP_CH1                    |
+ * | 10  | J5 UIP_CH2                    |
+ * | 9   | J6 LC_CH1                     |
+ * | 8   | J7 LC_CH2                     |
+ * | 7   | J8 RC_CH1                     |
+ * | 6   | J9 RC_CH2                     |
+ * | 5   | J10 NC                        |
+ * | 4   | J11 NC                        |
+ * | 24  | J14 SIMPWR_BLM_A              |
+ * | 23  | J14 SIMPWR_BLM_B              |
+ * | 22  | J14 SIMPWR_BLM_PUSH           |
+ * | SDA | TEMP SNSR                     |
+ * | SCL | TEMP SNSR                     |
+ * | 2   | J12 & J13 Cooling fan headers |
  */
 
-/**
- * Check if we're on a Mega328 or Mega2560 and define the correct
- * serial interface
- * 
- */
+/**********************************************************************************************************************
+ * @brief Preprocessor directives 
+ * @remark In particular:
+ *         1. Check if we're on a Mega328 or Mega2560 and choose serial interface (Pro Micro: Default)
+ *         2. Include external libraries FastLED and DcsBios
+ *         3. Include the abstract Panel base class and other panel classes
+ *********************************************************************************************************************/
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
+  #define DCSBIOS_IRQ_SERIAL
 #else
-#define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+  #define DCSBIOS_DEFAULT_SERIAL
 #endif
-
 #ifdef __AVR__
-#include <avr/power.h>
+  #include <avr/power.h>
 #endif
-
+#include "FastLED.h"
 #include "DcsBios.h"
-#include "Adafruit_NeoPixel.h"
+#include "panels/Panel.h"  
+#include "panels/1A2A1_MASTER_ARM.h"
+#include "panels/1A4_L_EWI.h"
+#include "panels/1A7A1_HUD_PANEL_REV4.h"            //Make sure to uncomment the correct HUD panel header file
+#include "panels/1A7A1_HUD_PANEL_REV3.h"           //Make sure to uncomment the correct HUD panel header file
+#include "panels/1A5_R_EWI.h"
+#include "panels/1A6A1_SPN_RCVY.h"
+#include "panels/Colors.h"
 
+/********************************************************************************************************************
+ * @brief Set up global variables: set up pins according to (YOUR!) wiring; define colours; set up FastLED objects.
+ * @remark The written number of LEDs per strip might exceed the actual number. This can be ignored.
+ ********************************************************************************************************************/
+const uint8_t pin_LIP_CH1  =     13;
+const uint8_t pin_LIP_CH2  =     12;
+const uint8_t pin_UIP_CH1  =     11;
+const uint8_t pin_UIP_CH2  =      9;              // Ulukaii deviation. Standard is pin 10
+const uint8_t pin_LC_CH1   =     10;             // Ulukaii deviation. Standard is pin 9
+const uint8_t pin_LC_CH2   =      8;
+const uint8_t pin_RC_CH1   =      7;
+const uint8_t pin_RC_CH2   =      6;
+const uint8_t pin_CH9      =      5;
+const uint8_t pin_CH10     =      4;
+const uint8_t pin_EncoderSw = 24;              // Ulukaii deviation. Standard is 22
+const uint8_t pin_EncoderA  = 22;              // Ulukaii deviation. Standard is 24
+const uint8_t pin_EncoderB  = 23;                            
 
-// Define pins for DCS-BIOS per interconnect diagram, and Bakclight control kicad sketch.
-#define LIP_BL_CH1 13  ///< J2 LIP_BL_CH1
-#define LIP_BL_CH2 12  ///< J3 LIP_BL_CH2
-#define UIP_BL_CH1 11  ///< J4 UIP_BL_CH1
-#define UIP_BL_CH2 10  ///< J5 UIP_BL_CH2
-#define LC_BL_CH1 9    ///< J6 LC_BL_CH1
-#define LC_BL_CH2 8    ///< J7 LC_BL_CH2
-#define RC_BL_CH1 7    ///< J8 RC_BL_CH1
-#define RC_BL_CH2 6    ///< J9 RC_BL_CH2
-//#define 5   ///< J10 NC
-//#define 4   ///< J11 NC
-#define SIMPWR_BLM_A 24  ///< J14 SIMPWR_BLM_A
-#define SIMPWR_BLM_B 23  ///< J14 SIMPWR_BLM_B
-#define SIMPWR_PUSH 22   ///< J14 SIMPWR_PUSH
-//#define SDA | TEMP SNSR
-//#define SCL | TEMP SNSR
-#define COOLING_FANS 2  ///< J12 & J13 Cooling fan headers.
+// Define arrays for each channel. The number in brackets shall be minimum the expected number of LEDs on the channel
+CRGB LIP_1[100];
+CRGB LIP_2[120];
+CRGB UIP_1[210];
+CRGB LC_1[200];
+CRGB LC_2[233];
+CRGB RC_1[250];
+CRGB RC_2[380];
 
-#define BRIGHTNESS 50  ///< Brightness value used by the panels.
-
-#include "2A13-BACKLIGHT_CONTROLLER.h"
-
-/**
-* Arduino Setup Function
-*
-* Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
-*/
+/********************************************************************************************************************
+ * @brief Standard Arduino setup and loop functions.
+ * @remark Setup runs once, loop runs continuously.
+ ********************************************************************************************************************/
 void setup() {
+  // Initialize FastLED
+  FastLED.addLeds<NEOPIXEL, pin_LIP_CH1>(LIP_1, 100);
+  FastLED.addLeds<NEOPIXEL, pin_LIP_CH2>(LIP_2, 120);
+  FastLED.addLeds<NEOPIXEL, pin_UIP_CH1>(UIP_1, 210);
+  FastLED.addLeds<NEOPIXEL, pin_LC_CH1>(LC_1, 200);
+  FastLED.addLeds<NEOPIXEL, pin_LC_CH2>(LC_2, 233);
+  FastLED.addLeds<NEOPIXEL, pin_RC_CH1>(RC_1, 250);
+  FastLED.addLeds<NEOPIXEL, pin_RC_CH2>(RC_2, 380);
+
+  // Initialize panels in order on UIP_1
+  int currentIndex = 0;
+  
+    // 1. Master Arm Panel (29 LEDs)
+    MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += masterArmPanel->getLedCount();
+    
+    // 2. Left EWI Panel (30 LEDs)
+    EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += ewiPanel->getLedCount();
+    
+    // 3. HUD Panel (50 LEDs)
+    //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
+    //currentIndex += hudPanel->getLedCount();
+    
+    // 4. Right EWI Panel (30 LEDs)
+    REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += rEwiPanel->getLedCount();
+    
+    // 5. Spin Recovery Panel (63 LEDs)
+    SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += spnRcvyPanel->getLedCount();
 
   // Run DCS Bios setup function
   DcsBios::setup();
-  OpenHornet::setup();
 }
 
-/**
-* Arduino Loop Function
-*
-* Arduino standard Loop Function. Code who should be executed
-* over and over in a loop, belongs in this function.
-*/
 void loop() {
-
   //Run DCS Bios loop function
   DcsBios::loop();
 }

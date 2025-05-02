@@ -1,0 +1,109 @@
+/**************************************************************************************
+ *        ____                   _    _                       _
+ *       / __ \                 | |  | |                     | |
+ *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
+ *      | |  | | '_ \ / _ \ '_ \|  __  |/ _ \| '__| '_ \ / _ \ __|
+ *      | |__| | |_) |  __/ | | | |  | | (_) | |  | | | |  __/ |_
+ *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
+ *             | |
+ *             |_|
+ *   ----------------------------------------------------------------------------------
+ *   Copyright 2016-2024 OpenHornet
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *   ----------------------------------------------------------------------------------
+ *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
+ *   GitHub repository is released under the Creative Commons Attribution -
+ *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
+ *   ----------------------------------------------------------------------------------
+ *   This Project uses Doxygen as a documentation generator.
+ *   Please use Doxygen capable comments.
+ **************************************************************************************/
+/**
+ * @file 1A6A1_SPN_RCVY_BL.h
+ * @author Arribe
+ * @date 03.25.2024
+ * @version u.0.0.1 (untested)
+ * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware.
+ * @brief Implements backlighting and indicators for the Spin Recovery panel.
+*/
+
+#ifndef __SPN_RCVY_BL_H
+#define __SPN_RCVY_BL_H
+
+#include "DcsBios.h"
+#include "Panel.h"
+#include "FastLED.h"
+#include "Colors.h"
+#include <avr/pgmspace.h>
+
+
+/********************************************************************************************************************
+ * @brief   This table defines the panel's LEDs.
+ * @details "Type" in this context refers to the LED type enum in the Panel.h file (enum used for memory efficiency).
+ * @remark  This table is stored in PROGMEM for memory efficiency.
+ ********************************************************************************************************************/
+const int SPN_RCVY_LED_COUNT = 63;  // Total number of LEDs in the panel
+const LedInfo spnRcvyLedIndicesTable[SPN_RCVY_LED_COUNT] PROGMEM = {
+    {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT}, {3, LED_BACKLIGHT}, {4, LED_BACKLIGHT}, 
+    {5, LED_BACKLIGHT}, {6, LED_BACKLIGHT}, {7, LED_BACKLIGHT}, {8, LED_BACKLIGHT}, {9, LED_BACKLIGHT},
+    {10, LED_BACKLIGHT}, {11, LED_BACKLIGHT}, {12, LED_BACKLIGHT}, {13, LED_BACKLIGHT}, {14, LED_BACKLIGHT}, 
+    {15, LED_BACKLIGHT}, {16, LED_BACKLIGHT}, {17, LED_BACKLIGHT}, {18, LED_BACKLIGHT}, {19, LED_BACKLIGHT},
+    {20, LED_BACKLIGHT}, {21, LED_BACKLIGHT}, {22, LED_BACKLIGHT}, {23, LED_BACKLIGHT}, {24, LED_BACKLIGHT}, 
+    {25, LED_BACKLIGHT}, {26, LED_BACKLIGHT}, {27, LED_BACKLIGHT}, {28, LED_BACKLIGHT}, {29, LED_SPIN},
+    {30, LED_BACKLIGHT}, {31, LED_BACKLIGHT}, {32, LED_BACKLIGHT}, {33, LED_BACKLIGHT}, {34, LED_BACKLIGHT}, 
+    {35, LED_BACKLIGHT}, {36, LED_SPIN}, {37, LED_BACKLIGHT}, {38, LED_BACKLIGHT}, {39, LED_BACKLIGHT},
+    {40, LED_BACKLIGHT}, {41, LED_BACKLIGHT}, {42, LED_BACKLIGHT}, {43, LED_BACKLIGHT}, {44, LED_BACKLIGHT}, 
+    {45, LED_BACKLIGHT}, {46, LED_BACKLIGHT}, {47, LED_BACKLIGHT}, {48, LED_BACKLIGHT}, {49, LED_BACKLIGHT},
+    {50, LED_BACKLIGHT}, {51, LED_BACKLIGHT}, {52, LED_BACKLIGHT}, {53, LED_BACKLIGHT}, {54, LED_BACKLIGHT}, 
+    {55, LED_BACKLIGHT}, {56, LED_BACKLIGHT}, {57, LED_BACKLIGHT}, {58, LED_BACKLIGHT}, {59, LED_BACKLIGHT},
+    {60, LED_BACKLIGHT}, {61, LED_BACKLIGHT}, {62, LED_BACKLIGHT}
+};
+
+/********************************************************************************************************************
+ * @brief   Spin Recovery Panel class
+ * @details Backlighting and indicator controller for the Spin Recovery panel.
+ *          Total LEDs: 63
+ *          Backlight LEDs: 61 (all except positions 29 and 36)
+ *          Indicator LEDs: 2 (SPIN: 29, SPIN2: 36)
+ * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
+ *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
+ ********************************************************************************************************************/
+class SpnRcvyPanel : public Panel<SpnRcvyPanel> {
+public:
+    // No need for instance declaration or getInstance() - they're now in the base class
+
+private:
+    // Constructor now just needs to set up the panel-specific data
+    SpnRcvyPanel(int startIndex, CRGB* ledArray) : Panel(startIndex, ledArray) {
+        ledIndicesTable = spnRcvyLedIndicesTable;
+        ledCount = SPN_RCVY_LED_COUNT;
+    }
+
+    // Static callback functions for DCS-BIOS
+    static void onInstrIntLtChange(unsigned int newValue) {
+        instance->setBacklights(newValue);
+    }
+    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+
+    static void onSpinLtChange(unsigned int newValue) {
+        instance->setIndicatorColor(LED_SPIN, newValue ? COLOR_RED : COLOR_BLACK);
+    }
+    DcsBios::IntegerBuffer spinLtBuffer{0x742a, 0x0800, 11, onSpinLtChange};
+
+    // Configuration data
+    int panelStartIndex;                            // The starting index of the panel's LEDs
+};
+
+#endif
