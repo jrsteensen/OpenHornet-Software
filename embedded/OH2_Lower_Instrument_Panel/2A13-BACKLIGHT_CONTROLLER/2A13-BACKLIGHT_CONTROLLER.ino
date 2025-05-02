@@ -126,6 +126,16 @@ void setup() {
   FastLED.addLeds<WS2812B, pin_RC_CH1, GRB>(RC_1, 250);
   FastLED.addLeds<WS2812B, pin_RC_CH2, GRB>(RC_2, 380);
 
+  // Initialize all LED strips to BLACK
+  fill_solid(LIP_1, 100, COLOR_BLACK);
+  fill_solid(LIP_2, 120, COLOR_BLACK);
+  fill_solid(UIP_1, 210, COLOR_BLACK);
+  fill_solid(LC_1, 200, COLOR_BLACK);
+  fill_solid(LC_2, 233, COLOR_BLACK);
+  fill_solid(RC_1, 250, COLOR_BLACK);
+  fill_solid(RC_2, 380, COLOR_BLACK);
+  FastLED.show();
+
   // Initialize panels in order on UIP_1
   int currentIndex = 0;
   

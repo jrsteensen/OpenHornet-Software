@@ -90,21 +90,17 @@ public:
 
 protected:
     // Protected constructor to prevent direct instantiation
-    Panel() {}
+    Panel() {
+        last_brightness = 255;
+    }
+
+    // Instance variable for tracking brightness
+    uint8_t last_brightness;
 
     // Protected methods that derived classes can use
     void setBacklights(int newValue) {
         // Safety checks
         if (!getLedArray() || !getLedIndicesTable()) return;
-
-        // Add time-based debouncing
-        static unsigned long lastInstrDebounceTime = 0;
-        static const unsigned long DEBOUNCE_DELAY = 50;    // 50ms debounce delay
-        static uint8_t last_brightness = 255;
-
-        unsigned long currentMillis = millis();
-        if (currentMillis - lastInstrDebounceTime < DEBOUNCE_DELAY) return;
-        lastInstrDebounceTime = currentMillis;
 
         // Determine the brightness value
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
