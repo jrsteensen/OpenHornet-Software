@@ -26,11 +26,11 @@
 #include <avr/pgmspace.h> 
 
 /**********************************************************************************************************************
- * @brief   LED type enumeration: lists all different LED types; LED info structure: bundles the index and type of an LED
- * @details Defines the different types of LEDs in a panel.
+ * @brief   LED role enumeration: lists all different LED roles; LED info structure: bundles properties of one LED
+ * @details Defines the different roles of LEDs in a panel.
  *          This enum is used for memory efficiency (Enum pointers only need 1 byte)
  *********************************************************************************************************************/
-enum LedType {
+enum LedRole {
     LED_BACKLIGHT,
     LED_READY,
     LED_DISCH,
@@ -68,9 +68,13 @@ enum LedType {
     LED_SPIN
 };
 
-struct LedInfo {
-    uint16_t index;     // Local index (will be added to panel's start index)
-    LedType type;       // Type of LED as enum
+// Maximum length for legend text (including null terminator)
+#define MAX_LEN 16
+
+struct Led {        
+    uint16_t index;               // Local position of the LED on the panel, starts at 0
+    LedRole  role;                // Role of LED as the enum defined above
+    char     text[MAX_LEN];       // Free text to associate LED with legend text on the panel
 };
 
 /**********************************************************************************************************************
@@ -84,8 +88,8 @@ public:
     // Pure virtual methods that inheriting classes must implement
     virtual int getStartIndex() const { return panelStartIndex; }
     virtual int getLedCount() const { return ledCount; }
-    virtual const LedInfo* getLedTable() const { return ledTable; }
-    virtual CRGB* getLedArray() const { return leds; }
+    virtual const Led* getLedTable() const { return ledTable; }
+    virtual CRGB* getLedStrip() const { return ledStrip; }
 
 protected:
     // Protected constructor to prevent direct instantiation
@@ -96,8 +100,8 @@ protected:
     // Protected member variables that inheriting classes must set
     int panelStartIndex;
     int ledCount;
-    const LedInfo* ledTable;
-    CRGB* leds;
+    const Led* ledTable;
+    CRGB* ledStrip;
 
     // Instance variable for tracking brightness
     uint8_t last_brightness;
@@ -105,7 +109,7 @@ protected:
     // Protected methods that derived classes can use
     void setBacklights(int newValue) {
         // Safety checks
-        if (!getLedArray() || !getLedTable()) return;
+        if (!getLedStrip() || !getLedTable()) return;
 
         // Determine the brightness value
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
@@ -116,29 +120,29 @@ protected:
 
         // Set the LED colors
         CRGB color = CRGB(0, 100 * brightness / 255, 0); 
-        // Read LED info from PROGMEM for each LED, check LED type is BACKLIGHT and set color
+        // Read LED info from PROGMEM for each LED, check LED role is BACKLIGHT and set color
         for (int i = 0; i < getLedCount(); i++) {
-            LedInfo info;
-            memcpy_P(&info, &getLedTable()[i], sizeof(LedInfo));
-            uint16_t ledIndex = info.index + getStartIndex();
-            if (info.type == LED_BACKLIGHT) {
-                getLedArray()[ledIndex] = color;
+            Led led;
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));
+            uint16_t ledIndex = led.index + getStartIndex();
+            if (led.role == LED_BACKLIGHT) {
+                getLedStrip()[ledIndex] = color;
             }
         }
         FastLED.show();
     }
 
-    void setIndicatorColor(LedType type, const CRGB& color) {
+    void setIndicatorColor(LedRole role, const CRGB& color) {
         // Safety checks
-        if (!getLedArray() || !getLedTable()) return;
+        if (!getLedStrip() || !getLedTable()) return;
 
-        // Read LED info from PROGMEM for each LED, check LED type is specified type and set color
+        // Read LED info from PROGMEM for each LED, check LED role is specified role and set color
         for (int i = 0; i < getLedCount(); i++) {
-            LedInfo info;
-            memcpy_P(&info, &getLedTable()[i], sizeof(LedInfo));
-            uint16_t ledIndex = info.index + getStartIndex();
-            if (info.type == type) {
-                getLedArray()[ledIndex] = color;
+            Led led;
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));
+            uint16_t ledIndex = led.index + getStartIndex();
+            if (led.role == role) {
+                getLedStrip()[ledIndex] = color;
             }
         }
         FastLED.show();

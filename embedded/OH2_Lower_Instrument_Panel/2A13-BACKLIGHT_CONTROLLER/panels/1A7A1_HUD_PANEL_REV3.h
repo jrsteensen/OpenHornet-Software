@@ -29,7 +29,7 @@
 
 /********************************************************************************************************************
  * @brief   This table defines the panel's LEDs.
- * @details "Type" in this context refers to the LED type enum in the Panel.h file (enum used for memory efficiency).
+ * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
 const int HUD_PANEL_REV3_LED_COUNT = 56;  // Total number of LEDs in the panel (Revision 3)
