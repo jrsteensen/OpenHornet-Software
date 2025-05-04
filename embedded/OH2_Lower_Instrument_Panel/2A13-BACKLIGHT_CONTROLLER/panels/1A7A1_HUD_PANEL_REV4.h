@@ -11,8 +11,8 @@
  *  
  * @file 1A7A1_HUD_PANEL_REV4.h
  * @author Ulukaii, Arribe, Higgins
- * @date 04.30.2025
- * @version t 0.3.1
+ * @date 04.05.2025
+ * @version u 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for the HUD panel (Revision 4).
  *********************************************************************************************************************/
@@ -33,7 +33,7 @@
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
 const int HUD_PANEL_REV4_LED_COUNT = 50;  // Total number of LEDs in the panel (Revision 4)
-const LedInfo hudRev4LedIndicesTable[HUD_PANEL_REV4_LED_COUNT] PROGMEM = {
+const LedInfo hudRev4LedTable[HUD_PANEL_REV4_LED_COUNT] PROGMEM = {
     {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT}, {3, LED_BACKLIGHT}, {4, LED_BACKLIGHT}, 
     {5, LED_BACKLIGHT}, {6, LED_BACKLIGHT}, {7, LED_BACKLIGHT}, {8, LED_BACKLIGHT}, {9, LED_BACKLIGHT},
     {10, LED_BACKLIGHT}, {11, LED_BACKLIGHT}, {12, LED_BACKLIGHT}, {13, LED_BACKLIGHT}, {14, LED_BACKLIGHT}, 
@@ -69,7 +69,7 @@ private:
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = HUD_PANEL_REV4_LED_COUNT;
-        ledIndicesTable = hudRev4LedIndicesTable;
+        ledTable = hudRev4LedTable;
     }
 
     // Static callback functions for DCS-BIOS

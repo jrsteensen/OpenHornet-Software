@@ -80,13 +80,13 @@
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
 #include "panels/1A7A1_HUD_PANEL_REV4.h"            //Make sure to uncomment the correct HUD panel header file
-#include "panels/1A7A1_HUD_PANEL_REV3.h"           //Make sure to uncomment the correct HUD panel header file
+#include "panels/1A7A1_HUD_PANEL_REV3.h"            //Make sure to uncomment the correct HUD panel header file
 #include "panels/1A5_R_EWI.h"
 #include "panels/1A6A1_SPN_RCVY.h"
 #include "panels/Colors.h"
 
 /********************************************************************************************************************
- * @brief Set up global variables: set up pins according to (YOUR!) wiring; define colours; set up FastLED objects.
+ * @brief Set up global variables: set up pins according to (YOUR!) wiring; set up FastLED arrays.
  * @remark The written number of LEDs per strip might exceed the actual number. This can be ignored.
  ********************************************************************************************************************/
 const uint8_t pin_LIP_CH1  =     13;
@@ -103,40 +103,49 @@ const uint8_t pin_EncoderSw = 24;              // Ulukaii deviation. Standard is
 const uint8_t pin_EncoderA  = 22;              // Ulukaii deviation. Standard is 24
 const uint8_t pin_EncoderB  = 23;                            
 
-// Define arrays for each channel. The number in brackets shall be minimum the expected number of LEDs on the channel
-CRGB LIP_1[100];
-CRGB LIP_2[120];
-CRGB UIP_1[210];
-CRGB LC_1[200];
-CRGB LC_2[233];
-CRGB RC_1[250];
-CRGB RC_2[380];
+// LED counts per channel
+const int LED_COUNT_LIP_1 = 100;
+const int LED_COUNT_LIP_2 = 120;
+const int LED_COUNT_UIP_1 = 210;
+const int LED_COUNT_LC_1 = 200;
+const int LED_COUNT_LC_2 = 233;
+const int LED_COUNT_RC_1 = 250;
+const int LED_COUNT_RC_2 = 380;
+
+// Define arrays for each channel using the named constants
+CRGB LIP_1[LED_COUNT_LIP_1];
+CRGB LIP_2[LED_COUNT_LIP_2];
+CRGB UIP_1[LED_COUNT_UIP_1];
+CRGB LC_1[LED_COUNT_LC_1];
+CRGB LC_2[LED_COUNT_LC_2];
+CRGB RC_1[LED_COUNT_RC_1];
+CRGB RC_2[LED_COUNT_RC_2];
 
 /********************************************************************************************************************
  * @brief Standard Arduino setup and loop functions.
- * @remark Setup runs once, loop runs continuously.
+ * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
  ********************************************************************************************************************/
 void setup() {
   // Initialize FastLED
-  FastLED.addLeds<WS2812B, pin_LIP_CH1, GRB>(LIP_1, 100);
-  FastLED.addLeds<WS2812B, pin_LIP_CH2, GRB>(LIP_2, 120);
-  FastLED.addLeds<WS2812B, pin_UIP_CH1, GRB>(UIP_1, 210);
-  FastLED.addLeds<WS2812B, pin_LC_CH1, GRB>(LC_1, 200);
-  FastLED.addLeds<WS2812B, pin_LC_CH2, GRB>(LC_2, 233);
-  FastLED.addLeds<WS2812B, pin_RC_CH1, GRB>(RC_1, 250);
-  FastLED.addLeds<WS2812B, pin_RC_CH2, GRB>(RC_2, 380);
+  FastLED.addLeds<WS2812B, pin_LIP_CH1, GRB>(LIP_1, LED_COUNT_LIP_1);
+  FastLED.addLeds<WS2812B, pin_LIP_CH2, GRB>(LIP_2, LED_COUNT_LIP_2);
+  FastLED.addLeds<WS2812B, pin_UIP_CH1, GRB>(UIP_1, LED_COUNT_UIP_1);
+  FastLED.addLeds<WS2812B, pin_LC_CH1,  GRB>(LC_1,  LED_COUNT_LC_1);
+  FastLED.addLeds<WS2812B, pin_LC_CH2,  GRB>(LC_2,  LED_COUNT_LC_2);
+  FastLED.addLeds<WS2812B, pin_RC_CH1,  GRB>(RC_1,  LED_COUNT_RC_1);
+  FastLED.addLeds<WS2812B, pin_RC_CH2,  GRB>(RC_2,  LED_COUNT_RC_2);
 
   // Initialize all LED strips to BLACK
-  fill_solid(LIP_1, 100, COLOR_BLACK);
-  fill_solid(LIP_2, 120, COLOR_BLACK);
-  fill_solid(UIP_1, 210, COLOR_BLACK);
-  fill_solid(LC_1, 200, COLOR_BLACK);
-  fill_solid(LC_2, 233, COLOR_BLACK);
-  fill_solid(RC_1, 250, COLOR_BLACK);
-  fill_solid(RC_2, 380, COLOR_BLACK);
+  fill_solid(LIP_1, LED_COUNT_LIP_1, COLOR_BLACK);
+  fill_solid(LIP_2, LED_COUNT_LIP_2, COLOR_BLACK);
+  fill_solid(UIP_1, LED_COUNT_UIP_1, COLOR_BLACK);
+  fill_solid(LC_1,  LED_COUNT_LC_1,  COLOR_BLACK);
+  fill_solid(LC_2,  LED_COUNT_LC_2,  COLOR_BLACK);
+  fill_solid(RC_1,  LED_COUNT_RC_1,  COLOR_BLACK);
+  fill_solid(RC_2,  LED_COUNT_RC_2,  COLOR_BLACK);
   FastLED.show();
 
-  // Initialize panels in order on UIP_1
+  // Initialize panels. Adapt the order of the panels according to your physical panel order.
   int currentIndex = 0;
   
     // 1. Master Arm Panel (29 LEDs)

@@ -10,8 +10,8 @@
  *   ----------------------------------------------------------------------------------
 
  * @file Panel.h
- * @author Ulukaii, Arribe, Higgins
- * @date 04.30.2025
+ * @author Ulukaii
+ * @date 05.05.2025
  * @version t 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  *********************************************************************************************************************/
@@ -26,7 +26,7 @@
 #include <avr/pgmspace.h> 
 
 /**********************************************************************************************************************
- * @brief LED type enumeration: lists all different LED types; LED info structure: bundles the index and type of an LED
+ * @brief   LED type enumeration: lists all different LED types; LED info structure: bundles the index and type of an LED
  * @details Defines the different types of LEDs in a panel.
  *          This enum is used for memory efficiency (Enum pointers only need 1 byte)
  *********************************************************************************************************************/
@@ -74,30 +74,29 @@ struct LedInfo {
 };
 
 /**********************************************************************************************************************
- * @brief Abstract panel class.
+ * @brief   Abstract panel class.
  * @details This class provides the interface for all panel backlight and indicator lighting implementations.
- * @remark The specific panel classes need to inherit from this base class and implement:
- *         - Panel-specific DCS-BIOS callback methods
- *         The specific panel classes then may use the static methods herein to set the backlight and indicator colors.
+ * @remark  The specific panel classes inherit basic functionality from this class and extend it by implementing their 
+ *          own DCS-BIOS callback methods.
  *********************************************************************************************************************/
 class Panel {
 public:
-    // Pure virtual methods that derived classes must implement
+    // Pure virtual methods that inheriting classes must implement
     virtual int getStartIndex() const { return panelStartIndex; }
     virtual int getLedCount() const { return ledCount; }
-    virtual const LedInfo* getLedIndicesTable() const { return ledIndicesTable; }
+    virtual const LedInfo* getLedTable() const { return ledTable; }
     virtual CRGB* getLedArray() const { return leds; }
 
 protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
-        last_brightness = 255;
+        last_brightness = 128;
     }
 
-    // Protected member variables that derived classes must set
+    // Protected member variables that inheriting classes must set
     int panelStartIndex;
     int ledCount;
-    const LedInfo* ledIndicesTable;
+    const LedInfo* ledTable;
     CRGB* leds;
 
     // Instance variable for tracking brightness
@@ -106,7 +105,7 @@ protected:
     // Protected methods that derived classes can use
     void setBacklights(int newValue) {
         // Safety checks
-        if (!getLedArray() || !getLedIndicesTable()) return;
+        if (!getLedArray() || !getLedTable()) return;
 
         // Determine the brightness value
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
@@ -120,7 +119,7 @@ protected:
         // Read LED info from PROGMEM for each LED, check LED type is BACKLIGHT and set color
         for (int i = 0; i < getLedCount(); i++) {
             LedInfo info;
-            memcpy_P(&info, &getLedIndicesTable()[i], sizeof(LedInfo));
+            memcpy_P(&info, &getLedTable()[i], sizeof(LedInfo));
             uint16_t ledIndex = info.index + getStartIndex();
             if (info.type == LED_BACKLIGHT) {
                 getLedArray()[ledIndex] = color;
@@ -131,12 +130,12 @@ protected:
 
     void setIndicatorColor(LedType type, const CRGB& color) {
         // Safety checks
-        if (!getLedArray() || !getLedIndicesTable()) return;
+        if (!getLedArray() || !getLedTable()) return;
 
         // Read LED info from PROGMEM for each LED, check LED type is specified type and set color
         for (int i = 0; i < getLedCount(); i++) {
             LedInfo info;
-            memcpy_P(&info, &getLedIndicesTable()[i], sizeof(LedInfo));
+            memcpy_P(&info, &getLedTable()[i], sizeof(LedInfo));
             uint16_t ledIndex = info.index + getStartIndex();
             if (info.type == type) {
                 getLedArray()[ledIndex] = color;

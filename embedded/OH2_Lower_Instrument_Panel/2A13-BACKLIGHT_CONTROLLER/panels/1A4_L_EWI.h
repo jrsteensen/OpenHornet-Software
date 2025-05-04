@@ -1,4 +1,4 @@
-/**************************************************************************************
+/**********************************************************************************************************************
  *        ____                   _    _                       _
  *       / __ \                 | |  | |                     | |
  *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
@@ -8,27 +8,14 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
- *
- *   Licensed under the Apache License, Version 2.0 (the "License");
- *   you may not use this file except in compliance with the License.
- *   You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *   distributed under the License is distributed on an "AS IS" BASIS,
- *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *   See the License for the specific language governing permissions and
- *   limitations under the License.
- *   ----------------------------------------------------------------------------------
- *   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
- *   GitHub repository is released under the Creative Commons Attribution -
- *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
- *   ----------------------------------------------------------------------------------
- *   This Project uses Doxygen as a documentation generator.
- *   Please use Doxygen capable comments.
- **************************************************************************************/
+ *  
+ * @file 1A4_L_EWI_BL.h
+ * @author Ulukaii, Arribe, Higgins
+ * @date 05.05.2025
+ * @version t 0.3.1
+ * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
+ * @brief Implements backlighting for the Left EWI panel.
+ *********************************************************************************************************************/
 /**
  * @file 1A4_L_EWI_BL.h
  * @author Arribe
@@ -55,7 +42,7 @@
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
 const int L_EWI_LED_COUNT = 30;  // Total number of LEDs in the panel
-const LedInfo lEwiLedIndicesTable[L_EWI_LED_COUNT] PROGMEM = {
+const LedInfo lEwiLedTable[L_EWI_LED_COUNT] PROGMEM = {
     {0, LED_FIRE}, {1, LED_FIRE}, {2, LED_FIRE}, {3, LED_FIRE}, {4, LED_CAUTION}, 
     {5, LED_CAUTION}, {6, LED_CAUTION}, {7, LED_CAUTION}, {8, LED_GO}, {9, LED_GO},
     {10, LED_NO_GO}, {11, LED_NO_GO}, {12, LED_R_BLEED}, {13, LED_R_BLEED}, {14, LED_L_BLEED}, 
@@ -89,7 +76,7 @@ private:
         panelStartIndex = startIndex;
         leds = ledArray;
         ledCount = L_EWI_LED_COUNT;
-        ledIndicesTable = lEwiLedIndicesTable;
+        ledTable = lEwiLedTable;
     }
 
     // Static callback functions for DCS-BIOS
