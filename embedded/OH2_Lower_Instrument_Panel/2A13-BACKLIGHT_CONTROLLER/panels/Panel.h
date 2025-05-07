@@ -81,7 +81,8 @@ enum LedRole {
     LED_RWR_DISPLAY,
     LED_RWR_LIMIT,
     LED_RWR_POWER,
-    LED_RWR_NONE
+    LED_RWR_NONE,
+    LED_FLOOD
 };
 
 // Maximum length for legend text (including null terminator)
@@ -122,6 +123,8 @@ protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
         last_brightness = 128;
+        last_flood_brightness = 128;
+        needsUpdate = false;
     }
 
     // Protected member variables that inheriting classes must set
@@ -130,6 +133,8 @@ protected:
     const Led* ledTable;             // Pointer to the LED table
     CRGB* ledStrip;                  // Pointer to the LED strip
     uint8_t last_brightness;         // Last brightness value
+    uint8_t last_flood_brightness;   // Last brightness value for floodlights
+    bool needsUpdate;                // Flag to indicate if LEDs need to be updated
 
     // Get color for brightness level using lookup table
     static CRGB getColorForBrightness(uint8_t brightness) {
@@ -181,6 +186,30 @@ protected:
         }
         // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
         ledsNeedUpdate = true;
+    }
+
+    void setFloodlights(int newValue) {
+        // Map the DCS-BIOS value (0-65535) to brightness (0-255)
+        uint8_t brightness = map(newValue, 0, 65535, 0, 255);
+        
+        // Only update if brightness has changed
+        if (brightness != last_flood_brightness) {
+            last_flood_brightness = brightness;
+            
+            // Create white color with the given brightness
+            CRGB color = CRGB(brightness, brightness, brightness);
+            
+            // Update all floodlight LEDs
+            for (int i = 0; i < ledCount; i++) {
+                Led led;
+                memcpy_P(&led, &ledTable[i], sizeof(Led));
+                if (led.role == LED_FLOOD) {
+                    ledStrip[panelStartIndex + led.index] = color;
+                }
+            }
+            
+            needsUpdate = true;
+        }
     }
 };
 

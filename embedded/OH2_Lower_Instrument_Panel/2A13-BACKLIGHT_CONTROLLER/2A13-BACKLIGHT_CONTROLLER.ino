@@ -86,6 +86,8 @@
 #include "panels/2A2A1A6_ECM.h"
 #include "panels/2A2A1A7_RWR_CONTROL.h"
 #include "panels/2A2A1A8_STANDBY_INSTRUMENT.h"
+#include "panels/4A1_LC_ALL_PANELS.h"
+#include "panels/4A1_LC_Flood.h"
 #include "panels/Colors.h"
 
 /********************************************************************************************************************
@@ -102,9 +104,9 @@ const uint8_t pin_RC_CH1   =      7;
 const uint8_t pin_RC_CH2   =      6;
 const uint8_t pin_CH9      =      5;
 const uint8_t pin_CH10     =      4;
-const uint8_t pin_EncoderSw = 24;              // Ulukaii deviation. Standard is 22
-const uint8_t pin_EncoderA  = 22;              // Ulukaii deviation. Standard is 24
-const uint8_t pin_EncoderB  = 23;                            
+const uint8_t pin_EncoderSw =    24;              // Ulukaii deviation. Standard is 22
+const uint8_t pin_EncoderA  =    22;              // Ulukaii deviation. Standard is 24
+const uint8_t pin_EncoderB  =    23;                            
 
 // LED counts per channel
 const int LED_COUNT_LIP_1 = 100;
@@ -148,44 +150,51 @@ void setup() {
   fill_solid(RC_2,  LED_COUNT_RC_2,  COLOR_BLACK);
   FastLED.show();
 
-  // Initialize panels. Adapt the order of the panels according to your physical panel order.
-  int currentIndex = 0;
   
-  // UIP_1 Channel Panels
-  // 1. Master Arm Panel (29 LEDs)
-  MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
-  currentIndex += masterArmPanel->getLedCount();
+  // InstantiateUIP_1 Channel Panels
+    int currentIndex = 0;
+    MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += masterArmPanel->getLedCount();
+    
+    EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += ewiPanel->getLedCount();
   
-  // 2. Left EWI Panel (30 LEDs)
-  EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
-  currentIndex += ewiPanel->getLedCount();
+    //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
+    //currentIndex += hudPanel->getLedCount();
   
-  // 3. HUD Panel (50 LEDs)
-  //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
-  //currentIndex += hudPanel->getLedCount();
+    REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += rEwiPanel->getLedCount();
   
-  // 4. Right EWI Panel (30 LEDs)
-  REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
-  currentIndex += rEwiPanel->getLedCount();
-  
-  // 5. Spin Recovery Panel (63 LEDs)
-  SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
-  currentIndex += spnRcvyPanel->getLedCount();
+    SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
+    currentIndex += spnRcvyPanel->getLedCount();
 
-  // LIP_2 Channel Panels
-  currentIndex = 0;  // Reset index for new channel
-  
-  // 1. ECM Panel (79 LEDs)
-  EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2);
-  currentIndex += ecmPanel->getLedCount();
+  // Instantiate LIP_2 Channel Panels
+    currentIndex = 0;  // Reset index for new channel
+    
+    EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2);
+    currentIndex += ecmPanel->getLedCount();
 
-  // 2. RWR Control Panel (85 LEDs)
-  RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2);
-  currentIndex += rwrControlPanel->getLedCount();
+    RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2);
+    currentIndex += rwrControlPanel->getLedCount();
 
-  // 3. Standby Instruments Panel (6 LEDs)
-  StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2);
-  currentIndex += standbyInstrumentPanel->getLedCount();
+    StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2);
+    currentIndex += standbyInstrumentPanel->getLedCount();
+
+
+  // Instantiate LC_1 Channel Panels
+    currentIndex = 0;  // Reset index for new channel
+
+    LcAllPanels* lcAllPanels = LcAllPanels::getInstance(currentIndex, LC_1);
+    currentIndex += lcAllPanels->getLedCount();
+
+  // Instantiate LC_2 Channel Panels
+    currentIndex = 0;  // Reset index for new channel
+
+    LcFloodPanel* lcFloodPanel = LcFloodPanel::getInstance(currentIndex, LC_2);
+    currentIndex += lcFloodPanel->getLedCount();
+
+
+
 
   // Run DCS Bios setup function
   DcsBios::setup();
