@@ -12,7 +12,7 @@
  * @file 2A2A1A6_ECM.h
  * @author Ulukaii
  * @date 05.05.2025
- * @version u 0.3.1
+ * @version t 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting and indicators for the ECM panel.
  *********************************************************************************************************************/
@@ -49,16 +49,16 @@ const Led ecmLedTable[ECM_LED_COUNT] PROGMEM = {
     {60, LED_BACKLIGHT, ""}, {61, LED_BACKLIGHT, ""}, {62, LED_BACKLIGHT, ""}, {63, LED_BACKLIGHT, ""}, {64, LED_BACKLIGHT, ""},
     {65, LED_BACKLIGHT, ""}, {66, LED_BACKLIGHT, ""}, {67, LED_BACKLIGHT, ""}, {68, LED_BACKLIGHT, ""}, {69, LED_BACKLIGHT, ""},
     {70, LED_BACKLIGHT, ""}, {71, LED_BACKLIGHT, ""}, {72, LED_BACKLIGHT, ""}, {73, LED_BACKLIGHT, ""},
-    // Indicator LEDs (74 and 78)
-    {74, LED_ECM_JETT_SEL, ""}, {75, LED_BACKLIGHT, ""}, {76, LED_BACKLIGHT, ""}, {77, LED_BACKLIGHT, ""}, {78, LED_BACKLIGHT, ""}
+    // ECM JETT SEL indicator (74 through 77)
+    {74, LED_ECM_JETT_SEL, ""}, {75, LED_ECM_JETT_SEL, ""}, {76, LED_ECM_JETT_SEL, ""}, {77, LED_ECM_JETT_SEL, ""}
 };
 
 /********************************************************************************************************************
  * @brief   ECM Panel class
  * @details Backlighting and indicator controller for the ECM panel.
- *          Total LEDs: 79
+ *          Total LEDs: 78
  *          Backlight LEDs: 74 (indices 0-73)
- *          Indicator LEDs: 5 (ECM JETT SEL: 74-78)
+ *          Indicator LEDs: 4 (ECM JETT SEL: 74-77)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
@@ -87,7 +87,7 @@ private:
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
 
     static void onCmsdJetSelLChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_ECM_JETT_SEL, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_ECM_JETT_SEL, newValue ? COLOR_YELLOW : COLOR_WHITE);
     }
     DcsBios::IntegerBuffer cmsdJetSelLBuffer{0x74d4, 0x8000, 15, onCmsdJetSelLChange};
 

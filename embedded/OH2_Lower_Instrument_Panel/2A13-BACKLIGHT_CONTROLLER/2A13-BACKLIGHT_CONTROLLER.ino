@@ -84,6 +84,8 @@
 #include "panels/1A5_R_EWI.h"
 #include "panels/1A6A1_SPN_RCVY.h"
 #include "panels/2A2A1A6_ECM.h"
+#include "panels/2A2A1A7_RWR_CONTROL.h"
+#include "panels/2A2A1A8_STANDBY_INSTRUMENT.h"
 #include "panels/Colors.h"
 
 /********************************************************************************************************************
@@ -176,6 +178,14 @@ void setup() {
   // 1. ECM Panel (79 LEDs)
   EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2);
   currentIndex += ecmPanel->getLedCount();
+
+  // 2. RWR Control Panel (85 LEDs)
+  RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2);
+  currentIndex += rwrControlPanel->getLedCount();
+
+  // 3. Standby Instruments Panel (6 LEDs)
+  StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2);
+  currentIndex += standbyInstrumentPanel->getLedCount();
 
   // Run DCS Bios setup function
   DcsBios::setup();

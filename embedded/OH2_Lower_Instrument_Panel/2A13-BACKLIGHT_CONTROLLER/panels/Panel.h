@@ -70,7 +70,18 @@ enum LedRole {
     LED_SPIN,
     // ECM Panel specific types
     LED_ECM_JETT_SEL,
-    LED_ECM_BACKLIGHT
+    LED_ECM_BACKLIGHT,
+    // RWR Panel specific types
+    LED_RWR_BIT,
+    LED_RWR_BIT_FAIL,
+    LED_RWR_OFFSET,
+    LED_RWR_OFFSET_EN,
+    LED_RWR_SPECIAL,
+    LED_RWR_SPECIAL_EN,
+    LED_RWR_DISPLAY,
+    LED_RWR_LIMIT,
+    LED_RWR_POWER,
+    LED_RWR_NONE
 };
 
 // Maximum length for legend text (including null terminator)
