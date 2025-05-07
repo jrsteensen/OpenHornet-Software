@@ -32,46 +32,45 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int HUD_PANEL_REV3_LED_COUNT = 56;  // Total number of LEDs in the panel (Revision 3)
-const LedInfo hudRev3LedTable[HUD_PANEL_REV3_LED_COUNT] PROGMEM = {
-    {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT}, {3, LED_BACKLIGHT}, {4, LED_BACKLIGHT}, 
-    {5, LED_BACKLIGHT}, {6, LED_BACKLIGHT}, {7, LED_BACKLIGHT}, {8, LED_BACKLIGHT}, {9, LED_BACKLIGHT},
-    {10, LED_BACKLIGHT}, {11, LED_BACKLIGHT}, {12, LED_BACKLIGHT}, {13, LED_BACKLIGHT}, {14, LED_BACKLIGHT}, 
-    {15, LED_BACKLIGHT}, {16, LED_BACKLIGHT}, {17, LED_BACKLIGHT}, {18, LED_BACKLIGHT}, {19, LED_BACKLIGHT},
-    {20, LED_BACKLIGHT}, {21, LED_BACKLIGHT}, {22, LED_BACKLIGHT}, {23, LED_BACKLIGHT}, {24, LED_BACKLIGHT}, 
-    {25, LED_BACKLIGHT}, {26, LED_BACKLIGHT}, {27, LED_BACKLIGHT}, {28, LED_BACKLIGHT}, {29, LED_BACKLIGHT},
-    {30, LED_BACKLIGHT}, {31, LED_BACKLIGHT}, {32, LED_BACKLIGHT}, {33, LED_BACKLIGHT}, {34, LED_BACKLIGHT}, 
-    {35, LED_BACKLIGHT}, {36, LED_BACKLIGHT}, {37, LED_BACKLIGHT}, {38, LED_BACKLIGHT}, {39, LED_BACKLIGHT},
-    {40, LED_BACKLIGHT}, {41, LED_BACKLIGHT}, {42, LED_BACKLIGHT}, {43, LED_BACKLIGHT}, {44, LED_BACKLIGHT}, 
-    {45, LED_BACKLIGHT}, {46, LED_BACKLIGHT}, {47, LED_BACKLIGHT}, {48, LED_BACKLIGHT}, {49, LED_BACKLIGHT},
-    {50, LED_BACKLIGHT}, {51, LED_BACKLIGHT}, {52, LED_BACKLIGHT}, {53, LED_BACKLIGHT}, {54, LED_BACKLIGHT}, 
-    {55, LED_BACKLIGHT}
+const int HUD_LED_COUNT = 50;  // Total number of LEDs in the panel
+const Led hudLedTable[HUD_LED_COUNT] PROGMEM = {
+    {0, LED_BACKLIGHT, ""}, {1, LED_BACKLIGHT, ""}, {2, LED_BACKLIGHT, ""}, {3, LED_BACKLIGHT, ""}, {4, LED_BACKLIGHT, ""}, 
+    {5, LED_BACKLIGHT, ""}, {6, LED_BACKLIGHT, ""}, {7, LED_BACKLIGHT, ""}, {8, LED_BACKLIGHT, ""}, {9, LED_BACKLIGHT, ""},
+    {10, LED_BACKLIGHT, ""}, {11, LED_BACKLIGHT, ""}, {12, LED_BACKLIGHT, ""}, {13, LED_BACKLIGHT, ""}, {14, LED_BACKLIGHT, ""}, 
+    {15, LED_BACKLIGHT, ""}, {16, LED_BACKLIGHT, ""}, {17, LED_BACKLIGHT, ""}, {18, LED_BACKLIGHT, ""}, {19, LED_BACKLIGHT, ""},
+    {20, LED_BACKLIGHT, ""}, {21, LED_BACKLIGHT, ""}, {22, LED_BACKLIGHT, ""}, {23, LED_BACKLIGHT, ""}, {24, LED_BACKLIGHT, ""}, 
+    {25, LED_BACKLIGHT, ""}, {26, LED_BACKLIGHT, ""}, {27, LED_BACKLIGHT, ""}, {28, LED_BACKLIGHT, ""}, {29, LED_BACKLIGHT, ""},
+    {30, LED_BACKLIGHT, ""}, {31, LED_BACKLIGHT, ""}, {32, LED_BACKLIGHT, ""}, {33, LED_BACKLIGHT, ""}, {34, LED_BACKLIGHT, ""}, 
+    {35, LED_BACKLIGHT, ""}, {36, LED_BACKLIGHT, ""}, {37, LED_BACKLIGHT, ""}, {38, LED_BACKLIGHT, ""}, {39, LED_BACKLIGHT, ""},
+    {40, LED_BACKLIGHT, ""}, {41, LED_BACKLIGHT, ""}, {42, LED_BACKLIGHT, ""}, {43, LED_BACKLIGHT, ""}, {44, LED_BACKLIGHT, ""}, 
+    {45, LED_BACKLIGHT, ""}, {46, LED_BACKLIGHT, ""}, {47, LED_BACKLIGHT, ""}, {48, LED_BACKLIGHT, ""}, {49, LED_BACKLIGHT, ""}
 };
 
 /********************************************************************************************************************
- * @brief   HUD Panel class (Revision 3)
- * @details Backlighting controller for the HUD panel (Revision 3).
- *          Total LEDs: 56
- *          All LEDs are backlight LEDs
+ * @brief   HUD Panel class
+ * @details Backlighting controller for the HUD panel.
+ *          Total LEDs: 50
+ *          Backlight LEDs: 50 (all LEDs are backlights)
+ *          Indicator LEDs: 0 (no indicators in this panel)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class HudPanelRev3 : public Panel {
+class HudPanel : public Panel {
 public:
-    static HudPanelRev3* getInstance(int startIndex = 0, CRGB* ledArray = nullptr) {
+    static HudPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
-            instance = new HudPanelRev3(startIndex, ledArray);
+            instance = new HudPanel(startIndex, ledStrip);
         }
         return instance;
     }
 
 private:
     // Private constructor
-    HudPanelRev3(int startIndex, CRGB* ledArray) {
+    HudPanel(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
-        leds = ledArray;
-        ledCount = HUD_PANEL_REV3_LED_COUNT;
-        ledTable = hudRev3LedTable;
+        this->ledStrip = ledStrip;
+        ledCount = HUD_LED_COUNT;
+        ledTable = hudLedTable;
     }
 
     // Static callback functions for DCS-BIOS
@@ -81,10 +80,10 @@ private:
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
 
     // Instance data
-    static HudPanelRev3* instance;
+    static HudPanel* instance;
 };
 
 // Initialize static instance pointer
-HudPanelRev3* HudPanelRev3::instance = nullptr;
+HudPanel* HudPanel::instance = nullptr;
 
 #endif 

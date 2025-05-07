@@ -80,7 +80,7 @@
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
 #include "panels/1A7A1_HUD_PANEL_REV4.h"            //Make sure to uncomment the correct HUD panel header file
-#include "panels/1A7A1_HUD_PANEL_REV3.h"            //Make sure to uncomment the correct HUD panel header file
+//#include "panels/1A7A1_HUD_PANEL_REV3.h"          //Make sure to uncomment the correct include statement for your HUD panel
 #include "panels/1A5_R_EWI.h"
 #include "panels/1A6A1_SPN_RCVY.h"
 #include "panels/Colors.h"
@@ -175,4 +175,7 @@ void setup() {
 void loop() {
   //Run DCS Bios loop function
   DcsBios::loop();
+  
+  // Call the updateLeds() method of the Panel class, which will update the LEDs if any changes are pending
+  Panel::updateLeds();
 }

@@ -20,9 +20,11 @@
 #ifndef __PANEL_H
 #define __PANEL_H
 
+#include "DcsBios.h"
+#include "FastLED.h"
+#include "Colors.h"
 #include <Arduino.h>
 #include <string.h>
-#include "FastLED.h"
 #include <avr/pgmspace.h> 
 
 /**********************************************************************************************************************
@@ -91,6 +93,17 @@ public:
     virtual const Led* getLedTable() const { return ledTable; }
     virtual CRGB* getLedStrip() const { return ledStrip; }
 
+    // Static flag to track if any LEDs need updating across all panels. Shared across all panel instances
+    static bool ledsNeedUpdate;
+
+    // Static method to update LEDs if any changes are pending
+    static void updateLeds() {
+        if (ledsNeedUpdate) {
+            FastLED.show();
+            ledsNeedUpdate = false;
+        }
+    }
+
 protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
@@ -98,13 +111,18 @@ protected:
     }
 
     // Protected member variables that inheriting classes must set
-    int panelStartIndex;
-    int ledCount;
-    const Led* ledTable;
-    CRGB* ledStrip;
+    int panelStartIndex;             // Start index of the panel on the LED strip
+    int ledCount;                    // Number of LEDs in the panel
+    const Led* ledTable;             // Pointer to the LED table
+    CRGB* ledStrip;                  // Pointer to the LED strip
+    uint8_t last_brightness;         // Last brightness value
 
-    // Instance variable for tracking brightness
-    uint8_t last_brightness;
+    // Get color for brightness level using lookup table
+    static CRGB getColorForBrightness(uint8_t brightness) {
+        CRGB color;
+        memcpy_P(&color, &BRIGHTNESS_TABLE[brightness], sizeof(CRGB));
+        return color;
+    }
 
     // Protected methods that derived classes can use
     void setBacklights(int newValue) {
@@ -113,13 +131,14 @@ protected:
 
         // Determine the brightness value
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
-        
+
         // Add value-based debouncing
         if (brightness == last_brightness) return;
         last_brightness = brightness;
 
-        // Set the LED colors
-        CRGB color = CRGB(0, 100 * brightness / 255, 0); 
+        // Get the color for this brightness level
+        CRGB color = getColorForBrightness(brightness);
+
         // Read LED info from PROGMEM for each LED, check LED role is BACKLIGHT and set color
         for (int i = 0; i < getLedCount(); i++) {
             Led led;
@@ -129,7 +148,8 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        FastLED.show();
+        // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
+        ledsNeedUpdate = true;
     }
 
     void setIndicatorColor(LedRole role, const CRGB& color) {
@@ -145,8 +165,12 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        FastLED.show();
+        // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
+        ledsNeedUpdate = true;
     }
 };
+
+// Define the static member variable
+bool Panel::ledsNeedUpdate;
 
 #endif 
