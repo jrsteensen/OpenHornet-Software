@@ -67,7 +67,10 @@ enum LedRole {
     LED_AI,
     LED_CW,
     // Spin Recovery Panel specific types
-    LED_SPIN
+    LED_SPIN,
+    // ECM Panel specific types
+    LED_ECM_JETT_SEL,
+    LED_ECM_BACKLIGHT
 };
 
 // Maximum length for legend text (including null terminator)

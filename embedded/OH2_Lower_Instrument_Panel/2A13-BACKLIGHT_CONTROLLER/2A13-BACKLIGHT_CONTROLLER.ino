@@ -83,6 +83,7 @@
 //#include "panels/1A7A1_HUD_PANEL_REV3.h"          //Make sure to uncomment the correct include statement for your HUD panel
 #include "panels/1A5_R_EWI.h"
 #include "panels/1A6A1_SPN_RCVY.h"
+#include "panels/2A2A1A6_ECM.h"
 #include "panels/Colors.h"
 
 /********************************************************************************************************************
@@ -148,25 +149,33 @@ void setup() {
   // Initialize panels. Adapt the order of the panels according to your physical panel order.
   int currentIndex = 0;
   
-    // 1. Master Arm Panel (29 LEDs)
-    MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += masterArmPanel->getLedCount();
-    
-    // 2. Left EWI Panel (30 LEDs)
-    EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += ewiPanel->getLedCount();
-    
-    // 3. HUD Panel (50 LEDs)
-    //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
-    //currentIndex += hudPanel->getLedCount();
-    
-    // 4. Right EWI Panel (30 LEDs)
-    REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += rEwiPanel->getLedCount();
-    
-    // 5. Spin Recovery Panel (63 LEDs)
-    SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += spnRcvyPanel->getLedCount();
+  // UIP_1 Channel Panels
+  // 1. Master Arm Panel (29 LEDs)
+  MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
+  currentIndex += masterArmPanel->getLedCount();
+  
+  // 2. Left EWI Panel (30 LEDs)
+  EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
+  currentIndex += ewiPanel->getLedCount();
+  
+  // 3. HUD Panel (50 LEDs)
+  //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
+  //currentIndex += hudPanel->getLedCount();
+  
+  // 4. Right EWI Panel (30 LEDs)
+  REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
+  currentIndex += rEwiPanel->getLedCount();
+  
+  // 5. Spin Recovery Panel (63 LEDs)
+  SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
+  currentIndex += spnRcvyPanel->getLedCount();
+
+  // LIP_2 Channel Panels
+  currentIndex = 0;  // Reset index for new channel
+  
+  // 1. ECM Panel (79 LEDs)
+  EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2);
+  currentIndex += ecmPanel->getLedCount();
 
   // Run DCS Bios setup function
   DcsBios::setup();
