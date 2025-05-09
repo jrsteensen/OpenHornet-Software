@@ -136,7 +136,7 @@ void setup() {
     // Instantiate the panels. Adapt the order of the panels according to your physical wiring.
     UIP_1.addPanel<MasterArmPanel>();
     UIP_1.addPanel<EwiPanel>();
-    //UIP_1.addPanel<HudPanel>();
+    UIP_1.addPanel<HudPanel>();
     UIP_1.addPanel<REwiPanel>();
     UIP_1.addPanel<SpnRcvyPanel>();
 
