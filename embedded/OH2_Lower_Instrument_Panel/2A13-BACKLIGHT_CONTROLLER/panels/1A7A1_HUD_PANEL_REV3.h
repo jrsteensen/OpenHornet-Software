@@ -30,7 +30,7 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int HUD_LED_COUNT = 50;  // Total number of LEDs in the panel
+const int HUD_LED_COUNT = 56;  // Total number of LEDs in the panel
 const Led hudLedTable[HUD_LED_COUNT] PROGMEM = {
     {0, LED_BACKLIGHT, ""}, {1, LED_BACKLIGHT, ""}, {2, LED_BACKLIGHT, ""}, {3, LED_BACKLIGHT, ""}, {4, LED_BACKLIGHT, ""}, 
     {5, LED_BACKLIGHT, ""}, {6, LED_BACKLIGHT, ""}, {7, LED_BACKLIGHT, ""}, {8, LED_BACKLIGHT, ""}, {9, LED_BACKLIGHT, ""},
@@ -41,7 +41,9 @@ const Led hudLedTable[HUD_LED_COUNT] PROGMEM = {
     {30, LED_BACKLIGHT, ""}, {31, LED_BACKLIGHT, ""}, {32, LED_BACKLIGHT, ""}, {33, LED_BACKLIGHT, ""}, {34, LED_BACKLIGHT, ""}, 
     {35, LED_BACKLIGHT, ""}, {36, LED_BACKLIGHT, ""}, {37, LED_BACKLIGHT, ""}, {38, LED_BACKLIGHT, ""}, {39, LED_BACKLIGHT, ""},
     {40, LED_BACKLIGHT, ""}, {41, LED_BACKLIGHT, ""}, {42, LED_BACKLIGHT, ""}, {43, LED_BACKLIGHT, ""}, {44, LED_BACKLIGHT, ""}, 
-    {45, LED_BACKLIGHT, ""}, {46, LED_BACKLIGHT, ""}, {47, LED_BACKLIGHT, ""}, {48, LED_BACKLIGHT, ""}, {49, LED_BACKLIGHT, ""}
+    {45, LED_BACKLIGHT, ""}, {46, LED_BACKLIGHT, ""}, {47, LED_BACKLIGHT, ""}, {48, LED_BACKLIGHT, ""}, {49, LED_BACKLIGHT, ""},
+    {50, LED_BACKLIGHT, ""}, {51, LED_BACKLIGHT, ""}, {52, LED_BACKLIGHT, ""}, {53, LED_BACKLIGHT, ""}, {54, LED_BACKLIGHT, ""},
+    {55, LED_BACKLIGHT, ""}
 };
 
 /********************************************************************************************************************

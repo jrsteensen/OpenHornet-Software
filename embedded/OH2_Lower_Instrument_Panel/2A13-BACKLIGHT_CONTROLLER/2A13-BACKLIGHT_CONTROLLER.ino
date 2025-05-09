@@ -93,7 +93,7 @@
 
 
 /********************************************************************************************************************
- * @brief Create the channels. Carefully check pinout corresponds to (YOUR!) wiring.
+ * @brief Create the channel objects. Carefully check pinout corresponds to (YOUR!) wiring.
  * @remark The written number of LEDs per strip might exceed the actual number. This can be ignored.
  * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected maxled count);
  ********************************************************************************************************************/
@@ -120,7 +120,7 @@ const uint8_t pin_EncoderB  =    23;
  * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
  ********************************************************************************************************************/
 void setup() {
-  // Initialize the LED strips (color will be set to black for startup)
+    // Initialize the LED strips
     LIP_1.initialize();
     LIP_2.initialize();
     UIP_1.initialize();
@@ -133,49 +133,22 @@ void setup() {
     AUX_2.initialize();
     FastLED.show();
 
-  // Instantiate UIP_1 Channel Panels
-  int currentIndex = 0;
-  MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1.getLeds());
-  currentIndex += masterArmPanel->getLedCount();
-  
-  EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1.getLeds());
-  currentIndex += ewiPanel->getLedCount();
+    // Panel instantiations
+    UIP_1.addPanel<MasterArmPanel>();
+    UIP_1.addPanel<EwiPanel>();
+    //UIP_1.addPanel<HudPanel>();
+    UIP_1.addPanel<REwiPanel>();
+    UIP_1.addPanel<SpnRcvyPanel>();
 
-  //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1.getLeds());
-  //currentIndex += hudPanel->getLedCount();
+    LIP_2.addPanel<EcmPanel>();
+    LIP_2.addPanel<RwrControlPanel>();
+    LIP_2.addPanel<StandbyInstrumentPanel>();
 
-  REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1.getLeds());
-  currentIndex += rEwiPanel->getLedCount();
+    LC_1.addPanel<LcAllPanels>();
+    LC_2.addPanel<LcFloodPanel>();
 
-  SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1.getLeds());
-  currentIndex += spnRcvyPanel->getLedCount();
-
-  // Instantiate LIP_2 Channel Panels
-  currentIndex = 0;  // Reset index for new channel
-  
-  EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2.getLeds());
-  currentIndex += ecmPanel->getLedCount();
-
-  RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2.getLeds());
-  currentIndex += rwrControlPanel->getLedCount();
-
-  StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2.getLeds());
-  currentIndex += standbyInstrumentPanel->getLedCount();
-
-  // Instantiate LC_1 Channel Panels
-  currentIndex = 0;  // Reset index for new channel
-
-  LcAllPanels* lcAllPanels = LcAllPanels::getInstance(currentIndex, LC_1.getLeds());
-  currentIndex += lcAllPanels->getLedCount();
-
-  // Instantiate LC_2 Channel Panels
-  currentIndex = 0;  // Reset index for new channel
-
-  LcFloodPanel* lcFloodPanel = LcFloodPanel::getInstance(currentIndex, LC_2.getLeds());
-  currentIndex += lcFloodPanel->getLedCount();
-
-  // Run DCS Bios setup function
-  DcsBios::setup();
+    // Run DCS Bios setup function
+    DcsBios::setup();
 }
 
 void loop() {

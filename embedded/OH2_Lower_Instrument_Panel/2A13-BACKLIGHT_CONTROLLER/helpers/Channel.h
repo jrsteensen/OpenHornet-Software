@@ -24,24 +24,31 @@
 
 #include "FastLED.h"
 #include "Colors.h"
+#include "Panel.h"
+
 
 
 class Channel {
+
+private:
+    uint8_t pin;           // Hardware pin number
+    const char* pcbName;   // Changed from char* to const char*
+    uint16_t ledCount;     // Number of LEDs
+    CRGB* leds;            // Pointer to LED array
+    uint16_t currentIndex; // Index of the next available LED
+    
 public:
     Channel(uint8_t p, const char* pcb, uint16_t count) {
         pin = p;
         pcbName = pcb;
         ledCount = count;
         leds = NULL;
+        currentIndex = 0;  // Initialize currentIndex to 0
     }
 
     void initialize() {
         leds = new CRGB[ledCount];
-        if (leds == NULL) {
-            // Handle allocation failure
-            return;
-        }
-        
+
         // Use a switch statement to overcome strange behaviour of FastLED to have a pin number at compile time
         switch(pin) {
             case 4:  FastLED.addLeds<WS2812B, 4, GRB>(leds, ledCount); break;
@@ -60,17 +67,20 @@ public:
         fill_solid(leds, ledCount, COLOR_BLACK);
     }
 
+    //Add panel to channel
+    template<typename PanelType>
+    void addPanel() {
+        PanelType* panel = PanelType::getInstance(currentIndex, leds);
+        currentIndex += panel->getLedCount();
+    }
+
+
     // Getters
     uint8_t getPin() const { return pin; }
     const char* getPcbName() const { return pcbName; }
     uint16_t getLedCount() const { return ledCount; }
     CRGB* getLeds() const { return leds; }
 
-private:
-    uint8_t pin;           // Hardware pin number
-    char* pcbName;         // Name on PCB ("Channel 1", "Channel 2")
-    uint16_t ledCount;     // Number of LEDs
-    CRGB* leds;            // Pointer to LED array
 };
 
 #endif 
