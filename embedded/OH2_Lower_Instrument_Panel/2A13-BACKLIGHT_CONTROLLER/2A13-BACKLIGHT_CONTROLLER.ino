@@ -64,7 +64,7 @@
  * @remark In particular:
  *         1. Check if we're on a Mega328 or Mega2560 and choose serial interface (Pro Micro: Default)
  *         2. Include external libraries FastLED and DcsBios
- *         3. Include the abstract Panel base class and other panel classes
+ *         3. Include the helper files (Panel, Colors, Channel...) and include the specific panel classes
  *********************************************************************************************************************/
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
   #define DCSBIOS_IRQ_SERIAL
@@ -76,7 +76,9 @@
 #endif
 #include "FastLED.h"
 #include "DcsBios.h"
-#include "panels/Panel.h"  
+#include "helpers/Panel.h"
+#include "helpers/Colors.h" 
+#include "helpers/Channel.h"
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
 #include "panels/1A7A1_HUD_PANEL_REV4.h"            //Make sure to uncomment the correct HUD panel header file
@@ -88,113 +90,89 @@
 #include "panels/2A2A1A8_STANDBY_INSTRUMENT.h"
 #include "panels/4A1_LC_ALL_PANELS.h"
 #include "panels/4A1_LC_Flood.h"
-#include "panels/Colors.h"
+
 
 /********************************************************************************************************************
- * @brief Set up global variables: set up pins according to (YOUR!) wiring; set up FastLED arrays.
+ * @brief Create the channels. Carefully check pinout corresponds to (YOUR!) wiring.
  * @remark The written number of LEDs per strip might exceed the actual number. This can be ignored.
+ * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected maxled count);
  ********************************************************************************************************************/
-const uint8_t pin_LIP_CH1  =     13;
-const uint8_t pin_LIP_CH2  =     12;
-const uint8_t pin_UIP_CH1  =     11;
-const uint8_t pin_UIP_CH2  =      9;              // Ulukaii deviation. Standard is pin 10
-const uint8_t pin_LC_CH1   =     10;             // Ulukaii deviation. Standard is pin 9
-const uint8_t pin_LC_CH2   =      8;
-const uint8_t pin_RC_CH1   =      7;
-const uint8_t pin_RC_CH2   =      6;
-const uint8_t pin_CH9      =      5;
-const uint8_t pin_CH10     =      4;
+
+Channel LIP_1(13, "Channel 1", 100);
+Channel LIP_2(12, "Channel 2", 120);
+Channel UIP_1(11, "Channel 3", 210);
+Channel UIP_2(10, "Channel 4", 210);
+Channel LC_1(9, "Channel 5", 200);
+Channel LC_2(5, "Channel 6", 233);
+Channel RC_1(7, "Channel 7", 250);
+Channel RC_2(6, "Channel 8", 380);
+Channel AUX_1(8, "Channel 9", 300);
+Channel AUX_2(4, "Channel 10", 300);
+
+//Set up other variables
 const uint8_t pin_EncoderSw =    24;              // Ulukaii deviation. Standard is 22
 const uint8_t pin_EncoderA  =    22;              // Ulukaii deviation. Standard is 24
 const uint8_t pin_EncoderB  =    23;                            
 
-// LED counts per channel
-const int LED_COUNT_LIP_1 = 100;
-const int LED_COUNT_LIP_2 = 120;
-const int LED_COUNT_UIP_1 = 210;
-const int LED_COUNT_LC_1 = 200;
-const int LED_COUNT_LC_2 = 233;
-const int LED_COUNT_RC_1 = 250;
-const int LED_COUNT_RC_2 = 380;
-
-// Define arrays for each channel using the named constants
-CRGB LIP_1[LED_COUNT_LIP_1];
-CRGB LIP_2[LED_COUNT_LIP_2];
-CRGB UIP_1[LED_COUNT_UIP_1];
-CRGB LC_1[LED_COUNT_LC_1];
-CRGB LC_2[LED_COUNT_LC_2];
-CRGB RC_1[LED_COUNT_RC_1];
-CRGB RC_2[LED_COUNT_RC_2];
 
 /********************************************************************************************************************
  * @brief Standard Arduino setup and loop functions.
  * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
  ********************************************************************************************************************/
 void setup() {
-  // Initialize FastLED
-  FastLED.addLeds<WS2812B, pin_LIP_CH1, GRB>(LIP_1, LED_COUNT_LIP_1);
-  FastLED.addLeds<WS2812B, pin_LIP_CH2, GRB>(LIP_2, LED_COUNT_LIP_2);
-  FastLED.addLeds<WS2812B, pin_UIP_CH1, GRB>(UIP_1, LED_COUNT_UIP_1);
-  FastLED.addLeds<WS2812B, pin_LC_CH1,  GRB>(LC_1,  LED_COUNT_LC_1);
-  FastLED.addLeds<WS2812B, pin_LC_CH2,  GRB>(LC_2,  LED_COUNT_LC_2);
-  FastLED.addLeds<WS2812B, pin_RC_CH1,  GRB>(RC_1,  LED_COUNT_RC_1);
-  FastLED.addLeds<WS2812B, pin_RC_CH2,  GRB>(RC_2,  LED_COUNT_RC_2);
+  // Initialize the LED strips (color will be set to black for startup)
+    LIP_1.initialize();
+    LIP_2.initialize();
+    UIP_1.initialize();
+    UIP_2.initialize();
+    LC_1.initialize();
+    LC_2.initialize();
+    RC_1.initialize();
+    RC_2.initialize();
+    AUX_1.initialize();
+    AUX_2.initialize();
+    FastLED.show();
 
-  // Initialize all LED strips to BLACK
-  fill_solid(LIP_1, LED_COUNT_LIP_1, COLOR_BLACK);
-  fill_solid(LIP_2, LED_COUNT_LIP_2, COLOR_BLACK);
-  fill_solid(UIP_1, LED_COUNT_UIP_1, COLOR_BLACK);
-  fill_solid(LC_1,  LED_COUNT_LC_1,  COLOR_BLACK);
-  fill_solid(LC_2,  LED_COUNT_LC_2,  COLOR_BLACK);
-  fill_solid(RC_1,  LED_COUNT_RC_1,  COLOR_BLACK);
-  fill_solid(RC_2,  LED_COUNT_RC_2,  COLOR_BLACK);
-  FastLED.show();
+  // Instantiate UIP_1 Channel Panels
+  int currentIndex = 0;
+  MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1.getLeds());
+  currentIndex += masterArmPanel->getLedCount();
+  
+  EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1.getLeds());
+  currentIndex += ewiPanel->getLedCount();
 
-  
-  // InstantiateUIP_1 Channel Panels
-    int currentIndex = 0;
-    MasterArmPanel* masterArmPanel = MasterArmPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += masterArmPanel->getLedCount();
-    
-    EwiPanel* ewiPanel = EwiPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += ewiPanel->getLedCount();
-  
-    //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1);
-    //currentIndex += hudPanel->getLedCount();
-  
-    REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += rEwiPanel->getLedCount();
-  
-    SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1);
-    currentIndex += spnRcvyPanel->getLedCount();
+  //HudPanel* hudPanel = HudPanel::getInstance(currentIndex, UIP_1.getLeds());
+  //currentIndex += hudPanel->getLedCount();
+
+  REwiPanel* rEwiPanel = REwiPanel::getInstance(currentIndex, UIP_1.getLeds());
+  currentIndex += rEwiPanel->getLedCount();
+
+  SpnRcvyPanel* spnRcvyPanel = SpnRcvyPanel::getInstance(currentIndex, UIP_1.getLeds());
+  currentIndex += spnRcvyPanel->getLedCount();
 
   // Instantiate LIP_2 Channel Panels
-    currentIndex = 0;  // Reset index for new channel
-    
-    EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2);
-    currentIndex += ecmPanel->getLedCount();
+  currentIndex = 0;  // Reset index for new channel
+  
+  EcmPanel* ecmPanel = EcmPanel::getInstance(currentIndex, LIP_2.getLeds());
+  currentIndex += ecmPanel->getLedCount();
 
-    RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2);
-    currentIndex += rwrControlPanel->getLedCount();
+  RwrControlPanel* rwrControlPanel = RwrControlPanel::getInstance(currentIndex, LIP_2.getLeds());
+  currentIndex += rwrControlPanel->getLedCount();
 
-    StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2);
-    currentIndex += standbyInstrumentPanel->getLedCount();
-
+  StandbyInstrumentPanel* standbyInstrumentPanel = StandbyInstrumentPanel::getInstance(currentIndex, LIP_2.getLeds());
+  currentIndex += standbyInstrumentPanel->getLedCount();
 
   // Instantiate LC_1 Channel Panels
-    currentIndex = 0;  // Reset index for new channel
+  currentIndex = 0;  // Reset index for new channel
 
-    LcAllPanels* lcAllPanels = LcAllPanels::getInstance(currentIndex, LC_1);
-    currentIndex += lcAllPanels->getLedCount();
+  LcAllPanels* lcAllPanels = LcAllPanels::getInstance(currentIndex, LC_1.getLeds());
+  currentIndex += lcAllPanels->getLedCount();
 
   // Instantiate LC_2 Channel Panels
-    currentIndex = 0;  // Reset index for new channel
+  currentIndex = 0;  // Reset index for new channel
 
-    LcFloodPanel* lcFloodPanel = LcFloodPanel::getInstance(currentIndex, LC_2);
-    currentIndex += lcFloodPanel->getLedCount();
-
-
-
+  LcFloodPanel* lcFloodPanel = LcFloodPanel::getInstance(currentIndex, LC_2.getLeds());
+  currentIndex += lcFloodPanel->getLedCount();
 
   // Run DCS Bios setup function
   DcsBios::setup();
@@ -204,6 +182,6 @@ void loop() {
   //Run DCS Bios loop function
   DcsBios::loop();
   
-  // Call the updateLeds() method of the Panel class, which will update the LEDs if any changes are pending
+  // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if any changes are pending
   Panel::updateLeds();
 }

@@ -17,14 +17,12 @@
  * @brief Implements backlighting and indicators for the ECM panel.
  *********************************************************************************************************************/
 
+
 #ifndef __ECM_BL_H
 #define __ECM_BL_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 /********************************************************************************************************************
  * @brief   This table defines the panel's LEDs.

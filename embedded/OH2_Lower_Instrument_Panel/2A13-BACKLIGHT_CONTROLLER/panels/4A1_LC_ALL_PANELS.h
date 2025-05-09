@@ -15,16 +15,15 @@
  * @version t 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for all Left Console panels.
+ * @warning This is a stub; a future implementation foresees individual files for each panel on the Left Console.
  *********************************************************************************************************************/
+
 
 #ifndef __LC_ALL_PANELS_H
 #define __LC_ALL_PANELS_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 /********************************************************************************************************************
  * @brief   This table defines the panel's LEDs.

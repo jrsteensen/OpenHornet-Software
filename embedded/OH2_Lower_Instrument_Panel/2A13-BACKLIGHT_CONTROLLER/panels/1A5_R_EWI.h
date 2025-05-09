@@ -16,24 +16,13 @@
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for the Right EWI panel.
  *********************************************************************************************************************/
-/**
- * @file 1A5_R_EWI_BL.h
- * @author Arribe
- * @date 03.25.2024
- * @version u.0.0.1 (untested)
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware.
- * @brief Implements backlighting and indicators for the Right EWI panel.
-*/
+
 
 #ifndef __R_EWI_BL_H
 #define __R_EWI_BL_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 
 /********************************************************************************************************************

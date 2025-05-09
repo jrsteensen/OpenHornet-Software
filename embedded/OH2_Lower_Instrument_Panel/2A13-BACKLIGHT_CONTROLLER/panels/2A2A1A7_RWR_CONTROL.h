@@ -17,14 +17,12 @@
  * @brief Implements backlighting and indicators for the RWR Control panel.
  *********************************************************************************************************************/
 
+
 #ifndef __RWR_CONTROL_H
 #define __RWR_CONTROL_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 
 /********************************************************************************************************************

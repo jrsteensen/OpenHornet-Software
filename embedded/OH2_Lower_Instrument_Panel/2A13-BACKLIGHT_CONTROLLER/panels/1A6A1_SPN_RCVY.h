@@ -16,24 +16,13 @@
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for the Spin Recovery panel.
  *********************************************************************************************************************/
-/**
- * @file 1A6A1_SPN_RCVY_BL.h
- * @author Arribe
- * @date 03.25.2024
- * @version u.0.0.1 (untested)
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware.
- * @brief Implements backlighting and indicators for the Spin Recovery panel.
-*/
+
 
 #ifndef __SPN_RCVY_BL_H
 #define __SPN_RCVY_BL_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 
 /********************************************************************************************************************

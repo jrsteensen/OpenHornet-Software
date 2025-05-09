@@ -17,14 +17,12 @@
  * @brief Implements backlighting for the HUD panel (Revision 3).
  *********************************************************************************************************************/
 
+
 #ifndef __HUD_PANEL_REV3_H
 #define __HUD_PANEL_REV3_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 
 /********************************************************************************************************************

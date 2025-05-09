@@ -16,24 +16,13 @@
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for the Master Arm panel.
  *********************************************************************************************************************/
-/**
- * @file 1A2A1_MASTER_ARM_BL.h
- * @author Ulukaii
- * @date 04.30.2025
- * @version t 0.3.1
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @warning This sketch is based on a wiring diagram according to OH-INTERCONNECT.
- * @brief Implements backlighting and indicators for the Master Arm panel.
-*/
+
 
 #ifndef __MASTER_ARM_BL_H
 #define __MASTER_ARM_BL_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 
 

@@ -1,9 +1,28 @@
- #ifndef STANDBY_INSTRUMENT_PANEL_H
+/**********************************************************************************************************************
+ *        ____                   _    _                       _
+ *       / __ \                 | |  | |                     | |
+ *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
+ *      | |  | | '_ \ / _ \ '_ \|  __  |/ _ \| '__| '_ \ / _ \ __|
+ *      | |__| | |_) |  __/ | | | |  | | (_) | |  | | | |  __/ |_
+ *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
+ *             | |
+ *             |_|
+ *   ----------------------------------------------------------------------------------
+ *  
+ * @file 2A2A1A8_STANDBY_INSTRUMENT.h
+ * @author Ulukaii
+ * @date 05.05.2025
+ * @version u 0.3.1
+ * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
+ * @brief Implements backlighting and indicators for the Standby Instrument panel.
+ *********************************************************************************************************************/
+
+
+#ifndef STANDBY_INSTRUMENT_PANEL_H
 #define STANDBY_INSTRUMENT_PANEL_H
 
-#include "Panel.h"
-#include "FastLED.h"
 #include "DcsBios.h"
+#include "../helpers/Panel.h"
 
 // Total number of LEDs in the panel
 const int STANDBY_INSTRUMENT_LED_COUNT = 6;

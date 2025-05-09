@@ -14,17 +14,15 @@
  * @date 05.05.2025
  * @version t 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Implements flood lighting for the Left Console.
+ * @brief Implements flood lighting for the Left Console. Assumes all lights are connected to the same WS2812 strip.
  *********************************************************************************************************************/
+
 
 #ifndef __LC_FLOOD_H
 #define __LC_FLOOD_H
 
 #include "DcsBios.h"
-#include "Panel.h"
-#include "FastLED.h"
-#include "Colors.h"
-#include <avr/pgmspace.h>
+#include "../helpers/Panel.h"
 
 /********************************************************************************************************************
  * @brief   This table defines the panel's LEDs.
