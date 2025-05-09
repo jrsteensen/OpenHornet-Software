@@ -23,7 +23,6 @@
 #define __PANEL_H
 
 #include <Arduino.h>
-#include <string.h>
 #include <avr/pgmspace.h> 
 #include "DcsBios.h"
 #include "FastLED.h"

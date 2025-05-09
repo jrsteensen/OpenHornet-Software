@@ -31,11 +31,11 @@
  **************************************************************************************/
 /**
  * @file 2A13-BACKLIGHT_CONTROLLER.ino
- * @author Arribe, Ulukaii, Higgins
- * @date May 01, 2025
- * @version V 0.1 (tested)
- * @warning This sketch is based on OH-Interconnect. You may need to adapt it to your actual wiring and panel versions.
- * @brief Controls backlights & most annunciators of the cockpit. Coded for Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
+ * @author Ulukaii, Arribe, Higgins
+ * @date May 10, 2025
+ * @version V 0.2 ( partially tested)
+ * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and panel versions.
+ * @brief Controls backlights & most annunciators. Coded for Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
  * @details
  * **Wiring Diagram:** 
  * 
@@ -60,7 +60,7 @@
  */
 
 /**********************************************************************************************************************
- * @brief Preprocessor directives 
+ * @brief  Preprocessor directives 
  * @remark In particular:
  *         1. Check if we're on a Mega328 or Mega2560 and choose serial interface (Pro Micro: Default)
  *         2. Include external libraries FastLED and DcsBios
@@ -81,8 +81,8 @@
 #include "helpers/Channel.h"
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
-#include "panels/1A7A1_HUD_PANEL_REV4.h"            //Make sure to uncomment the correct HUD panel header file
-//#include "panels/1A7A1_HUD_PANEL_REV3.h"          //Make sure to uncomment the correct include statement for your HUD panel
+#include "panels/1A7A1_HUD_PANEL_REV4.h"            
+#include "panels/1A7A1_HUD_PANEL_REV3.h"          
 #include "panels/1A5_R_EWI.h"
 #include "panels/1A6A1_SPN_RCVY.h"
 #include "panels/2A2A1A6_ECM.h"
@@ -93,9 +93,9 @@
 
 
 /********************************************************************************************************************
- * @brief Create the channel objects. Carefully check pinout corresponds to (YOUR!) wiring.
- * @remark The written number of LEDs per strip might exceed the actual number. This can be ignored.
- * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected maxled count);
+ * @brief   Create the channel objects. 
+ * @remark  Carefully check that the pinout corresponds to (YOUR!) wiring.
+ * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected max. led count);
  ********************************************************************************************************************/
 
 Channel LIP_1(13, "Channel 1", 100);
@@ -120,7 +120,7 @@ const uint8_t pin_EncoderB  =    23;
  * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
  ********************************************************************************************************************/
 void setup() {
-    // Initialize the LED strips
+    // Initialize the channel objects. This will create the LED strips within the channel objects.
     LIP_1.initialize();
     LIP_2.initialize();
     UIP_1.initialize();
@@ -133,7 +133,7 @@ void setup() {
     AUX_2.initialize();
     FastLED.show();
 
-    // Panel instantiations
+    // Instantiate the panels. Adapt the order of the panels according to your physical wiring.
     UIP_1.addPanel<MasterArmPanel>();
     UIP_1.addPanel<EwiPanel>();
     //UIP_1.addPanel<HudPanel>();
@@ -152,9 +152,9 @@ void setup() {
 }
 
 void loop() {
-  //Run DCS Bios loop function
-  DcsBios::loop();
+    //Run DCS Bios loop function
+    DcsBios::loop();
   
-  // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if any changes are pending
-  Panel::updateLeds();
+    // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if any changes are pending
+    Panel::updateLeds();
 }

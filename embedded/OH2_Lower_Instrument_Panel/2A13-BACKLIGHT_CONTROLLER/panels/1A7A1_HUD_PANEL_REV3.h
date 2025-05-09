@@ -30,8 +30,8 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int HUD_LED_COUNT = 56;  // Total number of LEDs in the panel
-const Led hudLedTable[HUD_LED_COUNT] PROGMEM = {
+const int HUD_REV3_LED_COUNT = 56;  // Total number of LEDs in the panel
+const Led hudRev3LedTable[HUD_REV3_LED_COUNT] PROGMEM = {
     {0, LED_BACKLIGHT, ""}, {1, LED_BACKLIGHT, ""}, {2, LED_BACKLIGHT, ""}, {3, LED_BACKLIGHT, ""}, {4, LED_BACKLIGHT, ""}, 
     {5, LED_BACKLIGHT, ""}, {6, LED_BACKLIGHT, ""}, {7, LED_BACKLIGHT, ""}, {8, LED_BACKLIGHT, ""}, {9, LED_BACKLIGHT, ""},
     {10, LED_BACKLIGHT, ""}, {11, LED_BACKLIGHT, ""}, {12, LED_BACKLIGHT, ""}, {13, LED_BACKLIGHT, ""}, {14, LED_BACKLIGHT, ""}, 
@@ -47,43 +47,43 @@ const Led hudLedTable[HUD_LED_COUNT] PROGMEM = {
 };
 
 /********************************************************************************************************************
- * @brief   HUD Panel class
- * @details Backlighting controller for the HUD panel.
- *          Total LEDs: 50
- *          Backlight LEDs: 50 (all LEDs are backlights)
+ * @brief   HUD Panel Rev3 class
+ * @details Backlighting controller for the HUD panel Rev3.
+ *          Total LEDs: 56
+ *          Backlight LEDs: 56 (all LEDs are backlights)
  *          Indicator LEDs: 0 (no indicators in this panel)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class HudPanel : public Panel {
+class HudPanelRev3 : public Panel {
 public:
-    static HudPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
+    static HudPanelRev3* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
-            instance = new HudPanel(startIndex, ledStrip);
+            instance = new HudPanelRev3(startIndex, ledStrip);
         }
         return instance;
     }
 
 private:
     // Private constructor
-    HudPanel(int startIndex, CRGB* ledStrip) {
+    HudPanelRev3(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;
-        ledCount = HUD_LED_COUNT;
-        ledTable = hudLedTable;
+        ledCount = HUD_REV3_LED_COUNT;
+        ledTable = hudRev3LedTable;
     }
 
     // Static callback functions for DCS-BIOS
-    static void onInstrIntLtChange(unsigned int newValue) {
+    static void onInstrIntLtChangeRev3(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBufferRev3{0x7560, 0xffff, 0, onInstrIntLtChangeRev3};
 
     // Instance data
-    static HudPanel* instance;
+    static HudPanelRev3* instance;
 };
 
 // Initialize static instance pointer
-HudPanel* HudPanel::instance = nullptr;
+HudPanelRev3* HudPanelRev3::instance = nullptr;
 
 #endif 
