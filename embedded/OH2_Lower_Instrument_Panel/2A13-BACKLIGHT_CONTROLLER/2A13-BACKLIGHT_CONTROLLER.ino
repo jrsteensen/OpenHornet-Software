@@ -96,6 +96,9 @@
  * @brief   Create the channel objects. 
  * @remark  Carefully check that the pinout corresponds to (YOUR!) wiring.
  * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected max. led count);
+ *          When adapting below code, observe memory constraints. The below LED allocation uses 5709 bytes of SRAM, 
+ *          of 8192 available on the Mega2560. The rest of the program requires another approx. 400-600 bytes 
+ *          (each DCS-BIOS buffer: 2byte; FastLED library: 100 bytes; DCS-Bios core: 200 bytes)
  ********************************************************************************************************************/
 
 Channel LIP_1(13, "Channel 1", 100);
@@ -106,8 +109,8 @@ Channel LC_1(9, "Channel 5", 200);
 Channel LC_2(5, "Channel 6", 233);
 Channel RC_1(7, "Channel 7", 250);
 Channel RC_2(6, "Channel 8", 380);
-Channel AUX_1(8, "Channel 9", 300);
-Channel AUX_2(4, "Channel 10", 300);
+Channel AUX_1(8, "Channel 9", 100);               //Channel is not used as per OH-Interconnect; use for future expansion
+Channel AUX_2(4, "Channel 10", 100);              //Channel is not used as per OH-Interconnect; use for future expansion
 
 //Set up other variables
 const uint8_t pin_EncoderSw =    24;              // Ulukaii deviation. Standard is 22
@@ -155,6 +158,6 @@ void loop() {
     //Run DCS Bios loop function
     DcsBios::loop();
   
-    // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if any changes are pending
+    // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if changes are pending
     Panel::updateLeds();
 }

@@ -73,8 +73,8 @@ protected:
 
     // Protected methods that derived classes can use
     void setBacklights(int newValue) {
-        // Safety checks
-        if (!getLedStrip() || !getLedTable()) return;
+        // Memory Safety checks
+        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
 
         // Determine the brightness value
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
@@ -101,7 +101,7 @@ protected:
 
     void setIndicatorColor(LedRole role, const CRGB& color) {
         // Safety checks
-        if (!getLedStrip() || !getLedTable()) return;
+        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
 
         // Read LED info from PROGMEM for each LED, check LED role is specified role and set color
         for (int i = 0; i < getLedCount(); i++) {
@@ -117,6 +117,9 @@ protected:
     }
 
     void setFloodlights(int newValue) {
+        // Memory safety checks
+        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
+
         // Map the DCS-BIOS value (0-65535) to brightness (0-255)
         uint8_t brightness = map(newValue, 0, 65535, 0, 255);
         
