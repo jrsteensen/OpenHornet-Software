@@ -31,26 +31,26 @@
  ********************************************************************************************************************/
 const int LC_FLOOD_LED_COUNT = 100;  // Total number of LEDs in the panel
 const Led lcFloodLedTable[LC_FLOOD_LED_COUNT] PROGMEM = {
-    {0, LED_FLOOD, ""}, {1, LED_FLOOD, ""}, {2, LED_FLOOD, ""}, {3, LED_FLOOD, ""}, {4, LED_FLOOD, ""}, 
-    {5, LED_FLOOD, ""}, {6, LED_FLOOD, ""}, {7, LED_FLOOD, ""}, {8, LED_FLOOD, ""}, {9, LED_FLOOD, ""},
-    {10, LED_FLOOD, ""}, {11, LED_FLOOD, ""}, {12, LED_FLOOD, ""}, {13, LED_FLOOD, ""}, {14, LED_FLOOD, ""}, 
-    {15, LED_FLOOD, ""}, {16, LED_FLOOD, ""}, {17, LED_FLOOD, ""}, {18, LED_FLOOD, ""}, {19, LED_FLOOD, ""},
-    {20, LED_FLOOD, ""}, {21, LED_FLOOD, ""}, {22, LED_FLOOD, ""}, {23, LED_FLOOD, ""}, {24, LED_FLOOD, ""}, 
-    {25, LED_FLOOD, ""}, {26, LED_FLOOD, ""}, {27, LED_FLOOD, ""}, {28, LED_FLOOD, ""}, {29, LED_FLOOD, ""},
-    {30, LED_FLOOD, ""}, {31, LED_FLOOD, ""}, {32, LED_FLOOD, ""}, {33, LED_FLOOD, ""}, {34, LED_FLOOD, ""}, 
-    {35, LED_FLOOD, ""}, {36, LED_FLOOD, ""}, {37, LED_FLOOD, ""}, {38, LED_FLOOD, ""}, {39, LED_FLOOD, ""},
-    {40, LED_FLOOD, ""}, {41, LED_FLOOD, ""}, {42, LED_FLOOD, ""}, {43, LED_FLOOD, ""}, {44, LED_FLOOD, ""}, 
-    {45, LED_FLOOD, ""}, {46, LED_FLOOD, ""}, {47, LED_FLOOD, ""}, {48, LED_FLOOD, ""}, {49, LED_FLOOD, ""},
-    {50, LED_FLOOD, ""}, {51, LED_FLOOD, ""}, {52, LED_FLOOD, ""}, {53, LED_FLOOD, ""}, {54, LED_FLOOD, ""}, 
-    {55, LED_FLOOD, ""}, {56, LED_FLOOD, ""}, {57, LED_FLOOD, ""}, {58, LED_FLOOD, ""}, {59, LED_FLOOD, ""},
-    {60, LED_FLOOD, ""}, {61, LED_FLOOD, ""}, {62, LED_FLOOD, ""}, {63, LED_FLOOD, ""}, {64, LED_FLOOD, ""}, 
-    {65, LED_FLOOD, ""}, {66, LED_FLOOD, ""}, {67, LED_FLOOD, ""}, {68, LED_FLOOD, ""}, {69, LED_FLOOD, ""},
-    {70, LED_FLOOD, ""}, {71, LED_FLOOD, ""}, {72, LED_FLOOD, ""}, {73, LED_FLOOD, ""}, {74, LED_FLOOD, ""}, 
-    {75, LED_FLOOD, ""}, {76, LED_FLOOD, ""}, {77, LED_FLOOD, ""}, {78, LED_FLOOD, ""}, {79, LED_FLOOD, ""},
-    {80, LED_FLOOD, ""}, {81, LED_FLOOD, ""}, {82, LED_FLOOD, ""}, {83, LED_FLOOD, ""}, {84, LED_FLOOD, ""}, 
-    {85, LED_FLOOD, ""}, {86, LED_FLOOD, ""}, {87, LED_FLOOD, ""}, {88, LED_FLOOD, ""}, {89, LED_FLOOD, ""},
-    {90, LED_FLOOD, ""}, {91, LED_FLOOD, ""}, {92, LED_FLOOD, ""}, {93, LED_FLOOD, ""}, {94, LED_FLOOD, ""}, 
-    {95, LED_FLOOD, ""}, {96, LED_FLOOD, ""}, {97, LED_FLOOD, ""}, {98, LED_FLOOD, ""}, {99, LED_FLOOD, ""}
+    {0, LED_FLOOD}, {1, LED_FLOOD}, {2, LED_FLOOD}, {3, LED_FLOOD}, {4, LED_FLOOD}, 
+    {5, LED_FLOOD}, {6, LED_FLOOD}, {7, LED_FLOOD}, {8, LED_FLOOD}, {9, LED_FLOOD},
+    {10, LED_FLOOD}, {11, LED_FLOOD}, {12, LED_FLOOD}, {13, LED_FLOOD}, {14, LED_FLOOD}, 
+    {15, LED_FLOOD}, {16, LED_FLOOD}, {17, LED_FLOOD}, {18, LED_FLOOD}, {19, LED_FLOOD},
+    {20, LED_FLOOD}, {21, LED_FLOOD}, {22, LED_FLOOD}, {23, LED_FLOOD}, {24, LED_FLOOD}, 
+    {25, LED_FLOOD}, {26, LED_FLOOD}, {27, LED_FLOOD}, {28, LED_FLOOD}, {29, LED_FLOOD},
+    {30, LED_FLOOD}, {31, LED_FLOOD}, {32, LED_FLOOD}, {33, LED_FLOOD}, {34, LED_FLOOD}, 
+    {35, LED_FLOOD}, {36, LED_FLOOD}, {37, LED_FLOOD}, {38, LED_FLOOD}, {39, LED_FLOOD},
+    {40, LED_FLOOD}, {41, LED_FLOOD}, {42, LED_FLOOD}, {43, LED_FLOOD}, {44, LED_FLOOD}, 
+    {45, LED_FLOOD}, {46, LED_FLOOD}, {47, LED_FLOOD}, {48, LED_FLOOD}, {49, LED_FLOOD},
+    {50, LED_FLOOD}, {51, LED_FLOOD}, {52, LED_FLOOD}, {53, LED_FLOOD}, {54, LED_FLOOD}, 
+    {55, LED_FLOOD}, {56, LED_FLOOD}, {57, LED_FLOOD}, {58, LED_FLOOD}, {59, LED_FLOOD},
+    {60, LED_FLOOD}, {61, LED_FLOOD}, {62, LED_FLOOD}, {63, LED_FLOOD}, {64, LED_FLOOD}, 
+    {65, LED_FLOOD}, {66, LED_FLOOD}, {67, LED_FLOOD}, {68, LED_FLOOD}, {69, LED_FLOOD},
+    {70, LED_FLOOD}, {71, LED_FLOOD}, {72, LED_FLOOD}, {73, LED_FLOOD}, {74, LED_FLOOD}, 
+    {75, LED_FLOOD}, {76, LED_FLOOD}, {77, LED_FLOOD}, {78, LED_FLOOD}, {79, LED_FLOOD},
+    {80, LED_FLOOD}, {81, LED_FLOOD}, {82, LED_FLOOD}, {83, LED_FLOOD}, {84, LED_FLOOD}, 
+    {85, LED_FLOOD}, {86, LED_FLOOD}, {87, LED_FLOOD}, {88, LED_FLOOD}, {89, LED_FLOOD},
+    {90, LED_FLOOD}, {91, LED_FLOOD}, {92, LED_FLOOD}, {93, LED_FLOOD}, {94, LED_FLOOD}, 
+    {95, LED_FLOOD}, {96, LED_FLOOD}, {97, LED_FLOOD}, {98, LED_FLOOD}, {99, LED_FLOOD}
 };
 
 /********************************************************************************************************************

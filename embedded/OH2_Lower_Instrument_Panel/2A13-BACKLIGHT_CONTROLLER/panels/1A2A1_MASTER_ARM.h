@@ -33,17 +33,28 @@
  ********************************************************************************************************************/
 const int MASTER_ARM_LED_COUNT = 29;  // Total number of LEDs in the panel
 const Led masterArmLedTable[MASTER_ARM_LED_COUNT] PROGMEM = {
-    {0, LED_READY, ""}, {1, LED_READY, ""}, {2, LED_DISCH, ""}, {3, LED_DISCH, ""}, 
-    {4, LED_BACKLIGHT, "MASTER ARM"}, {5, LED_BACKLIGHT, "READY"}, {6, LED_BACKLIGHT, "DISCH"}, 
-    {7, LED_BACKLIGHT, "AG"}, {8, LED_BACKLIGHT, "AA"}, {9, LED_BACKLIGHT, ""},
-    {10, LED_BACKLIGHT, ""}, {11, LED_BACKLIGHT, ""}, {12, LED_BACKLIGHT, ""}, 
-    {13, LED_BACKLIGHT, ""}, {14, LED_BACKLIGHT, ""}, {15, LED_BACKLIGHT, ""}, 
-    {16, LED_BACKLIGHT, ""}, {17, LED_BACKLIGHT, ""}, {18, LED_BACKLIGHT, ""}, 
-    {19, LED_BACKLIGHT, ""}, {20, LED_BACKLIGHT, ""}, {21, LED_BACKLIGHT, ""}, 
-    {22, LED_BACKLIGHT, ""}, {23, LED_BACKLIGHT, ""}, {24, LED_BACKLIGHT, ""}, 
-    {25, LED_AG, ""}, {26, LED_AG, ""}, {27, LED_AA, ""}, {28, LED_AA, ""}
+    {0, LED_READY}, {1, LED_READY}, {2, LED_DISCH}, {3, LED_DISCH}, 
+    {4, LED_BACKLIGHT}, {5, LED_BACKLIGHT}, {6, LED_BACKLIGHT}, 
+    {7, LED_BACKLIGHT}, {8, LED_BACKLIGHT}, {9, LED_BACKLIGHT},
+    {10, LED_BACKLIGHT}, {11, LED_BACKLIGHT}, {12, LED_BACKLIGHT}, 
+    {13, LED_BACKLIGHT}, {14, LED_BACKLIGHT}, {15, LED_BACKLIGHT}, 
+    {16, LED_BACKLIGHT}, {17, LED_BACKLIGHT}, {18, LED_BACKLIGHT}, 
+    {19, LED_BACKLIGHT}, {20, LED_BACKLIGHT}, {21, LED_BACKLIGHT}, 
+    {22, LED_BACKLIGHT}, {23, LED_BACKLIGHT}, {24, LED_BACKLIGHT}, 
+    {25, LED_AG}, {26, LED_AG}, {27, LED_AA}, {28, LED_AA}
 };
 
+/********************************************************************************************************************
+ * @brief   This table defines the optional legend text for specific backlight LEDs.
+ * @details Only LEDs that need text are included in this table.
+ * @remark  This table is stored in PROGMEM for memory efficiency.
+ ********************************************************************************************************************/
+const int MASTER_ARM_TEXT_COUNT = 3;  // Number of LEDs that need text
+const LedText masterArmTextTable[MASTER_ARM_TEXT_COUNT] PROGMEM = {
+    {18, "MASTER"},
+    {20, "MASTER"},
+    {21, "MASTER"}
+};
 
 /********************************************************************************************************************
  * @brief   Master Arm Panel class

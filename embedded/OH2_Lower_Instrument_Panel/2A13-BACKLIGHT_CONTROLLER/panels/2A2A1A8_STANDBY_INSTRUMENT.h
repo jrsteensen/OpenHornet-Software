@@ -29,8 +29,8 @@ const int STANDBY_INSTRUMENT_LED_COUNT = 6;
 
 // LED table definition
 const Led standbyInstrumentLedTable[STANDBY_INSTRUMENT_LED_COUNT] PROGMEM = {
-    {0, LED_BACKLIGHT, ""}, {1, LED_BACKLIGHT, ""}, {2, LED_BACKLIGHT, ""},
-    {3, LED_BACKLIGHT, ""}, {4, LED_BACKLIGHT, ""}, {5, LED_BACKLIGHT, ""}
+    {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT},
+    {3, LED_BACKLIGHT}, {4, LED_BACKLIGHT}, {5, LED_BACKLIGHT}
 };
 
 /********************************************************************************************************************

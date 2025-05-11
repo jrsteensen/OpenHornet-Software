@@ -32,12 +32,12 @@
  ********************************************************************************************************************/
 const int R_EWI_LED_COUNT = 30;  // Total number of LEDs in the panel
 const Led rEwiLedTable[R_EWI_LED_COUNT] PROGMEM = {
-    {0, LED_R_FIRE, ""}, {1, LED_R_FIRE, ""}, {2, LED_R_FIRE, ""}, {3, LED_R_FIRE, ""}, {4, LED_APU_FIRE, ""}, 
-    {5, LED_APU_FIRE, ""}, {6, LED_APU_FIRE, ""}, {7, LED_APU_FIRE, ""}, {8, LED_DISP, ""}, {9, LED_DISP, ""},
-    {10, LED_RCDRON, ""}, {11, LED_RCDRON, ""}, {12, LED_BLANK1, ""}, {13, LED_BLANK1, ""}, {14, LED_BLANK2, ""}, 
-    {15, LED_BLANK2, ""}, {16, LED_BLANK3, ""}, {17, LED_BLANK3, ""}, {18, LED_BLANK4, ""}, {19, LED_BLANK4, ""},
-    {20, LED_BLANK5, ""}, {21, LED_BLANK5, ""}, {22, LED_SAM, ""}, {23, LED_SAM, ""}, {24, LED_AAA, ""}, 
-    {25, LED_AAA, ""}, {26, LED_AI, ""}, {27, LED_AI, ""}, {28, LED_CW, ""}, {29, LED_CW, ""}
+    {0, LED_R_FIRE}, {1, LED_R_FIRE}, {2, LED_R_FIRE}, {3, LED_R_FIRE}, {4, LED_APU_FIRE},
+    {5, LED_APU_FIRE}, {6, LED_APU_FIRE}, {7, LED_APU_FIRE}, {8, LED_DISP}, {9, LED_DISP},
+    {10, LED_RCDRON}, {11, LED_RCDRON}, {12, LED_BLANK1}, {13, LED_BLANK1}, {14, LED_BLANK2},
+    {15, LED_BLANK2}, {16, LED_BLANK3}, {17, LED_BLANK3}, {18, LED_BLANK4}, {19, LED_BLANK4},
+    {20, LED_BLANK5}, {21, LED_BLANK5}, {22, LED_SAM}, {23, LED_SAM}, {24, LED_AAA},
+    {25, LED_AAA}, {26, LED_AI}, {27, LED_AI}, {28, LED_CW}, {29, LED_CW}
 };
 
 /********************************************************************************************************************

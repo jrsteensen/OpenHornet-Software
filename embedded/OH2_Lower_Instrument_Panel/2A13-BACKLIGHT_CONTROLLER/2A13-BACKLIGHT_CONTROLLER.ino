@@ -109,8 +109,8 @@ Channel LC_1(9, "Channel 5", 200);
 Channel LC_2(5, "Channel 6", 233);
 Channel RC_1(7, "Channel 7", 250);
 Channel RC_2(6, "Channel 8", 380);
-Channel AUX_1(8, "Channel 9", 100);               //Channel is not used as per OH-Interconnect; use for future expansion
-Channel AUX_2(4, "Channel 10", 100);              //Channel is not used as per OH-Interconnect; use for future expansion
+Channel AUX_1(8, "Channel 9", 100);               //Channel 9 not used as per OH-Interconnect; for future expansion
+Channel AUX_2(4, "Channel 10", 100);              //Channel 10 not used as per OH-Interconnect; for future expansion
 
 //Set up other variables
 const uint8_t pin_EncoderSw =    24;              // Ulukaii deviation. Standard is 22
@@ -139,7 +139,7 @@ void setup() {
     // Instantiate the panels. Adapt the order of the panels according to your physical wiring.
     UIP_1.addPanel<MasterArmPanel>();
     UIP_1.addPanel<EwiPanel>();
-    UIP_1.addPanel<HudPanel>();
+    //UIP_1.addPanel<HudPanel>();
     UIP_1.addPanel<REwiPanel>();
     UIP_1.addPanel<SpnRcvyPanel>();
 

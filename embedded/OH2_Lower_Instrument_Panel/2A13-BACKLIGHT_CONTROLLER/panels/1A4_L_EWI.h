@@ -32,12 +32,12 @@
  ********************************************************************************************************************/
 const int L_EWI_LED_COUNT = 30;  // Total number of LEDs in the panel
 const Led lEwiLedTable[L_EWI_LED_COUNT] PROGMEM = {
-    {0, LED_FIRE, ""}, {1, LED_FIRE, ""}, {2, LED_FIRE, ""}, {3, LED_FIRE, ""}, {4, LED_CAUTION, ""}, 
-    {5, LED_CAUTION, ""}, {6, LED_CAUTION, ""}, {7, LED_CAUTION, ""}, {8, LED_GO, ""}, {9, LED_GO, ""},
-    {10, LED_NO_GO, ""}, {11, LED_NO_GO, ""}, {12, LED_R_BLEED, ""}, {13, LED_R_BLEED, ""}, {14, LED_L_BLEED, ""}, 
-    {15, LED_L_BLEED, ""}, {16, LED_SPD_BRK, ""}, {17, LED_SPD_BRK, ""}, {18, LED_STBY, ""}, {19, LED_STBY, ""},
-    {20, LED_REC, ""}, {21, LED_REC, ""}, {22, LED_L_BAR1, ""}, {23, LED_L_BAR1, ""}, {24, LED_L_BAR2, ""}, 
-    {25, LED_L_BAR2, ""}, {26, LED_XMIT, ""}, {27, LED_XMIT, ""}, {28, LED_ASPJ_ON, ""}, {29, LED_ASPJ_ON, ""}
+    {0, LED_FIRE}, {1, LED_FIRE}, {2, LED_FIRE}, {3, LED_FIRE}, {4, LED_CAUTION}, 
+    {5, LED_CAUTION}, {6, LED_CAUTION}, {7, LED_CAUTION}, {8, LED_GO}, {9, LED_GO},
+    {10, LED_NO_GO}, {11, LED_NO_GO}, {12, LED_R_BLEED}, {13, LED_R_BLEED}, {14, LED_L_BLEED}, 
+    {15, LED_L_BLEED}, {16, LED_SPD_BRK}, {17, LED_SPD_BRK}, {18, LED_STBY}, {19, LED_STBY},
+    {20, LED_REC}, {21, LED_REC}, {22, LED_L_BAR1}, {23, LED_L_BAR1}, {24, LED_L_BAR2}, 
+    {25, LED_L_BAR2}, {26, LED_XMIT}, {27, LED_XMIT}, {28, LED_ASPJ_ON}, {29, LED_ASPJ_ON}
 };
 
 /********************************************************************************************************************

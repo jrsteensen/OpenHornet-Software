@@ -41,6 +41,9 @@ public:
     // Static flag to track if any LEDs need updating across all panels. Shared across all panel instances
     static bool ledsNeedUpdate;
 
+    // Static color used for backlights - shared across all panel instances
+    static CRGB targetColor;
+
     // Static method to update LEDs if any changes are pending
     static void updateLeds() {
         if (ledsNeedUpdate) {
@@ -64,11 +67,13 @@ protected:
     uint8_t last_brightness;         // Last brightness value
     uint8_t last_flood_brightness;   // Last brightness value for floodlights
 
-    // Get color for brightness level using lookup table
-    static CRGB getColorForBrightness(uint8_t brightness) {
-        CRGB color;
-        memcpy_P(&color, &BRIGHTNESS_TABLE[brightness], sizeof(CRGB));
-        return color;
+    // Calculate the green color for given brightness and optional offset
+    static CRGB getColorForBrightness(uint8_t brightness, int8_t offset = 0) {
+        // Ensure brightness stays within valid range (0-255)
+        int16_t adjustedBrightness = brightness + offset;
+        if (adjustedBrightness < 0) adjustedBrightness = 0;
+        if (adjustedBrightness > 255) adjustedBrightness = 255;
+        return CRGB(0, adjustedBrightness, 0);
     }
 
     // Protected methods that derived classes can use
@@ -83,8 +88,8 @@ protected:
         if (brightness == last_brightness) return;
         last_brightness = brightness;
 
-        // Get the color for this brightness level
-        CRGB color = getColorForBrightness(brightness);
+        // Only calculate the color if we are in the first method call of this update cycle (ledsNeedUpdate is still false)
+        if (!ledsNeedUpdate) targetColor = getColorForBrightness(brightness);
 
         // Read LED info from PROGMEM for each LED, check LED role is BACKLIGHT and set color
         for (int i = 0; i < getLedCount(); i++) {
@@ -92,7 +97,7 @@ protected:
             memcpy_P(&led, &getLedTable()[i], sizeof(Led));
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_BACKLIGHT) {
-                getLedStrip()[ledIndex] = color;
+                getLedStrip()[ledIndex] = targetColor;
             }
         }
         // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
@@ -144,7 +149,8 @@ protected:
     }
 };
 
-// Define the static member variable
+// Define the static member variables
 bool Panel::ledsNeedUpdate;
+CRGB Panel::targetColor = CRGB(0, 0, 0);
 
 #endif 

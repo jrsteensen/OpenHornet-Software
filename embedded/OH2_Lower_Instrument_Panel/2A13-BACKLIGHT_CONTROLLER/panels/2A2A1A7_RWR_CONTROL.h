@@ -32,14 +32,14 @@
  ********************************************************************************************************************/
 const int RWR_CONTROL_LED_COUNT = 32;  // Total number of LEDs in the panel
 const Led rwrControlLedTable[RWR_CONTROL_LED_COUNT] PROGMEM = {
-    {0, LED_BACKLIGHT, ""}, {1, LED_BACKLIGHT, ""}, {2, LED_BACKLIGHT, ""}, {3, LED_BACKLIGHT, ""},
-    {4, LED_BACKLIGHT, ""}, {5, LED_BACKLIGHT, ""}, {6, LED_RWR_BIT, ""}, {7, LED_RWR_BIT_FAIL, ""},
-    {8, LED_RWR_BIT_FAIL, ""}, {9, LED_RWR_BIT, ""}, {10, LED_RWR_OFFSET, ""}, {11, LED_RWR_OFFSET_EN, ""},
-    {12, LED_RWR_OFFSET_EN, ""}, {13, LED_RWR_OFFSET, ""}, {14, LED_RWR_SPECIAL, ""}, {15, LED_RWR_SPECIAL_EN, ""},
-    {16, LED_RWR_SPECIAL_EN, ""}, {17, LED_RWR_SPECIAL, ""}, {18, LED_RWR_DISPLAY, ""}, {19, LED_RWR_LIMIT, ""},
-    {20, LED_RWR_LIMIT, ""}, {21, LED_RWR_DISPLAY, ""}, {22, LED_RWR_POWER, ""}, {23, LED_RWR_POWER, ""},
-    {24, LED_RWR_NONE, ""}, {25, LED_RWR_NONE, ""}, {26, LED_BACKLIGHT, ""}, {27, LED_BACKLIGHT, ""},
-    {28, LED_BACKLIGHT, ""}, {29, LED_BACKLIGHT, ""}, {30, LED_BACKLIGHT, ""}, {31, LED_BACKLIGHT, ""}
+    {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT}, {3, LED_BACKLIGHT},
+    {4, LED_BACKLIGHT}, {5, LED_BACKLIGHT}, {6, LED_RWR_BIT}, {7, LED_RWR_BIT_FAIL},
+    {8, LED_RWR_BIT_FAIL}, {9, LED_RWR_BIT}, {10, LED_RWR_OFFSET}, {11, LED_RWR_OFFSET_EN},
+    {12, LED_RWR_OFFSET_EN}, {13, LED_RWR_OFFSET}, {14, LED_RWR_SPECIAL}, {15, LED_RWR_SPECIAL_EN},
+    {16, LED_RWR_SPECIAL_EN}, {17, LED_RWR_SPECIAL}, {18, LED_RWR_DISPLAY}, {19, LED_RWR_LIMIT},
+    {20, LED_RWR_LIMIT}, {21, LED_RWR_DISPLAY}, {22, LED_RWR_POWER}, {23, LED_RWR_POWER},
+    {24, LED_RWR_NONE}, {25, LED_RWR_NONE}, {26, LED_BACKLIGHT}, {27, LED_BACKLIGHT},
+    {28, LED_BACKLIGHT}, {29, LED_BACKLIGHT}, {30, LED_BACKLIGHT}, {31, LED_BACKLIGHT}
 };
 
 /********************************************************************************************************************
