@@ -32,67 +32,64 @@
 
 class Panel {
 public:
-    // Pure virtual methods that inheriting classes must implement
+    //Virtual methods. Specific panels must implement them INDIVIDUALLY.
     virtual int getStartIndex() const { return panelStartIndex; }
     virtual int getLedCount() const { return ledCount; }
     virtual const Led* getLedTable() const { return ledTable; }
     virtual CRGB* getLedStrip() const { return ledStrip; }
+    
+    //Static variables and methods. SHARED across all panels.
+    static CRGB targetColor;                                          //Save the current backlight color
+    static bool ledsNeedUpdate;                                       //Track if any LEDs need updating
+    static int updCountdown;                                         //Countdown before triggiering FastLED.show()
 
-    // Static flag to track if any LEDs need updating across all panels. Shared across all panel instances
-    static bool ledsNeedUpdate;
-
-    // Static color used for backlights - shared across all panel instances
-    static CRGB targetColor;
-
-    // Static method to update LEDs if any changes are pending
     static void updateLeds() {
         if (ledsNeedUpdate) {
-            FastLED.show();
-            ledsNeedUpdate = false;
+            updCountdown = (updCountdown == 0) ? 8 : updCountdown;    //If countdown is 0, this is the first cycle, so set to 8
+            updCountdown--;
+            if (updCountdown == 0) {                                  //Trigger FastLED.show() at end of countdown
+                FastLED.show();                                       //This countdown logic allows to capture multiple
+                ledsNeedUpdate = false;                               //DCS-BIOS loop cycles into one FastLED.show() call
+            }
         }
     }
 
 protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
-        last_brightness = 128;
-        last_flood_brightness = 128;
+        last_brightness = 64;
+        last_flood_brightness = 64;
     }
 
-    // Protected member variables that inheriting classes must set
-    int panelStartIndex;             // Start index of the panel on the LED strip
-    int ledCount;                    // Number of LEDs in the panel
-    const Led* ledTable;             // Pointer to the LED table
-    CRGB* ledStrip;                  // Pointer to the LED strip
-    uint8_t last_brightness;         // Last brightness value
-    uint8_t last_flood_brightness;   // Last brightness value for floodlights
+    // Protected variables. Specific panels must set them INDIVIDUALLY.
+    int panelStartIndex;                                              // Start index of the panel on the LED strip
+    int ledCount;                                                     // Number of LEDs in the panel
+    const Led* ledTable;                                              // Pointer to the LED table
+    CRGB* ledStrip;                                                   // Pointer to the LED strip
+    uint8_t last_brightness;                                          // Last brightness value
+    uint8_t last_flood_brightness;                                    // Last brightness value for floodlights
+
+
+    //The following methods are used to set the color of the LEDs
+    //They are SHARED across all panels.
 
     // Calculate the green color for given brightness and optional offset
-    static CRGB getColorForBrightness(uint8_t brightness, int8_t offset = 0) {
-        // Ensure brightness stays within valid range (0-255)
-        int16_t adjustedBrightness = brightness + offset;
+    CRGB getBrightness(int brightness, int offset = 0) {
+        int adjustedBrightness = brightness + offset;
         if (adjustedBrightness < 0) adjustedBrightness = 0;
         if (adjustedBrightness > 255) adjustedBrightness = 255;
         return CRGB(0, adjustedBrightness, 0);
     }
 
-    // Protected methods that derived classes can use
+    // Set the color of LEDs with role LED_BACKLIGHT
     void setBacklights(int newValue) {
-        // Memory Safety checks
-        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
-
-        // Determine the brightness value
-        uint8_t brightness = map(newValue, 0, 65535, 0, 255);
-
-        // Add value-based debouncing
-        if (brightness == last_brightness) return;
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        int brightness = map(newValue, 0, 65535, 0, 255);             // Determine the brightness value
+        if (brightness == last_brightness) return;                    // Add value-based debouncing
         last_brightness = brightness;
-
-        // Only calculate the color if we are in the first method call of this update cycle (ledsNeedUpdate is still false)
-        if (!ledsNeedUpdate) targetColor = getColorForBrightness(brightness);
-
-        // Read LED info from PROGMEM for each LED, check LED role is BACKLIGHT and set color
-        for (int i = 0; i < getLedCount(); i++) {
+        if (!ledsNeedUpdate) targetColor = getBrightness(brightness); // Only calculate the color if we are in the first method call of this update cycle (ledsNeedUpdate is still false)
+        int n = getLedCount();
+        for (int i = 0; i < n; i++) {                                 // For each LED, read infor from PROGMEM; if LED is BACKLIGHT, set color
             Led led;
             memcpy_P(&led, &getLedTable()[i], sizeof(Led));
             uint16_t ledIndex = led.index + getStartIndex();
@@ -100,16 +97,14 @@ protected:
                 getLedStrip()[ledIndex] = targetColor;
             }
         }
-        // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
-        ledsNeedUpdate = true;
+        ledsNeedUpdate = true;                                        // Set "LED update required" flag
     }
 
+    // Set the color of LEDs with a specific role (parameter "role"))
     void setIndicatorColor(LedRole role, const CRGB& color) {
-        // Safety checks
-        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
-
-        // Read LED info from PROGMEM for each LED, check LED role is specified role and set color
-        for (int i = 0; i < getLedCount(); i++) {
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        int n = getLedCount();                                        
+        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED matches role, set color
             Led led;
             memcpy_P(&led, &getLedTable()[i], sizeof(Led));
             uint16_t ledIndex = led.index + getStartIndex();
@@ -117,40 +112,31 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        // Mark that LEDs need updating. Do not call FastLED.show() directly just yet.
-        ledsNeedUpdate = true;
+        ledsNeedUpdate = true;                                           // Set "LED update required" flag
     }
 
+    // Set the color of LEDs with role LED_FLOOD
     void setFloodlights(int newValue) {
-        // Memory safety checks
-        if (!getLedStrip() || !getLedTable() || getLedCount() <= 0) return;
-
-        // Map the DCS-BIOS value (0-65535) to brightness (0-255)
-        uint8_t brightness = map(newValue, 0, 65535, 0, 255);
-        
-        // Only update if brightness has changed
-        if (brightness != last_flood_brightness) {
-            last_flood_brightness = brightness;
-            
-            // Create white color with the given brightness
-            CRGB color = CRGB(brightness, brightness, brightness);
-            
-            // Update all floodlight LEDs
-            for (int i = 0; i < ledCount; i++) {
-                Led led;
-                memcpy_P(&led, &ledTable[i], sizeof(Led));
-                if (led.role == LED_FLOOD) {
-                    ledStrip[panelStartIndex + led.index] = color;
-                }
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        uint8_t brightness = map(newValue, 0, 65535, 0, 255);         // Map DCS-BIOS value to brightness
+        if (brightness == last_flood_brightness) return;              // Add value-based debouncing
+        last_flood_brightness = brightness;                           // Store new brightness
+        CRGB color = CRGB(brightness, brightness, brightness);        // Create white color with the given brightness
+        int n = getLedCount();                                        // Get LED count once for clarity
+        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is FLOOD, set color
+            Led led;
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));
+            if (led.role == LED_FLOOD) {
+                getLedStrip()[led.index + getStartIndex()] = color;
             }
-            
-            ledsNeedUpdate = true;
         }
+        ledsNeedUpdate = true;                                           // Set "LED update required" flag
     }
 };
 
 // Define the static member variables
 bool Panel::ledsNeedUpdate;
 CRGB Panel::targetColor = CRGB(0, 0, 0);
+int Panel::updCountdown = 0;
 
 #endif 
