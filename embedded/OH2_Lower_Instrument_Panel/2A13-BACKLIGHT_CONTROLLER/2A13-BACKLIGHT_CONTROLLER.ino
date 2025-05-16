@@ -104,8 +104,8 @@
 Channel LIP_1(13, "Channel 1", 100);
 Channel LIP_2(12, "Channel 2", 120);
 Channel UIP_1(11, "Channel 3", 210);
-Channel UIP_2(10, "Channel 4", 210);
-Channel LC_1(9, "Channel 5", 200);
+Channel UIP_2(9, "Channel 4", 210);              // Ulukaii deviation. Standard is pin 10
+Channel LC_1(10, "Channel 5", 200);              // Ulukaii deviation. Standard is pin 9
 Channel LC_2(5, "Channel 6", 233);
 Channel RC_1(7, "Channel 7", 250);
 Channel RC_2(6, "Channel 8", 380);
@@ -113,8 +113,8 @@ Channel AUX_1(8, "Channel 9", 100);               //Channel 9 not used as per OH
 Channel AUX_2(4, "Channel 10", 100);              //Channel 10 not used as per OH-Interconnect; for future expansion
 
 //Set up other variables
-const uint8_t pin_EncoderSw =    24;              // Ulukaii deviation. Standard is 22
-const uint8_t pin_EncoderA  =    22;              // Ulukaii deviation. Standard is 24
+const uint8_t pin_EncoderSw =    22;              
+const uint8_t pin_EncoderA  =    24;              
 const uint8_t pin_EncoderB  =    23;                            
 
 
@@ -158,6 +158,6 @@ void loop() {
     //Run DCS Bios loop function
     DcsBios::loop();
   
-    // Call the updateLeds() method of the Panel class, which will update the LEDs if and only if changes are pending
-    Panel::updateLeds();
+    // Call the updateLeds() method of the Board class, which will update the LEDs if and only if changes are pending
+    Board::getInstance()->updateLeds();
 }
