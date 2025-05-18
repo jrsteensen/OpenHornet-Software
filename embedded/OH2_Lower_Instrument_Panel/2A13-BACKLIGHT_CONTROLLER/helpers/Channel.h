@@ -71,6 +71,18 @@ public:
     template<typename PanelType>
     void addPanel() {
         PanelType* panel = PanelType::getInstance(currentIndex, leds);
+        
+        // Safety check: Ensure we don't exceed the channel's LED capacity
+        if (currentIndex + panel->getLedCount() > ledCount) {
+            // Halt execution and indicate error with LED pattern
+            while(1) {
+                digitalWrite(LED_BUILTIN, HIGH);
+                delay(100);
+                digitalWrite(LED_BUILTIN, LOW);
+                delay(100);
+            }
+        }
+        
         currentIndex += panel->getLedCount();
     }
 

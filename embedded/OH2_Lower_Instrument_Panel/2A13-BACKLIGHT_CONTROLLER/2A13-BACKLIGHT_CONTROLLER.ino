@@ -139,6 +139,9 @@ void setup() {
     FastLED.show();
 
     // Instantiate the panels. Adapt the order of the panels according to your physical wiring.
+    // Make sure that the total number of LEDs does not exceed the channel's capacity defined above - this could
+    // cause spillover effects from one channel to another. A safety check is implemented in channel.h, which will
+    // halt the Arduino and make its red onboard LED blink rapidly, if you exceed a channel's capacity. 
     UIP_1.addPanel<MasterArmPanel>();
     UIP_1.addPanel<EwiPanel>();
     //UIP_1.addPanel<HudPanel>();
