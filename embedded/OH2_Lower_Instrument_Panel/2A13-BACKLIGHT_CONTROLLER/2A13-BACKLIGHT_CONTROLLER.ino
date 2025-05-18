@@ -88,6 +88,8 @@
 #include "panels/2A2A1A6_ECM.h"
 #include "panels/2A2A1A7_RWR_CONTROL.h"
 #include "panels/2A2A1A8_STANDBY_INSTRUMENT.h"
+#include "panels/4A2A1_LDG_GEAR_PANEL.h"
+#include "panels/4A3A1_SELECT_JETT_PANEL.h"
 #include "panels/4A1_LC_ALL_PANELS.h"
 #include "panels/4A1_LC_Flood.h"
 
@@ -105,8 +107,8 @@ Channel LIP_1(13, "Channel 1", 100);
 Channel LIP_2(12, "Channel 2", 120);
 Channel UIP_1(11, "Channel 3", 210);
 Channel UIP_2(9, "Channel 4", 210);              // Ulukaii deviation. Standard is pin 10
-Channel LC_1(10, "Channel 5", 200);              // Ulukaii deviation. Standard is pin 9
-Channel LC_2(5, "Channel 6", 233);
+Channel LC_1(10, "Channel 5", 304);              // Updated: 23 (LdgGear) + 81 (SelectJett) + 200 (LcAllPanels)
+Channel LC_2(5, "Channel 6", 150);
 Channel RC_1(7, "Channel 7", 250);
 Channel RC_2(6, "Channel 8", 380);
 Channel AUX_1(8, "Channel 9", 100);               //Channel 9 not used as per OH-Interconnect; for future expansion
@@ -147,7 +149,10 @@ void setup() {
     LIP_2.addPanel<RwrControlPanel>();
     LIP_2.addPanel<StandbyInstrumentPanel>();
 
+    LC_1.addPanel<LdgGearPanel>();
+    LC_1.addPanel<SelectJettPanel>();
     LC_1.addPanel<LcAllPanels>();
+
     LC_2.addPanel<LcFloodPanel>();
 
     // Run DCS Bios setup function
