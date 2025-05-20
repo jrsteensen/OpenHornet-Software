@@ -119,6 +119,31 @@ const uint8_t pin_EncoderSw =    22;
 const uint8_t pin_EncoderA  =    24;              
 const uint8_t pin_EncoderB  =    23;                            
 
+// Mode definitions
+#define MODE_NORMAL 1    // Normal DCS-BIOS controlled mode
+#define MODE_MANUAL 2    // Manual mode with all backlights at 100% green
+#define MODE_DARK 3      // All channels dark
+#define MODE_CHANGE_PIN 22
+
+// Global mode variable
+int currentMode = MODE_NORMAL;
+
+// Function to handle mode changes
+void handleModeChange() {
+    static bool lastButtonState = HIGH;
+    bool currentButtonState = digitalRead(MODE_CHANGE_PIN);
+    
+    // Check for button press (LOW when pressed due to INPUT_PULLUP)
+    if (currentButtonState == LOW && lastButtonState == HIGH) {
+        // Cycle through modes
+        currentMode = (currentMode % 3) + 1;
+        
+        // Small delay to debounce
+        delay(50);
+    }
+    
+    lastButtonState = currentButtonState;
+}
 
 /********************************************************************************************************************
  * @brief Standard Arduino setup and loop functions.
@@ -137,6 +162,9 @@ void setup() {
     AUX_1.initialize();
     AUX_2.initialize();
     FastLED.show();
+
+    // Initialize mode change pin
+    pinMode(MODE_CHANGE_PIN, INPUT_PULLUP);
 
     // Instantiate the panels. Adapt the order of the panels according to your physical wiring.
     // Make sure that the total number of LEDs does not exceed the channel's capacity defined above - this could
@@ -163,9 +191,47 @@ void setup() {
 }
 
 void loop() {
-    //Run DCS Bios loop function
-    DcsBios::loop();
-  
-    // Call the updateLeds() method of the Board class, which will update the LEDs if and only if changes are pending
+    // Handle mode changes
+    handleModeChange();
+    
+    // Mode-specific behavior
+    switch(currentMode) {
+        case MODE_NORMAL:
+            // Normal DCS-BIOS operation
+            DcsBios::loop();
+            break;
+            
+        case MODE_MANUAL:
+            // Manual mode - all backlights at 100% green
+            fill_solid(LIP_1.getLeds(), LIP_1.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(LIP_2.getLeds(), LIP_2.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(UIP_1.getLeds(), UIP_1.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(UIP_2.getLeds(), UIP_2.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(LC_1.getLeds(), LC_1.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(LC_2.getLeds(), LC_2.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(RC_1.getLeds(), RC_1.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(RC_2.getLeds(), RC_2.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(AUX_1.getLeds(), AUX_1.getLedCount(), CRGB(0, 255, 0));
+            fill_solid(AUX_2.getLeds(), AUX_2.getLedCount(), CRGB(0, 255, 0));
+            Board::getInstance()->setLedsNeedUpdate();
+            break;
+            
+        case MODE_DARK:
+            // Dark mode - all channels off
+            fill_solid(LIP_1.getLeds(), LIP_1.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(LIP_2.getLeds(), LIP_2.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(UIP_1.getLeds(), UIP_1.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(UIP_2.getLeds(), UIP_2.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(LC_1.getLeds(), LC_1.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(LC_2.getLeds(), LC_2.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(RC_1.getLeds(), RC_1.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(RC_2.getLeds(), RC_2.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(AUX_1.getLeds(), AUX_1.getLedCount(), CRGB(0, 0, 0));
+            fill_solid(AUX_2.getLeds(), AUX_2.getLedCount(), CRGB(0, 0, 0));
+            Board::getInstance()->setLedsNeedUpdate();
+            break;
+    }
+    
+    // Update LEDs if needed (using Board's efficient update logic)
     Board::getInstance()->updateLeds();
 }
