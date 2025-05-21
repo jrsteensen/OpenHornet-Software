@@ -57,7 +57,20 @@ enum LedRole {
     LED_RWR_POWER,
     LED_RWR_NONE,
     // Flood Lights specific types
-    LED_FLOOD
+    LED_FLOOD,
+    // Caution Panel specific types
+    LED_CK_SEAT,
+    LED_APU_ACC,
+    LED_BATT_SW,
+    LED_FCS_HOT,
+    LED_GEN_TIE,
+    LED_SPARE1,
+    LED_FUEL_LO,
+    LED_FCES,
+    LED_SPARE2,
+    LED_L_GEN,
+    LED_R_GEN,
+    LED_SPARE3
 };
 
 #endif 

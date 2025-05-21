@@ -92,6 +92,12 @@
 #include "panels/4A3A1_SELECT_JETT_PANEL.h"
 #include "panels/4A1_LC_ALL_PANELS.h"
 #include "panels/4A1_LC_Flood.h"
+#include "panels/5A2A7_LDG_CHECKLIST.h"
+#include "panels/5A2A4_RADAR_ALT.h"
+#include "panels/5A4A1_HYD_PRESS.h"
+#include "panels/5A3A1_CAUTION.h"
+#include "panels/5A2A3_RC1_ALL_REMAINING_PANELS.h"
+#include "panels/5A5_RC2_ALL_PANELS.h"
 
 
 /********************************************************************************************************************
@@ -109,10 +115,10 @@ Channel UIP_1(11, "Channel 3", 210);
 Channel UIP_2(9, "Channel 4", 210);              // Ulukaii deviation. Standard is pin 10
 Channel LC_1(10, "Channel 5", 304);              // Updated: 23 (LdgGear) + 81 (SelectJett) + 200 (LcAllPanels)
 Channel LC_2(5, "Channel 6", 150);
-Channel RC_1(7, "Channel 7", 250);
-Channel RC_2(6, "Channel 8", 380);
-Channel AUX_1(8, "Channel 9", 100);               //Channel 9 not used as per OH-Interconnect; for future expansion
-Channel AUX_2(4, "Channel 10", 100);              //Channel 10 not used as per OH-Interconnect; for future expansion
+Channel RC_1(7, "Channel 7", 170);               // Updated: 24 (LdgChecklist) + 2 (RadarAlt) + 42 (HydPress) + 24 (Caution) + 78 (Rc1AllRemaining)
+Channel RC_2(6, "Channel 8", 266);               // Updated: 266 (Rc2AllPanels)
+Channel AUX_1(8, "Channel 9", 100);              //Channel 9 not used as per OH-Interconnect; for future expansion
+Channel AUX_2(4, "Channel 10", 100);             //Channel 10 not used as per OH-Interconnect; for future expansion
 
 //Set up other variables
 const uint8_t pin_EncoderSw =    22;              
@@ -122,11 +128,15 @@ const uint8_t pin_EncoderB  =    23;
 // Mode definitions
 #define MODE_NORMAL 1    // Normal DCS-BIOS controlled mode
 #define MODE_MANUAL 2    // Manual mode with all backlights at 100% green
-#define MODE_DARK 3      // All channels dark
+#define MODE_RAINBOW 3   // Rainbow mode with all channels showing rainbow effect
 #define MODE_CHANGE_PIN 22
 
 // Global mode variable
 int currentMode = MODE_NORMAL;
+
+// Rainbow effect variables
+uint8_t thisHue = 0;     // Starting hue
+uint8_t deltaHue = 3;    // Hue change between LEDs
 
 // Function to handle mode changes
 void handleModeChange() {
@@ -135,11 +145,23 @@ void handleModeChange() {
     
     // Check for button press (LOW when pressed due to INPUT_PULLUP)
     if (currentButtonState == LOW && lastButtonState == HIGH) {
-        // Cycle through modes
+        // Reset the LEDs
+        fill_solid(LIP_1.getLeds(), LIP_1.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(LIP_2.getLeds(), LIP_2.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(UIP_1.getLeds(), UIP_1.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(UIP_2.getLeds(), UIP_2.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(LC_1.getLeds(), LC_1.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(LC_2.getLeds(), LC_2.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(RC_1.getLeds(), RC_1.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(RC_2.getLeds(), RC_2.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(AUX_1.getLeds(), AUX_1.getLedCount(), CRGB(0, 0, 0));
+        fill_solid(AUX_2.getLeds(), AUX_2.getLedCount(), CRGB(0, 0, 0));
+        Board::getInstance()->setLedsNeedUpdate();
+        // Cycle to next mode
         currentMode = (currentMode % 3) + 1;
         
         // Small delay to debounce
-        delay(50);
+        delay(10);
     }
     
     lastButtonState = currentButtonState;
@@ -186,6 +208,16 @@ void setup() {
 
     LC_2.addPanel<LcFloodPanel>();
 
+    // Add panels to RC_1
+    RC_1.addPanel<LdgChecklistPanel>();
+    RC_1.addPanel<RadarAltPanel>();
+    RC_1.addPanel<HydPressGauge>();
+    RC_1.addPanel<CautionPanel>();
+    RC_1.addPanel<Rc1AllRemainingPanels>();
+
+    // Add panels to RC_2
+    RC_2.addPanel<Rc2AllPanels>();
+
     // Run DCS Bios setup function
     DcsBios::setup();
 }
@@ -197,7 +229,7 @@ void loop() {
     // Mode-specific behavior
     switch(currentMode) {
         case MODE_NORMAL:
-            // Normal DCS-BIOS operation
+            // Normal DCS-BIOS operation. Shot down the LEDs and star DCS BIOS loop.
             DcsBios::loop();
             break;
             
@@ -216,18 +248,22 @@ void loop() {
             Board::getInstance()->setLedsNeedUpdate();
             break;
             
-        case MODE_DARK:
-            // Dark mode - all channels off
-            fill_solid(LIP_1.getLeds(), LIP_1.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(LIP_2.getLeds(), LIP_2.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(UIP_1.getLeds(), UIP_1.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(UIP_2.getLeds(), UIP_2.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(LC_1.getLeds(), LC_1.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(LC_2.getLeds(), LC_2.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(RC_1.getLeds(), RC_1.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(RC_2.getLeds(), RC_2.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(AUX_1.getLeds(), AUX_1.getLedCount(), CRGB(0, 0, 0));
-            fill_solid(AUX_2.getLeds(), AUX_2.getLedCount(), CRGB(0, 0, 0));
+        case MODE_RAINBOW:
+            // Rainbow mode - all channels show rainbow effect
+            fill_rainbow(LIP_1.getLeds(), LIP_1.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(LIP_2.getLeds(), LIP_2.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(UIP_1.getLeds(), UIP_1.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(UIP_2.getLeds(), UIP_2.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(LC_1.getLeds(), LC_1.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(LC_2.getLeds(), LC_2.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(RC_1.getLeds(), RC_1.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(RC_2.getLeds(), RC_2.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(AUX_1.getLeds(), AUX_1.getLedCount(), thisHue, deltaHue);
+            fill_rainbow(AUX_2.getLeds(), AUX_2.getLedCount(), thisHue, deltaHue);
+            
+            // Increment the hue for the next frame
+            thisHue++;
+            
             Board::getInstance()->setLedsNeedUpdate();
             break;
     }
