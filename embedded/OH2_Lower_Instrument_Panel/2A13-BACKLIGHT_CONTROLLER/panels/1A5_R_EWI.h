@@ -85,57 +85,57 @@ private:
     DcsBios::IntegerBuffer fireApuLtBuffer{0x740c, 0x0004, 2, onFireApuLtChange};
 
     static void onRhAdvAaaChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_AAA, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AAA, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvAaaBuffer{0x740a, 0x0800, 11, onRhAdvAaaChange};
 
     static void onRhAdvAiChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_AI, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AI, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvAiBuffer{0x740a, 0x0400, 10, onRhAdvAiChange};
 
     static void onRhAdvCwChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_CW, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CW, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvCwBuffer{0x740a, 0x1000, 12, onRhAdvCwChange};
 
     static void onRhAdvDispChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_DISP, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_DISP, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvDispBuffer{0x740a, 0x0100, 8, onRhAdvDispChange};
 
     static void onRhAdvRcdrOnChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RCDRON, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RCDRON, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvRcdrOnBuffer{0x740a, 0x0080, 7, onRhAdvRcdrOnChange};
 
     static void onRhAdvSamChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SAM, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SAM, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSamBuffer{0x740a, 0x0200, 9, onRhAdvSamChange};
 
     static void onRhAdvSpareRh1Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK1, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK1, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh1Buffer{0x740a, 0x2000, 13, onRhAdvSpareRh1Change};
 
     static void onRhAdvSpareRh2Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK2, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK2, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh2Buffer{0x740a, 0x4000, 14, onRhAdvSpareRh2Change};
 
     static void onRhAdvSpareRh3Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK3, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK3, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh3Buffer{0x740a, 0x8000, 15, onRhAdvSpareRh3Change};
 
     static void onRhAdvSpareRh4Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK4, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK4, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh4Buffer{0x740c, 0x0001, 0, onRhAdvSpareRh4Change};
 
     static void onRhAdvSpareRh5Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK5, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BLANK5, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer rhAdvSpareRh5Buffer{0x740c, 0x0002, 1, onRhAdvSpareRh5Change};
 

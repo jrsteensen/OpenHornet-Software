@@ -90,12 +90,12 @@ private:
     DcsBios::IntegerBuffer lhAdvAspjOhBuffer{0x740a, 0x0008, 3, onLhAdvAspjOhChange};
 
     static void onLhAdvGoChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_GO, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_GO, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvGoBuffer{0x740a, 0x0010, 4, onLhAdvGoChange};
 
     static void onLhAdvLBarGreenChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_L_BAR2, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_L_BAR2, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvLBarGreenBuffer{0x740a, 0x0002, 1, onLhAdvLBarGreenChange};
 
@@ -120,22 +120,22 @@ private:
     DcsBios::IntegerBuffer lhAdvRBleedBuffer{0x7408, 0x1000, 12, onLhAdvRBleedChange};
 
     static void onLhAdvRecChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_REC, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_REC, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvRecBuffer{0x740a, 0x0001, 0, onLhAdvRecChange};
 
     static void onLhAdvSpdBrkChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPD_BRK, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPD_BRK, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvSpdBrkBuffer{0x7408, 0x2000, 13, onLhAdvSpdBrkChange};
 
     static void onLhAdvStbyChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_STBY, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_STBY, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvStbyBuffer{0x7408, 0x4000, 14, onLhAdvStbyChange};
 
     static void onLhAdvXmitChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_XMIT, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_XMIT, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer lhAdvXmitBuffer{0x740a, 0x0004, 2, onLhAdvXmitChange};
 

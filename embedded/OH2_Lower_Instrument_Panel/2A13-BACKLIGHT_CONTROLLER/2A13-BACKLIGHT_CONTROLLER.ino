@@ -74,6 +74,9 @@
 #ifdef __AVR__
   #include <avr/power.h>
 #endif
+
+#define FASTLED_INTERRUPT_RETRY_COUNT 1
+
 #include "FastLED.h"
 #include "DcsBios.h"
 #include "helpers/Panel.h"

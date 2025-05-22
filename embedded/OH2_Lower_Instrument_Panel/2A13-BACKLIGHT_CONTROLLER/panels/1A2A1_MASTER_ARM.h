@@ -95,17 +95,17 @@ private:
     DcsBios::IntegerBuffer mcReadyBuffer{0x740c, 0x8000, 15, onMcReadyChange};
 
     static void onMcDischChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_DISCH, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_DISCH, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer mcDischBuffer{0x740c, 0x4000, 14, onMcDischChange};
 
     static void onMasterModeAgLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_AG, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AG, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer masterModeAgLtBuffer{0x740c, 0x0400, 10, onMasterModeAgLtChange};
 
     static void onMasterModeAaLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_AA, newValue ? COLOR_GREEN : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_AA, newValue ? COLOR_GREEN_A : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer masterModeAaLtBuffer{0x740c, 0x0200, 9, onMasterModeAaLtChange};
 

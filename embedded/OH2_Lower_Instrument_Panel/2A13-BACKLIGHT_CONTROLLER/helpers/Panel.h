@@ -63,11 +63,13 @@ protected:
     // Set the color of LEDs with role LED_BACKLIGHT
     void setBacklights(uint16_t newValue) {
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
-        if (newValue == current_backl_brightness) return;             // Value-based debouncing: exit if no brightness change
+        if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         current_backl_brightness = newValue;
         
-        uint8_t brightness = map(newValue, 0, 65535, 0, 255);         // Map DCS-BIOS value (0-65535) to FastLED brightness (0-255)
-        current_color = CRGB(0, brightness, 0);                       // Set the color to green with the calculated brightness
+                                                                      // Determine dimmed GREEN_A according MIL-STD-3099
+        uint8_t bRed = map(newValue, 0, 65535, 0, 51);                // 51 is the maximum brightness for RED
+        uint8_t bGreen = map(newValue, 0, 65535, 0, 102);             // 102 is the maximum brightness for GREEN
+        current_color = CRGB(bRed, bGreen, 0);                        
 
         
         int n = getLedCount();
