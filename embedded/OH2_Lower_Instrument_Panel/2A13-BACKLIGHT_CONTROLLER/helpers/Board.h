@@ -25,10 +25,15 @@
 #define __BOARD_H
 
 #include "FastLED.h"
-
+#include "Channel.h"
 
 class Board {
 public:
+    // Mode definitions
+    static const int MODE_NORMAL = 1;   // Normal DCS-BIOS controlled mode
+    static const int MODE_MANUAL = 2;   // Manual mode with all backlights at 100% green
+    static const int MODE_RAINBOW = 3;  // Rainbow test mode
+
     static Board* getInstance() {
         if (!instance) {
             instance = new Board();
@@ -58,11 +63,63 @@ public:
         }
     }
 
+    // Add a channel to the board
+    void addChannel(Channel* channel) {
+        channels[channelCount++] = channel;
+    }
+
+    // Initialize and register a channel in one step
+    void initAndRegisterChannel(Channel* channel) {
+        channel->initialize();
+        addChannel(channel);
+    }
+
+    // Fill all channels with a solid color
+    void fillSolid(const CRGB& color) {
+        for (int i = 0; i < channelCount; i++) {
+            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), color);
+        }
+        setLedsNeedUpdate();
+    }
+
+    // Fill all channels with a rainbow pattern
+    void fillRainbow() {
+        for (int i = 0; i < channelCount; i++) {
+            fill_rainbow(channels[i]->getLeds(), channels[i]->getLedCount(), thisHue, deltaHue);
+        }
+        thisHue++;  // Increment the hue for the next frame
+        setLedsNeedUpdate();
+    }
+
+    // Handle mode change button press and return current mode
+    int handleModeChange(uint8_t buttonPin) {
+        static bool lastButtonState = HIGH;
+        bool currentButtonState = digitalRead(buttonPin);
+        if (currentButtonState == LOW && lastButtonState == HIGH) {       // Button has just been pressed
+            fillSolid(COLOR_BLACK);                                       // Reset the LEDs
+            currentMode = (currentMode % 3) + 1;                          // Cycle to next mode
+            lastButtonState = currentButtonState;
+            delay(10);                                                    // Small delay to debounce
+        } else {
+            lastButtonState = currentButtonState;
+        }
+        return currentMode;
+    }
+
+    // Get current mode
+    int getCurrentMode() const {
+        return currentMode;
+    }
+
 private:
     // Private constructor to enforce singleton pattern
     Board() {
         ledsNeedUpdate = false;
         updCountdown = 0;
+        channelCount = 0;
+        thisHue = 0;      // Starting hue
+        deltaHue = 3;     // Hue change between LEDs
+        currentMode = MODE_NORMAL;  // Initialize to normal mode
     }
 
     // Static instance pointer
@@ -71,6 +128,18 @@ private:
     // LED update state
     bool ledsNeedUpdate;
     int updCountdown;
+
+    // Channel management
+    static const int MAX_CHANNELS = 10;  // Maximum number of channels
+    Channel* channels[MAX_CHANNELS];     // Array of channel pointers
+    int channelCount;                    // Current number of channels
+
+    // Rainbow effect variables
+    uint8_t thisHue;     // Current hue value
+    uint8_t deltaHue;    // Hue change between LEDs
+
+    // Mode management
+    int currentMode;     // Current operating mode
 };
 
 // Initialize static instance pointer
