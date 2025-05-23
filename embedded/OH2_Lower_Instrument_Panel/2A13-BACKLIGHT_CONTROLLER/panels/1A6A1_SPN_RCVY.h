@@ -81,7 +81,7 @@ private:
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
 
     static void onSpinLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPIN, newValue ? COLOR_RED : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPIN, newValue ? NVIS_RED : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer spinLtBuffer{0x742a, 0x0800, 11, onSpinLtChange};
 

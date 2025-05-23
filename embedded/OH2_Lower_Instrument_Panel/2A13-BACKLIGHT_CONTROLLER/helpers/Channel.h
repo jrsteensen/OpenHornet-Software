@@ -23,7 +23,6 @@
 #define __CHANNEL_H
 
 #include "FastLED.h"
-#include "Colors.h"
 #include "Panel.h"
 
 

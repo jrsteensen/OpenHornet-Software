@@ -85,62 +85,62 @@ private:
 
     // Static callback functions for DCS-BIOS
     static void onClipApuAccLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_APU_ACC, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_APU_ACC, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipApuAccLtBuffer{0x74a4, 0x0100, 8, onClipApuAccLtChange};
 
     static void onClipBattSwLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BATT_SW, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_BATT_SW, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipBattSwLtBuffer{0x74a4, 0x0200, 9, onClipBattSwLtChange};
 
     static void onClipCkSeatLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_CK_SEAT, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CK_SEAT, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipCkSeatLtBuffer{0x74a0, 0x8000, 15, onClipCkSeatLtChange};
 
     static void onClipFcesLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_FCES, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_FCES, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipFcesLtBuffer{0x74a4, 0x4000, 14, onClipFcesLtChange};
 
     static void onClipFcsHotLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_FCS_HOT, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_FCS_HOT, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipFcsHotLtBuffer{0x74a4, 0x0400, 10, onClipFcsHotLtChange};
 
     static void onClipFuelLoLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_FUEL_LO, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_FUEL_LO, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipFuelLoLtBuffer{0x74a4, 0x2000, 13, onClipFuelLoLtChange};
 
     static void onClipGenTieLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_GEN_TIE, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_GEN_TIE, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipGenTieLtBuffer{0x74a4, 0x0800, 11, onClipGenTieLtChange};
 
     static void onClipLGenLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_L_GEN, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_L_GEN, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipLGenLtBuffer{0x74a8, 0x0100, 8, onClipLGenLtChange};
 
     static void onClipRGenLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_R_GEN, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_R_GEN, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipRGenLtBuffer{0x74a8, 0x0200, 9, onClipRGenLtChange};
 
     static void onClipSpareCtn1LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE1, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE1, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn1LtBuffer{0x74a4, 0x1000, 12, onClipSpareCtn1LtChange};
 
     static void onClipSpareCtn2LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE2, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE2, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn2LtBuffer{0x74a4, 0x8000, 15, onClipSpareCtn2LtChange};
 
     static void onClipSpareCtn3LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE3, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE3, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn3LtBuffer{0x74a8, 0x0400, 10, onClipSpareCtn3LtChange};
 

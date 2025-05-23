@@ -90,7 +90,7 @@ private:
     DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
     
     static void onMcReadyChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_READY, newValue ? COLOR_YELLOW : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_READY, newValue ? NVIS_YELLOW : COLOR_BLACK);
     }
     DcsBios::IntegerBuffer mcReadyBuffer{0x740c, 0x8000, 15, onMcReadyChange};
 

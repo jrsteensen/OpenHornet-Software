@@ -26,10 +26,10 @@
 #include <avr/pgmspace.h> 
 #include "DcsBios.h"
 #include "FastLED.h"
-#include "Colors.h"
 #include "LedRole.h"
 #include "LedStruct.h"
 #include "Board.h"
+#include "Colors.h"
 
 class Panel {
 public:
@@ -44,7 +44,6 @@ protected:
     Panel() {
         current_backl_brightness = 64;
         current_flood_brightness = 64;
-        current_color = CRGB(0, 0, 0);  // Initialize target color to black
     }
 
     // Protected variables. Specific panels must set them INDIVIDUALLY.
@@ -52,43 +51,38 @@ protected:
     int ledCount;                                                     // Number of LEDs in the panel
     const Led* ledTable;                                              // Pointer to the LED table
     CRGB* ledStrip;                                                   // Pointer to the LED strip
-    uint8_t current_backl_brightness;                                 // Current brightness value for backlights
-    uint8_t current_flood_brightness;                                 // Current brightness value for floodlights
-    CRGB current_color;                                               // Current target color for backlights
+    uint16_t current_backl_brightness;                                // Current br. value for backlights (0-65535)
+    uint16_t current_flood_brightness;                                // Current br. value for floodlights (0-65535)
 
 
-    //The following methods are used to set the color of the LEDs
+    //The following methods are used to set LEDs
     //They are SHARED across all panels.
 
-    // Set the color of LEDs with role LED_BACKLIGHT
-    void setBacklights(uint16_t newValue) {
+    void setBacklights(uint16_t newValue) {                           // Set the color of all LEDs with role LED_BACKLIGHT
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
-        current_backl_brightness = newValue;
-        
-                                                                      // Determine dimmed GREEN_A according MIL-STD-3099
-        uint8_t bRed = map(newValue, 0, 65535, 0, 51);                // 51 is the maximum brightness for RED
-        uint8_t bGreen = map(newValue, 0, 65535, 0, 102);             // 102 is the maximum brightness for GREEN
-        current_color = CRGB(bRed, bGreen, 0);                        
-
-        
+        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
+        CRGB target = NVIS_GREEN_A;
+        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        current_backl_brightness = newValue;                          // Update and save the current brightness value
+                 
         int n = getLedCount();
         for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is BACKLIGHT, set color
             Led led;
-            memcpy_P(&led, &getLedTable()[i], sizeof(Led));
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));           // getLedTable() accesses the panel's LED table
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_BACKLIGHT) {
-                getLedStrip()[ledIndex] = current_color;
+                getLedStrip()[ledIndex] = target;
             }
         }
         Board::getInstance()->setLedsNeedUpdate();                    // Inform the board that the LEDs need to be updated
     }
 
-    // Set the color of LEDs with a specific role (parameter "role"))
-    void setIndicatorColor(LedRole role, const CRGB& color) {
-        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+
+    void setIndicatorColor(LedRole role, const CRGB& color) {         // Set color of specific LEDs ("role" parameter)
+        if (!getLedStrip() || !getLedTable()) return;                 
         int n = getLedCount();                                        
-        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED matches role, set color
+        for (int i = 0; i < n; i++) {                                 
             Led led;
             memcpy_P(&led, &getLedTable()[i], sizeof(Led));
             uint16_t ledIndex = led.index + getStartIndex();
@@ -96,28 +90,30 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        Board::getInstance()->setLedsNeedUpdate();                    // Inform the board that the LEDs need to be updated
+        Board::getInstance()->setLedsNeedUpdate();                    
     }
 
-    // Set the brightness of LEDs with role LED_FLOOD
-    void setFloodlights(uint16_t newValue) {
-        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
-        if (newValue == current_flood_brightness) return;             // Value-based debouncing: exit if no brightness change
+
+    void setFloodlights(uint16_t newValue) {                          // Set the brightness of LEDs with role LED_FLOOD
+        if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setBacklights()
+        if (newValue == current_flood_brightness) return;             
         current_flood_brightness = newValue;
         
-        uint8_t brightness = map(newValue, 0, 65535, 0, 255);     // Map DCS-BIOS value (0-65535) to FastLED brightness (0-255)
-        current_color = CRGB(brightness, brightness, brightness); // Set the color to white with the calculated brightness
+        uint8_t scale = map(newValue, 0, 65535, 0, 255);
+        
+        CRGB target = NVIS_WHITE;
+        target.nscale8_video(scale);
         
         int n = getLedCount();
-        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is FLOOD, set color
+        for (int i = 0; i < n; i++) {                                 
             Led led;
-            memcpy_P(&led, &getLedTable()[i], sizeof(Led));
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));           
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_FLOOD) {
-                getLedStrip()[ledIndex] = current_color;
+                getLedStrip()[ledIndex] = target;
             }
         }
-        Board::getInstance()->setLedsNeedUpdate();                    // Inform the board that the LEDs need to be updated
+        Board::getInstance()->setLedsNeedUpdate();                    
     }
 };
 

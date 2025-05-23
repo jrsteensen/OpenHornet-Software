@@ -97,7 +97,7 @@ public:
         static bool lastButtonState = HIGH;
         bool currentButtonState = digitalRead(buttonPin);
         if (currentButtonState == LOW && lastButtonState == HIGH) {       // Button has just been pressed
-            fillSolid(COLOR_BLACK);                                       // Reset the LEDs
+            fillSolid(NVIS_BLACK);                                       // Reset the LEDs
             currentMode = (currentMode % 3) + 1;                          // Cycle to next mode
             lastButtonState = currentButtonState;
             delay(10);                                                    // Small delay to debounce

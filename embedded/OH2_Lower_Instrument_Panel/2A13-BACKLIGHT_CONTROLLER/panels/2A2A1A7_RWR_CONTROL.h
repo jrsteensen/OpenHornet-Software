@@ -77,47 +77,47 @@ private:
 
     // RWR indicator callbacks
     static void onRwrBitLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_BIT, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_BIT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrBitLtBuffer{0x749c, 0x1000, 12, onRwrBitLtChange};
 
     static void onRwrFailLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_BIT_FAIL, newValue ? COLOR_RED : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_BIT_FAIL, newValue ? NVIS_RED : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrFailLtBuffer{0x749c, 0x0800, 11, onRwrFailLtChange};
 
     static void onRwrOffsetLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrOffsetLtBuffer{0x749c, 0x0400, 10, onRwrOffsetLtChange};
 
     static void onRwrEnableLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET_EN, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET_EN, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrEnableLtBuffer{0x749c, 0x0200, 9, onRwrEnableLtChange};
 
     static void onRwrSpecialLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrSpecialLtBuffer{0x749c, 0x0100, 8, onRwrSpecialLtChange};
 
     static void onRwrSpecialEnLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL_EN, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL_EN, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrSpecialEnLtBuffer{0x7498, 0x8000, 15, onRwrSpecialEnLtChange};
 
     static void onRwrDisplayLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_DISPLAY, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_DISPLAY, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrDisplayLtBuffer{0x7498, 0x4000, 14, onRwrDisplayLtChange};
 
     static void onRwrLimitLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_LIMIT, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_LIMIT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrLimitLtBuffer{0x7498, 0x2000, 13, onRwrLimitLtChange};
 
     static void onRwrLowerLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_POWER, newValue ? COLOR_GREEN_A : COLOR_BLACK);
+        if (instance) instance->setIndicatorColor(LED_RWR_POWER, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer rwrLowerLtBuffer{0x7498, 0x1000, 12, onRwrLowerLtChange};
 

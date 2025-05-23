@@ -75,8 +75,8 @@
 #include "FastLED.h"
 #include "DcsBios.h"
 #include "helpers/Panel.h"
-#include "helpers/Colors.h" 
 #include "helpers/Channel.h"
+#include "helpers/Colors.h"
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
 #include "panels/1A7A1_HUD_PANEL_REV4.h"            
@@ -100,7 +100,16 @@
 // Hardware pin definitions
 const uint8_t pin_EncoderSw =    22;              
 const uint8_t pin_EncoderA  =    24;              
-const uint8_t pin_EncoderB  =    23;                            
+const uint8_t pin_EncoderB  =    23;  
+
+// Color definitions according MIL-STD-3099. Adapt to your visual preferences.
+#define NVIS_YELLOW  CRGB(172, 144, 0)                                // Yellow Indicators
+#define NVIS_RED     CRGB(158, 4, 4)                                  // Red Indicators
+#define NVIS_GREEN_A CRGB(51, 102, 0)                                 // Green Backlighting
+#define NVIS_GREEN_B CRGB(85, 138, 0)                                 // Green indicators
+#define NVIS_WHITE   CRGB(40, 40, 30)                                 // Dimmed white, e.g. for Jett Station Select toggle light
+#define NVIS_BLACK   CRGB(0, 0, 0)                                    // No colour / OFF
+
 
 /********************************************************************************************************************
  * @brief   Create the channel objects. 
@@ -172,7 +181,7 @@ void loop() {
             DcsBios::loop();
             break;
         case Board::MODE_MANUAL:                                      //LEDs controlled manually through BKLT switch
-            board->fillSolid(COLOR_GREEN_A);
+            board->fillSolid(NVIS_GREEN_A);
             break;   
         case Board::MODE_RAINBOW:                                     //Rainbow test mode
             board->fillRainbow();
