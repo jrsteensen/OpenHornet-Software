@@ -9,14 +9,14 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file Channel.h
- * @author Ulukaii
- * @date 09.05.2025
- * @version u 0.3.1
+ * @file      Channel.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   u 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Defines the Channel class for managing LED strips.
- * @details Each channel represents a physical LED strip connected to a specific pin.
- *          The class manages the LED array and provides methods for initialization and control.
+ * @brief     Defines the Channel class for managing logical LED strips.
+ * @details   Each channel represents a physical LED strip connected to a specific pin.
+ *            The class manages the logical LED array. It also stores a list of "its" panels.
  *********************************************************************************************************************/
 
 #ifndef __CHANNEL_H

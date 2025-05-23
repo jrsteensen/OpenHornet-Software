@@ -9,12 +9,12 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file 2A2A1A6_ECM.h
- * @author Ulukaii
- * @date 05.05.2025
- * @version t 0.3.1
+ * @file      2A2A1A6_ECM.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Implements backlighting and indicators for the ECM panel.
+ * @brief     Implements backlighting and indicators for the ECM panel.
  *********************************************************************************************************************/
 
 

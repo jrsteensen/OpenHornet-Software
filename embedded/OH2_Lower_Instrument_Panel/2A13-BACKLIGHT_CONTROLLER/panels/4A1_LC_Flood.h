@@ -9,12 +9,12 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file 4A1_LC_Flood.h
- * @author Ulukaii
- * @date 05.05.2025
- * @version t 0.3.1
+ * @file      4A1_LC_Flood.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Implements flood lighting for the Left Console. Assumes all lights are connected to the same WS2812 strip.
+ * @brief     Implements flood lighting for the Left Console. Assumes all lights are connected to the same WS2812 strip.
  *********************************************************************************************************************/
 
 

@@ -9,13 +9,13 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file 4A1_LC_ALL_PANELS.h
- * @author Ulukaii
- * @date 05.05.2025
- * @version t 0.3.1
+ * @file      4A1_LC_ALL_PANELS.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Implements backlighting for all Left Console panels.
- * @warning This is a stub; a future implementation foresees individual files for each panel on the Left Console.
+ * @brief     Implements backlighting for all Left Console panels.
+ * @warning   This is a shorthanded version; a future implementation foresees individual files for each panel on the LC.
  *********************************************************************************************************************/
 
 

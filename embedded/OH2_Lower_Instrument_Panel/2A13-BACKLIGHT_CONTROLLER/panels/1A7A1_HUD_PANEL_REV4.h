@@ -9,12 +9,12 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file 1A7A1_HUD_PANEL_REV4.h
- * @author Ulukaii, Arribe, Higgins
- * @date 04.05.2025
- * @version u 0.3.1
+ * @file      1A7A1_HUD_PANEL_REV4.h
+ * @author    Ulukaii, Arribe, Higgins
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Implements backlighting for the HUD panel (Revision 4).
+ * @brief     Implements backlighting for the HUD panel (Revision 4).
  *********************************************************************************************************************/
 
 

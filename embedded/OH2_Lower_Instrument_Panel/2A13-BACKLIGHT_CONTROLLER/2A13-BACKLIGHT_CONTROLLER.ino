@@ -33,7 +33,7 @@
  * @file    2A13-BACKLIGHT_CONTROLLER.ino
  * @author  Ulukaii, Arribe, Higgins
  * @date    May 22, 2025
- * @version V 0.4 ( partially tested)
+ * @version V 0.3.2 ( partially tested)
  * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and panel versions.
  * @brief   Controls backlights & most annunciators. Coded for Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
  * @details **Wiring Diagram:** 
@@ -74,6 +74,7 @@
 
 #include "FastLED.h"
 #include "DcsBios.h"
+#include "RotaryEncoder.h"
 #include "helpers/Panel.h"
 #include "helpers/Channel.h"
 #include "helpers/Colors.h"
@@ -129,7 +130,9 @@ Channel RC_2(6, "Channel 8", 266);
 Channel AUX_1(8, "Channel 9", 100);                                   //Spare channel
 Channel AUX_2(4, "Channel 10", 100);                                  //Spare channel
 
-Board* board;   // Global board pointer
+Board* board;                                                         // Pointer to singleton board instance
+RotaryEncoder encoder(pin_EncoderA, pin_EncoderB, RotaryEncoder::LatchMode::TWO03);
+
 
 /********************************************************************************************************************
  * @brief Standard Arduino setup and loop functions.
@@ -175,6 +178,8 @@ void setup() {
 
 void loop() {
     int currentMode = board->handleModeChange(pin_EncoderSw);         // Handle mode changes and get current mode
+    static int rotary_pos = 0;                                        // Static to persist between loop iterations
+    int newPos = 0;                                                  // Declare outside switch
     
     switch(currentMode) {
         case Board::MODE_NORMAL:                                      //LEDs controlled by DCS BIOS
@@ -182,6 +187,17 @@ void loop() {
             break;
         case Board::MODE_MANUAL:                                      //LEDs controlled manually through BKLT switch
             board->fillSolid(NVIS_GREEN_A);
+            encoder.tick();
+            newPos = encoder.getPosition();
+            if (newPos != rotary_pos) {
+                RotaryEncoder::Direction direction = encoder.getDirection();
+                if (direction == RotaryEncoder::Direction::CLOCKWISE) {
+                    board->incrBrightness();
+                } else {
+                    board->decrBrightness();
+                }
+                rotary_pos = newPos;
+            }
             break;   
         case Board::MODE_RAINBOW:                                     //Rainbow test mode
             board->fillRainbow();

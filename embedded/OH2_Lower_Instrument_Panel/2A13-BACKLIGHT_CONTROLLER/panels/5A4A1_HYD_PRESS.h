@@ -12,7 +12,7 @@
  * @file      5A4A1_HYD_PRESS.h
  * @author    Ulukaii
  * @date      20.05.2025
- * @version   t 0.3.1
+ * @version   u 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Implements backlighting for the Hydraulic Pressure panel.
  *********************************************************************************************************************/

@@ -9,10 +9,10 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file 1A5_R_EWI_BL.h
- * @author Ulukaii, Arribe, Higgins
- * @date 05.05.2025
- * @version t 0.3.1
+ * @file      1A5_R_EWI_BL.h
+ * @author    Ulukaii, Arribe, Higgins
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief Implements backlighting for the Right EWI panel.
  *********************************************************************************************************************/

@@ -8,14 +8,15 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
-
- * @file Panel.h
- * @author Ulukaii
- * @date 05.05.2025
- * @version t 0.3.1
+ *  
+ * @file      Panel.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief Abstract base class for all panels.
- * @details Each panel is a derived class from this base class.
+ * @brief     Abstract base class for all panels.
+ * @details   Each panel is a derived class from this base class.
+ *            It provides the basic functionality for all panels.
  *********************************************************************************************************************/
 
 

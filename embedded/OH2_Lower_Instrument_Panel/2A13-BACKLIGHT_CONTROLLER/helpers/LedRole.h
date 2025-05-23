@@ -1,3 +1,25 @@
+/**********************************************************************************************************************
+ *        ____                   _    _                       _
+ *       / __ \                 | |  | |                     | |
+ *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
+ *      | |  | | '_ \ / _ \ '_ \|  __  |/ _ \| '__| '_ \ / _ \ __|
+ *      | |__| | |_) |  __/ | | | |  | | (_) | |  | | | |  __/ |_
+ *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
+ *             | |
+ *             |_|
+ *   ----------------------------------------------------------------------------------
+ *  
+ * @file      LedRole.h
+ * @author    Ulukaii
+ * @date      24.05.2025
+ * @version   t 0.3.2
+ * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
+ * @brief     Defines the role of the LEDs in the panels.
+ * @details   Each panel holds a table of LEDs. These contain the role of the LED, which is one of the values
+ *            defined in this enum. When LEDs update commands are processed, the table of LEDs is scanned through
+ *            and only those LEDs that match the desired role are updated.
+ *********************************************************************************************************************/
+
 #ifndef LED_ROLE_H
 #define LED_ROLE_H
 

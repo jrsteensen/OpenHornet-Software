@@ -11,12 +11,16 @@
  *  
  * @file      Board.h
  * @author    Ulukaii
- * @date      16.05.2025
- * @version   t 0.3.1
+ * @date      24.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Defines the Board class for managing LED strips.
+ * @brief     Defines the Board class for physically managing LED strips.
  * @details   During setup, a single board object is created. It manages the update of the LEDs centrally.
- *            It is the only place from which the expensive FastLED.show() function is called.
+ *            It is the only place from which the expensive physical update (FastLED.show() function) is called.
+ *            Additionally, it provides the logic to cycle between three modes:
+ *            - Normal mode (DCS-BIOS controlled)
+ *            - Manual mode (control backlights with rotary encoder)
+ *            - Rainbow test mode
  *********************************************************************************************************************/
 
 
@@ -31,21 +35,16 @@
 
 class Board {
 public:
-    // Mode definitions
-    static const int MODE_NORMAL = 1;   // Normal DCS-BIOS controlled mode
-    static const int MODE_MANUAL = 2;   // Manual mode with all backlights at 100% green
-    static const int MODE_RAINBOW = 3;  // Rainbow test mode
+    static const int MODE_NORMAL = 1;                                 // Normal DCS-BIOS controlled mode
+    static const int MODE_MANUAL = 2;                                 // Manual mode - control backlights with rotary encoder
+    static const int MODE_RAINBOW = 3;                                // Rainbow test mode
 
-    static Board* getInstance() {
-        if (!instance) {
-            instance = new Board();
-        }
-        return instance;
-    }
+    static Board* getInstance() { return instance ? instance : (instance = new Board()); }
 
-    // Method to check if LEDs need updating
-    bool isLedsNeedUpdate() const {
-        return ledsNeedUpdate;
+    // Initialize and register a channel in one step
+    void initAndRegisterChannel(Channel* channel) {
+        channel->initialize();
+        channels[channelCount++] = channel;
     }
 
     // Method to indicate that LEDs need updating
@@ -65,21 +64,14 @@ public:
         }
     }
 
-    // Add a channel to the board
-    void addChannel(Channel* channel) {
-        channels[channelCount++] = channel;
-    }
-
-    // Initialize and register a channel in one step
-    void initAndRegisterChannel(Channel* channel) {
-        channel->initialize();
-        addChannel(channel);
-    }
 
     // Fill all channels with a solid color
     void fillSolid(const CRGB& color) {
+        if (currentMode != MODE_MANUAL) return;                       // Only applicable in manual mode
+        CRGB dimmedColor = color;
+        dimmedColor.nscale8_video(brightness);                     
         for (int i = 0; i < channelCount; i++) {
-            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), color);
+            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), dimmedColor);
         }
         setLedsNeedUpdate();
     }
@@ -97,11 +89,13 @@ public:
     int handleModeChange(uint8_t buttonPin) {
         static bool lastButtonState = HIGH;
         bool currentButtonState = digitalRead(buttonPin);
-        if (currentButtonState == LOW && lastButtonState == HIGH) {       // Button has just been pressed
-            fillSolid(NVIS_BLACK);                                       // Reset the LEDs
-            currentMode = (currentMode % 3) + 1;                          // Cycle to next mode
+        if (currentButtonState == LOW && lastButtonState == HIGH) {   // Button has just been pressed
+            fillSolid(NVIS_BLACK);                                    // Reset the LEDs
+            int previousMode = currentMode;                           // Store previous mode
+            currentMode = (currentMode % 3) + 1;                      // Cycle to next mode
+            
             lastButtonState = currentButtonState;
-            delay(10);                                                    // Small delay to debounce
+            delay(10);                                                // Small delay to debounce
         } else {
             lastButtonState = currentButtonState;
         }
@@ -113,6 +107,28 @@ public:
         return currentMode;
     }
 
+    // Increase brightness by 32 levels (0-255)
+    void incrBrightness() {
+        if (currentMode != MODE_MANUAL) return;  // Only allow in manual mode
+        if (brightness < 224) {  // Leave room for 32 more steps
+            brightness += 32;
+        } else {
+            brightness = 255;    // Cap at maximum
+        }
+        setLedsNeedUpdate();
+    }
+
+    // Decrease brightness by 32 levels (0-255)
+    void decrBrightness() {
+        if (currentMode != MODE_MANUAL) return;  // Only allow in manual mode
+        if (brightness > 32) {   // Leave room for 32 more steps
+            brightness -= 32;
+        } else {
+            brightness = 0;      // Cap at minimum
+        }
+        setLedsNeedUpdate();
+    }
+
 private:
     // Private constructor to enforce singleton pattern
     Board() {
@@ -122,13 +138,7 @@ private:
         thisHue = 0;      // Starting hue
         deltaHue = 3;     // Hue change between LEDs
         currentMode = MODE_NORMAL;  // Initialize to normal mode
-    }
-
-    // Private methods
-    static void onAcftNameChange(char* newValue) {
-        if (!strcmp(newValue, "FA-18C_hornet")) {
-            //cl_F18C.MakeCurrent();
-        }
+        brightness = 128;  // Initialize manual mode brightness to 50%
     }
 
     // LED update state
@@ -146,6 +156,31 @@ private:
 
     // Mode management
     int currentMode;     // Current operating mode
+
+    // Brightness control
+    uint8_t brightness;  // Current brightness level (0-255)
+
+
+    // Static instance pointer
+    static Board* instance;
+};
+
+// Initialize static instance pointer
+Board* Board::instance = nullptr;
+
+#endif 
+
+
+
+
+
+    // TODO: the following lines contain code snippets for the future PREFLT mode that is not yet implemented
+
+    //    static void onAcftNameChange(char* newValue) {
+    //    if (!strcmp(newValue, "FA-18C_hornet")) {
+    //        //cl_F18C.MakeCurrent();
+    //    }
+    //}
 
     // DCS-BIOS callbacks and buffers
     //static void onAcftNameChange(char* newValue) {
@@ -186,12 +221,3 @@ private:
         DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
         
     */
-
-    // Static instance pointer
-    static Board* instance;
-};
-
-// Initialize static instance pointer
-Board* Board::instance = nullptr;
-
-#endif 
