@@ -26,6 +26,7 @@
 
 #include "FastLED.h"
 #include "Channel.h"
+#include "DcsBios.h"
 
 class Board {
 public:
@@ -122,8 +123,12 @@ private:
         currentMode = MODE_NORMAL;  // Initialize to normal mode
     }
 
-    // Static instance pointer
-    static Board* instance;
+    // Private methods
+    static void onAcftNameChange(char* newValue) {
+        if (!strcmp(newValue, "FA-18C_hornet")) {
+            //cl_F18C.MakeCurrent();
+        }
+    }
 
     // LED update state
     bool ledsNeedUpdate;
@@ -140,6 +145,49 @@ private:
 
     // Mode management
     int currentMode;     // Current operating mode
+
+    // DCS-BIOS callbacks and buffers
+    //static void onAcftNameChange(char* newValue) {
+    //    if (!strcmp(newValue, "FA-18C_hornet")) {
+    //        //cl_F18C.MakeCurrent();
+    //    }
+    //}
+    //DcsBios::StringBuffer<16> AcftNameBuffer{0x0000, onAcftNameChange};
+
+    /*
+            // This is the recommended approach and the ideal if we can work out all the kinks:
+        // If the mission time changes backwards, we have entered a new aircraft; Resync everything
+
+        unsigned long uLastModelTimeS = 0xFFFFFFFF; // Start big, to ensure the first step triggers a resync
+
+        void onModTimeChange(char* newValue) {
+        unsigned long currentModelTimeS = atol(newValue);
+
+        if( currentModelTimeS < uLastModelTimeS )
+        {
+            if( currentModelTimeS > 20 )// Delay to give time for DCS to finish loading and become stable and responsive
+            {
+            DcsBios::resetAllStates();
+            uLastModelTimeS = currentModelTimeS;
+            }
+        }
+        else
+        {
+            uLastModelTimeS = currentModelTimeS;
+        }
+        }
+        DcsBios::StringBuffer<5> modTimeBuffer(0x043e, onModTimeChange);
+
+        // Also we can check on weight on wheels change:
+        void onExtWowLeftChange(unsigned int newValue) {
+            // your code here 
+        }
+        DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
+        
+    */
+
+    // Static instance pointer
+    static Board* instance;
 };
 
 // Initialize static instance pointer
