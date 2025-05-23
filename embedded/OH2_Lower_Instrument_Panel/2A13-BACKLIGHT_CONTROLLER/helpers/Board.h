@@ -27,6 +27,7 @@
 #include "FastLED.h"
 #include "Channel.h"
 #include "DcsBios.h"
+#include "Colors.h"
 
 class Board {
 public:

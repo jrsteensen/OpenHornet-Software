@@ -24,7 +24,7 @@
 
 #include "FastLED.h"
 #include "Panel.h"
-
+#include "Colors.h"
 
 
 class Channel {
@@ -63,7 +63,7 @@ public:
             default: break; // Handle invalid pin
         }
         
-        fill_solid(leds, ledCount, COLOR_BLACK);
+        fill_solid(leds, ledCount, NVIS_BLACK);
     }
 
     //Add panel to channel
