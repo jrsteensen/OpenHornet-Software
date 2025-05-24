@@ -46,7 +46,7 @@ public:
     virtual const Led* getLedTable() const { return ledTable; }
     virtual CRGB* getLedStrip() const { return ledStrip; }
     
-    // Add friend declaration to allow Channel to access nextPanel
+    // Add friend declaration to allow Channel to access nextPanel and its protected methods
     friend class Channel;
     
 protected:

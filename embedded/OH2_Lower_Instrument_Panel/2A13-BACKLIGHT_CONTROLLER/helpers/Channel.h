@@ -110,6 +110,15 @@ public:
     Panel* getFirstPanel() const { return firstPanel; }
     uint8_t getPanelCount() const { return panelCount; }
 
+    // Update backlights for all panels in this channel
+    void updateBacklights(uint16_t brightness) {
+        Panel* current = firstPanel;
+        while (current != nullptr) {
+            current->setBacklights(brightness);
+            current = current->nextPanel;
+        }
+    }
+
 };
 
 #endif 

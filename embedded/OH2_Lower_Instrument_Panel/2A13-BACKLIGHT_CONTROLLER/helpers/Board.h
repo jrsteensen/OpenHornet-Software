@@ -66,7 +66,7 @@ public:
         CRGB dimmedColor = color;
         dimmedColor.nscale8_video(brightness);                     
         for (int i = 0; i < channelCount; i++) {
-            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), dimmedColor);
+            channels[i]->updateBacklights(map(brightness, 0, 255, 0, 65535));
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
@@ -96,6 +96,11 @@ public:
             fillBlack();                                              // Reset the LEDs regardless of mode
             int previousMode = currentMode;                           // Store previous mode
             currentMode = (currentMode % 3) + 1;                      // Cycle to next mode
+            
+            // Reset brightness when entering manual mode
+            if (currentMode == MODE_MANUAL) {
+                brightness = 128;  // Reset to 50% brightness
+            }
             
             lastButtonState = currentButtonState;
             delay(10);                                                // Small delay to debounce
