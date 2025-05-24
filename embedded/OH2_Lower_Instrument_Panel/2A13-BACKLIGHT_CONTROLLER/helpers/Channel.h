@@ -35,6 +35,8 @@ private:
     uint16_t ledCount;     // Number of LEDs
     CRGB* leds;            // Pointer to LED array
     uint16_t currentIndex; // Index of the next available LED
+    Panel* firstPanel;     // Pointer to first panel in the channel
+    uint8_t panelCount;    // Number of panels in the channel
     
 public:
     Channel(uint8_t p, const char* pcb, uint16_t count) {
@@ -43,6 +45,8 @@ public:
         ledCount = count;
         leds = NULL;
         currentIndex = 0;  // Initialize currentIndex to 0
+        firstPanel = nullptr;  // Initialize first panel pointer
+        panelCount = 0;    // Initialize panel count
     }
 
     void initialize() {
@@ -82,15 +86,29 @@ public:
             }
         }
         
+        // Add panel to linked list
+        if (firstPanel == nullptr) {
+            firstPanel = panel;  // First panel in the channel
+        } else {
+            // Find the last panel
+            Panel* current = firstPanel;
+            while (current->nextPanel != nullptr) {
+                current = current->nextPanel;
+            }
+            current->nextPanel = panel;  // Add new panel at the end
+        }
+        
+        panelCount++;
         currentIndex += panel->getLedCount();
     }
-
 
     // Getters
     uint8_t getPin() const { return pin; }
     const char* getPcbName() const { return pcbName; }
     uint16_t getLedCount() const { return ledCount; }
     CRGB* getLeds() const { return leds; }
+    Panel* getFirstPanel() const { return firstPanel; }
+    uint8_t getPanelCount() const { return panelCount; }
 
 };
 

@@ -17,6 +17,12 @@
  * @brief     Abstract base class for all panels.
  * @details   Each panel is a derived class from this base class.
  *            It provides the basic functionality for all panels.
+ *            Panels are added to Channels. But the channel class does not hold an array of panels.
+ *            Instead, panels are organized in a linked list within each channel. This conserves stack memory.
+ *            This approach avoids allocating fixed-size arrays for panel pointers in each channel,
+ *            which would exhaust the limited stack space on the Arduino Mega 2560 (I tested it).
+ *            Instead, this class provides a pointer to the next panel in its channel.
+ *            Thus,the parent channels still can iterate through all of their panels.
  *********************************************************************************************************************/
 
 
@@ -40,11 +46,15 @@ public:
     virtual const Led* getLedTable() const { return ledTable; }
     virtual CRGB* getLedStrip() const { return ledStrip; }
     
+    // Add friend declaration to allow Channel to access nextPanel
+    friend class Channel;
+    
 protected:
     // Protected constructor to prevent direct instantiation
     Panel() {
         current_backl_brightness = 64;
         current_flood_brightness = 64;
+        nextPanel = nullptr;  // Initialize next panel pointer
     }
 
     // Protected variables. Specific panels must set them INDIVIDUALLY.
@@ -54,6 +64,7 @@ protected:
     CRGB* ledStrip;                                                   // Pointer to the LED strip
     uint16_t current_backl_brightness;                                // Current br. value for backlights (0-65535)
     uint16_t current_flood_brightness;                                // Current br. value for floodlights (0-65535)
+    Panel* nextPanel;                                                 // Pointer to next panel in the channel
 
 
     //The following methods are used to set LEDs
