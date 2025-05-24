@@ -31,3 +31,6 @@
 [submodule "libraries/FastLED"]
 	path = libraries/FastLED
 	url = https://github.com/FastLED/FastLED
+[submodule "libraries/RotaryEncoder"]
+	path = libraries/RotaryEncoder
+	url = https://github.com/mathertel/RotaryEncoder.git
