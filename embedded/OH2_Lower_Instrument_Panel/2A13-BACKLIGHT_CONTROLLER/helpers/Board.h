@@ -71,6 +71,14 @@ public:
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
+    // Fill all channels with black (works in any mode)
+    void fillBlack() {
+        for (int i = 0; i < channelCount; i++) {
+            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), NVIS_BLACK);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+    }
+
     // Fill all channels with a rainbow pattern
     void fillRainbow() {
         for (int i = 0; i < channelCount; i++) {
@@ -85,7 +93,7 @@ public:
         static bool lastButtonState = HIGH;
         bool currentButtonState = digitalRead(buttonPin);
         if (currentButtonState == LOW && lastButtonState == HIGH) {   // Button has just been pressed
-            fillSolid(NVIS_BLACK);                                    // Reset the LEDs
+            fillBlack();                                              // Reset the LEDs regardless of mode
             int previousMode = currentMode;                           // Store previous mode
             currentMode = (currentMode % 3) + 1;                      // Cycle to next mode
             
