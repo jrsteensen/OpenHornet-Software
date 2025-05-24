@@ -29,7 +29,7 @@
 #include "FastLED.h"
 #include "LedRole.h"
 #include "LedStruct.h"
-#include "Board.h"
+#include "LedUpdateState.h"
 #include "Colors.h"
 
 class Panel {
@@ -76,7 +76,7 @@ protected:
                 getLedStrip()[ledIndex] = target;
             }
         }
-        Board::getInstance()->setLedsNeedUpdate();                    // Inform the board that the LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
 
@@ -91,7 +91,7 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        Board::getInstance()->setLedsNeedUpdate();                    
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
 
@@ -114,7 +114,7 @@ protected:
                 getLedStrip()[ledIndex] = target;
             }
         }
-        Board::getInstance()->setLedsNeedUpdate();                    
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 };
 

@@ -78,6 +78,7 @@
 #include "helpers/Panel.h"
 #include "helpers/Channel.h"
 #include "helpers/Colors.h"
+#include "helpers/Board.h"
 #include "panels/1A2A1_MASTER_ARM.h"
 #include "panels/1A4_L_EWI.h"
 #include "panels/1A7A1_HUD_PANEL_REV4.h"            
@@ -99,9 +100,9 @@
 #include "panels/5A5_RC2_ALL_PANELS.h"
 
 // Hardware pin definitions
-const uint8_t pin_EncoderSw =    22;              
-const uint8_t pin_EncoderA  =    24;              
-const uint8_t pin_EncoderB  =    23;  
+const uint8_t encSw =    22;              
+const uint8_t encA  =    24;              
+const uint8_t encB  =    23;  
 
 // Color definitions according MIL-STD-3099. Adapt to your visual preferences.
 #define NVIS_YELLOW  CRGB(172, 144, 0)                                // Yellow Indicators
@@ -131,7 +132,7 @@ Channel AUX_1(8, "Channel 9", 100);                                   //Spare ch
 Channel AUX_2(4, "Channel 10", 100);                                  //Spare channel
 
 Board* board;                                                         // Pointer to singleton board instance
-RotaryEncoder encoder(pin_EncoderA, pin_EncoderB, RotaryEncoder::LatchMode::TWO03);
+RotaryEncoder encoder(encA, encB, RotaryEncoder::LatchMode::TWO03);
 
 
 /********************************************************************************************************************
@@ -151,7 +152,7 @@ void setup() {
     board->initAndRegisterChannel(&AUX_1);
     board->initAndRegisterChannel(&AUX_2);
 
-    pinMode(pin_EncoderSw, INPUT_PULLUP);                             // Initialize mode change pin
+    pinMode(encSw, INPUT_PULLUP);                             // Initialize mode change pin
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
@@ -177,7 +178,7 @@ void setup() {
 }
 
 void loop() {
-    int currentMode = board->handleModeChange(pin_EncoderSw);         // Handle mode changes and get current mode
+    int currentMode = board->handleModeChange(encSw);         // Handle mode changes and get current mode
     static int rotary_pos = 0;                                        // Static to persist between loop iterations
     int newPos = 0;                                                  // Declare outside switch
     

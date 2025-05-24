@@ -32,6 +32,7 @@
 #include "Channel.h"
 #include "DcsBios.h"
 #include "Colors.h"
+#include "LedUpdateState.h"
 
 class Board {
 public:
@@ -47,23 +48,17 @@ public:
         channels[channelCount++] = channel;
     }
 
-    // Method to indicate that LEDs need updating
-    void setLedsNeedUpdate() {
-        ledsNeedUpdate = true;
-    }
-
     // Method to update LEDs if needed
     void updateLeds() {
-        if (ledsNeedUpdate) {
+        if (LedUpdateState::getInstance()->getUpdateFlag()) {
             updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // If countdown is 0, this is the first cycle, so set to 8
             updCountdown--;
             if (updCountdown == 0) {                                  // Trigger FastLED.show() at end of countdown
                 FastLED.show();                                       // This countdown logic allows to capture multiple
-                ledsNeedUpdate = false;                               // DCS-BIOS loop cycles into one FastLED.show() call
+                LedUpdateState::getInstance()->setUpdateFlag(false);  // DCS-BIOS loop cycles into one FastLED.show() call
             }
         }
     }
-
 
     // Fill all channels with a solid color
     void fillSolid(const CRGB& color) {
@@ -73,7 +68,7 @@ public:
         for (int i = 0; i < channelCount; i++) {
             fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), dimmedColor);
         }
-        setLedsNeedUpdate();
+        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     // Fill all channels with a rainbow pattern
@@ -82,7 +77,7 @@ public:
             fill_rainbow(channels[i]->getLeds(), channels[i]->getLedCount(), thisHue, deltaHue);
         }
         thisHue++;  // Increment the hue for the next frame
-        setLedsNeedUpdate();
+        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     // Handle mode change button press and return current mode
@@ -115,7 +110,7 @@ public:
         } else {
             brightness = 255;    // Cap at maximum
         }
-        setLedsNeedUpdate();
+        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     // Decrease brightness by 32 levels (0-255)
@@ -126,13 +121,12 @@ public:
         } else {
             brightness = 0;      // Cap at minimum
         }
-        setLedsNeedUpdate();
+        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
 private:
     // Private constructor to enforce singleton pattern
     Board() {
-        ledsNeedUpdate = false;
         updCountdown = 0;
         channelCount = 0;
         thisHue = 0;      // Starting hue
@@ -142,7 +136,6 @@ private:
     }
 
     // LED update state
-    bool ledsNeedUpdate;
     int updCountdown;
 
     // Channel management
@@ -159,7 +152,6 @@ private:
 
     // Brightness control
     uint8_t brightness;  // Current brightness level (0-255)
-
 
     // Static instance pointer
     static Board* instance;
