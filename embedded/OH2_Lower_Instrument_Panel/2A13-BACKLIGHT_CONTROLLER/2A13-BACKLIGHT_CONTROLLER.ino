@@ -187,7 +187,6 @@ void loop() {
             DcsBios::loop();
             break;
         case Board::MODE_MANUAL:                                      //LEDs controlled manually through BKLT switch
-            board->fillSolid(NVIS_GREEN_A);
             encoder.tick();
             newPos = encoder.getPosition();
             if (newPos != rotary_pos) {
@@ -198,6 +197,7 @@ void loop() {
                     board->decrBrightness();
                 }
                 rotary_pos = newPos;
+                board->fillSolid(NVIS_GREEN_A);  // Only call fillSolid when brightness changes
             }
             break;   
         case Board::MODE_RAINBOW:                                     //Rainbow test mode

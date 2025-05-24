@@ -14,10 +14,10 @@
  * @date      24.05.2025
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Defines the Board class for physically managing LED strips.
+ * @brief     The board class is responsible for the physical interaction: catch rotary encoder commands, update LEDs.
  * @details   During setup, a single board object is created. It manages the update of the LEDs centrally.
  *            It is the only place from which the expensive physical update (FastLED.show() function) is called.
- *            Additionally, it provides the logic to cycle between three modes:
+ *            Additionally, it provides the logic to catch rotary encoder commands to cycle between three modes:
  *            - Normal mode (DCS-BIOS controlled)
  *            - Manual mode (control backlights with rotary encoder)
  *            - Rainbow test mode
@@ -37,19 +37,19 @@
 class Board {
 public:
     static const int MODE_NORMAL = 1;                                 // Normal DCS-BIOS controlled mode
-    static const int MODE_MANUAL = 2;                                 // Manual mode - control backlights with rotary encoder
+    static const int MODE_MANUAL = 2;                                 // Manual mode - control backlts with rotary encoder
     static const int MODE_RAINBOW = 3;                                // Rainbow test mode
 
-    static Board* getInstance() { return instance ? instance : (instance = new Board()); }
+    static Board* getInstance() {                                     // Singleton pattern
+        return instance ? instance : (instance = new Board()); }
 
-    // Initialize and register a channel in one step
-    void initAndRegisterChannel(Channel* channel) {
+    void initAndRegisterChannel(Channel* channel) {                   // Initialize and register a channel in one step
         channel->initialize();
         channels[channelCount++] = channel;
     }
 
-    // Method to update LEDs if needed
-    void updateLeds() {
+
+    void updateLeds() {                                                // Method to update LEDs if needed
         if (LedUpdateState::getInstance()->getUpdateFlag()) {
             updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // If countdown is 0, this is the first cycle, so set to 8
             updCountdown--;
@@ -60,27 +60,24 @@ public:
         }
     }
 
-    // Fill all channels with a solid color
-    void fillSolid(const CRGB& color) {
+    
+    void fillSolid(const CRGB& color) {                               // Fill backlights of all channels with a solid color
         if (currentMode != MODE_MANUAL) return;                       // Only applicable in manual mode
-        CRGB dimmedColor = color;
-        dimmedColor.nscale8_video(brightness);                     
         for (int i = 0; i < channelCount; i++) {
             channels[i]->updateBacklights(map(brightness, 0, 255, 0, 65535));
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
-    // Fill all channels with black (works in any mode)
-    void fillBlack() {
+    void fillBlack() {                                                // Fill all channels with black (works in any mode)
         for (int i = 0; i < channelCount; i++) {
             fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), NVIS_BLACK);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
-    // Fill all channels with a rainbow pattern
-    void fillRainbow() {
+    
+    void fillRainbow() {                                              // Fill all channels with a rainbow pattern
         for (int i = 0; i < channelCount; i++) {
             fill_rainbow(channels[i]->getLeds(), channels[i]->getLedCount(), thisHue, deltaHue);
         }
@@ -93,15 +90,19 @@ public:
         static bool lastButtonState = HIGH;
         bool currentButtonState = digitalRead(buttonPin);
         if (currentButtonState == LOW && lastButtonState == HIGH) {   // Button has just been pressed
-            fillBlack();                                              // Reset the LEDs regardless of mode
             int previousMode = currentMode;                           // Store previous mode
             currentMode = (currentMode % 3) + 1;                      // Cycle to next mode
             
-            // Reset brightness when entering manual mode
             if (currentMode == MODE_MANUAL) {
                 brightness = 128;  // Reset to 50% brightness
+                fillSolid(NVIS_GREEN_A);                              // Apply the brightness immediately
+                LedUpdateState::getInstance()->setUpdateFlag(true);   // Register an LED update is needed
             }
-            
+            if (currentMode == MODE_NORMAL) {
+                fillBlack();
+                LedUpdateState::getInstance()->setUpdateFlag(true);   // Register an LED update is needed
+            }
+
             lastButtonState = currentButtonState;
             delay(10);                                                // Small delay to debounce
         } else {
