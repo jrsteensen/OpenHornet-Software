@@ -34,9 +34,13 @@
  * @author  Ulukaii, Arribe, Higgins
  * @date    May 22, 2025
  * @version V 0.3.2 ( partially tested)
- * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and panel versions.
- * @brief   Controls backlights & most annunciators. Coded for Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
- * @details **Wiring Diagram:** 
+ * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and 
+ *          panel versions.
+ * @brief   Controls backlights & most annunciators. 
+ * @details **Intended Board**
+ *          For Arduino MEGA 2560 + ABSIS BACKLIGHT SHIELD.
+
+ *          **Wiring Diagram:** 
  * 
  *          | Pin | Function                      |
  *          |-----|-------------------------------|
@@ -56,7 +60,48 @@
  *          | SDA | TEMP SNSR                     |
  *          | SCL | TEMP SNSR                     |
  *          | 2   | J12 & J13 Cooling fan headers |
+ *   
+ *          **How to use**
+ *          If you are building according to spec, you only need to review this file:
+ *          - In the setup() function, add only those panels that you are using.
+ *          - Make sure to add the panels to the channel and in the order that you have physically connected them.
+ *          - There is no need to adapt any indexes or LED counts, anyhwere.
+ *          If you want to change the colors:
+ *          - Open the Colors.h file and change the color definitions.
+ *          - Colors are according MIL-STD-3099. Adapt individually as needed for your build and LEDs in use.
+ *          - Note that methods that are dimming these LEDs are using FastLED's nscale8_video() function.
+ *            This function provides a more color-preserving dimming effect than pure RGB value recalculation.
+ *          If you have an non-standard wiring / pinout of your backlight controller:
+ *          - Adapt the pinout in the "Define pinouts and channels" section in this file.
+ *          If you are using custom panels: 
+ *          - Adapt or create a new panel class in the "panels" folder. You may use the 1A2A1_MASTER_ARM.h as template. 
+ *          - Make sure to use the same class structure (Inherit from panel class) as the other panels.
+ *          - Add the panel to the setup() function.
+ *          - Adapt the max LED count of the affected channel as needed in the "Define pinouts and channels" section.
+ * 
+ *          **Technical Background**
+ *          This sketch / codebase is result of matching OH requirements into a constrained Arduino environment.
+ *          It addresses the following requirements:
+ *          1. Enable control of OH backlights and indicators with DCS-BIOS.
+ *          2. Enable control of OH backlights manually with a rotary encoder, if no DCS-BIOS connection is available.
+ *          3. Provide a function to test all backlights and indicators with a rainbow pattern.
+ *          4. Backlights and indicators share the same LED strip.
+ *          5. Not all panels are used in all builds; the code must be modular enough to allow for this.
+ *          6. Fast code execution to avoid LED flickering (output side) or dropping DCS-BIOS updates (input side).
+ *          7. Use shall not need to recalculate LED indices or LED counts as their builds evolve.
+ *          8. DCS-BIOS callbacks expect to call 'static' functions - no dynamic allocation is allowed.
+ *          9. Extensible for a future use of the PREFLT function (feasibility study ongoing).
+ *          Solutions:
+ *          - An OOP programming paradigm is used, as many functions are repeating across panels.
+ *          - Panels classes adhere to a singleton pattern to make them compatible with DCS-BIOS callbacks (addresses: rqrmt 8)
+ *          - Panels classes store their LED role info in PROGMEM to save SRAM, of which only 8KB are available
+ *          - Channels class implements logical LED strip mgmt and automatic indices calculation (addresses: rqrmt 4, 5, 7)
+ *          - Board class implements the main logic and handles mode changes (addresses: rqrmt 1, 2, 3)
+ *          - LedUpdateState class implements central point for LED update calls, ensuring high performance (addresses: rqrmt 6)
+ *          - LedStruct class prepares LedText struct for future PREFLT function (addresses: rqrmt 9)
  */
+
+ /*************************************************************************************/
 
 /**********************************************************************************************************************
  * @brief  Preprocessor directives & library includes
@@ -99,27 +144,20 @@
 #include "panels/5A2A3_RC1_ALL_REMAINING_PANELS.h"
 #include "panels/5A5_RC2_ALL_PANELS.h"
 
+
+/********************************************************************************************************************
+ * @brief   Define pinouts and channels 
+ * @remark  Check that the pinout corresponds to (YOUR!) wiring.
+ * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected max. led count);
+ *          When adapting below code, observe memory constraints. Each LED uses 3 bytes of SRAM. 8KB are available.
+ ********************************************************************************************************************/
+
 // Hardware pin definitions
 const uint8_t encSw =    22;              
 const uint8_t encA  =    24;              
 const uint8_t encB  =    23;  
 
-// Color definitions according MIL-STD-3099. Adapt to your visual preferences.
-#define NVIS_YELLOW  CRGB(172, 144, 0)                                // Yellow Indicators
-#define NVIS_RED     CRGB(158, 4, 4)                                  // Red Indicators
-#define NVIS_GREEN_A CRGB(51, 102, 0)                                 // Green Backlighting
-#define NVIS_GREEN_B CRGB(85, 138, 0)                                 // Green indicators
-#define NVIS_WHITE   CRGB(40, 40, 30)                                 // Dimmed white, e.g. for Jett Station Select toggle light
-#define NVIS_BLACK   CRGB(0, 0, 0)                                    // No colour / OFF
-
-
-/********************************************************************************************************************
- * @brief   Create the channel objects. 
- * @remark  Check that the pinout corresponds to (YOUR!) wiring.
- * @details Syntax: Channel <Name as on Interconnect>(hardware pin, "Channel name as on PCB", expected max. led count);
- *          When adapting below code, observe memory constraints. Each LED uses 3 bytes of SRAM.
- ********************************************************************************************************************/
-
+// Define channel objects (and create them)
 Channel LIP_1(13, "Channel 1", 100);
 Channel LIP_2(12, "Channel 2", 120);
 Channel UIP_1(11, "Channel 3", 210);
@@ -141,8 +179,8 @@ RotaryEncoder encoder(encA, encB, RotaryEncoder::LatchMode::TWO03);
  ********************************************************************************************************************/
 void setup() {
     board = Board::getInstance();                                      // Get board instance
-    board->initAndRegisterChannel(&LIP_1);                            // Initialize channels and register them
-    board->initAndRegisterChannel(&LIP_2);
+    board->initAndRegisterChannel(&LIP_1);                            // Initializing channels will block RAM according 
+    board->initAndRegisterChannel(&LIP_2);                            //   to max LED count
     board->initAndRegisterChannel(&UIP_1);
     board->initAndRegisterChannel(&UIP_2);
     board->initAndRegisterChannel(&LC_1);
@@ -152,7 +190,7 @@ void setup() {
     board->initAndRegisterChannel(&AUX_1);
     board->initAndRegisterChannel(&AUX_2);
 
-    pinMode(encSw, INPUT_PULLUP);                             // Initialize mode change pin
+    pinMode(encSw, INPUT_PULLUP);                                     // Initialize mode change pin
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
@@ -178,15 +216,15 @@ void setup() {
 }
 
 void loop() {
-    int currentMode = board->handleModeChange(encSw);         // Handle mode changes and get current mode
+    int currentMode = board->handleModeChange(encSw);                 // Handle mode changes and get current mode
     static int rotary_pos = 0;                                        // Static to persist between loop iterations
-    int newPos = 0;                                                  // Declare outside switch
+    int newPos = 0;                                                   // Declare outside switch
     
     switch(currentMode) {
-        case Board::MODE_NORMAL:                                      //LEDs controlled by DCS BIOS
+        case Board::MODE_NORMAL:                                      // LEDs controlled by DCS BIOS
             DcsBios::loop();
             break;
-        case Board::MODE_MANUAL:                                      //LEDs controlled manually through BKLT switch
+        case Board::MODE_MANUAL:                                      // LEDs controlled manually through BKLT switch
             encoder.tick();
             newPos = encoder.getPosition();
             if (newPos != rotary_pos) {
@@ -197,7 +235,7 @@ void loop() {
                     board->decrBrightness();
                 }
                 rotary_pos = newPos;
-                board->fillSolid(NVIS_GREEN_A);  // Only call fillSolid when brightness changes
+                board->fillSolid(NVIS_GREEN_A);                       // Only call fillSolid when brightness changes
             }
             break;   
         case Board::MODE_RAINBOW:                                     //Rainbow test mode
@@ -205,5 +243,5 @@ void loop() {
             break;
     }
 
-    board->updateLeds();                                             // Update LEDs as needed
+    board->updateLeds();                                              // Update LEDs as needed
 }

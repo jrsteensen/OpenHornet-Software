@@ -12,7 +12,7 @@
  * @file      Colors.h
  * @author    Ulukaii
  * @date      24.05.2025
- * @version   u 0.3.1
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Defines the color constants for the LED strips.
  * @details   The color constants are used to set the color of the LED strips.

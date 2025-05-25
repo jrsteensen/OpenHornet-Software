@@ -12,11 +12,16 @@
  * @file      Channel.h
  * @author    Ulukaii
  * @date      24.05.2025
- * @version   u 0.3.1
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Defines the Channel class for managing logical LED strips.
- * @details   Each channel represents a physical LED strip connected to a specific pin.
- *            The class manages the logical LED array. It also stores a list of "its" panels.
+ * @brief     Channels are the logical representation of LED strips.
+ * @details   Each channel maintains an array of LEDs, and a pointer to the first panel on the channel.
+ *            The channel class provides methods to add panels to the channel and to update the backlights of all 
+ *            panels in the channel. The channel class does not hold an array of panels. Instead, panels are organized 
+ *            in a linked list within each channel. This conserves stack memory. This approach avoids allocating 
+ *            fixed-size arrays for panels in each channel, which would exhaust the limited stack space on the 
+ *            Arduino Mega 2560 (I tested it). Instead, this class provides a pointer its first panel.
+ *            Thus,the channels are still able to iterate through all of their panels.
  *********************************************************************************************************************/
 
 #ifndef __CHANNEL_H
@@ -110,7 +115,7 @@ public:
     Panel* getFirstPanel() const { return firstPanel; }
     uint8_t getPanelCount() const { return panelCount; }
 
-    // Update backlights for all panels in this channel
+    // Update backlights for all panels in this channel (only used in manual mode)
     void updateBacklights(uint16_t brightness) {
         Panel* current = firstPanel;
         while (current != nullptr) {
