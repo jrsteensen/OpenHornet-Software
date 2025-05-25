@@ -62,7 +62,7 @@
  *          | 2   | J12 & J13 Cooling fan headers |
  *   
  *          **How to use**
- *          If you are building according to spec, you only need to review this file:
+ *          If you are building according to spec, you only need to work with this file:
  *          - In the setup() function, add only those panels that you are using.
  *          - Make sure to add the panels to the channel and in the order that you have physically connected them.
  *          - There is no need to adapt any indexes or LED counts, anyhwere.
@@ -75,13 +75,12 @@
  *          - Adapt the pinout in the "Define pinouts and channels" section in this file.
  *          If you are using custom panels: 
  *          - Adapt or create a new panel class in the "panels" folder. You may use the 1A2A1_MASTER_ARM.h as template. 
- *          - Make sure to use the same class structure (Inherit from panel class) as the other panels.
+ *          - Make sure to use the same concepts (Inherit from panel class, singleton, PROGMEM etc.) as the other panels.
  *          - Add the panel to the setup() function.
  *          - Adapt the max LED count of the affected channel as needed in the "Define pinouts and channels" section.
  * 
  *          **Technical Background**
- *          This sketch / codebase is result of matching OH requirements into a constrained Arduino environment.
- *          It addresses the following requirements:
+ *          This sketch addresses the following OH requirements:
  *          1. Enable control of OH backlights and indicators with DCS-BIOS.
  *          2. Enable control of OH backlights manually with a rotary encoder, if no DCS-BIOS connection is available.
  *          3. Provide a function to test all backlights and indicators with a rainbow pattern.
@@ -93,15 +92,18 @@
  *          9. Extensible for a future use of the PREFLT function (feasibility study ongoing).
  *          Solutions:
  *          - An OOP programming paradigm is used, as many functions are repeating across panels.
- *          - Panels classes adhere to a singleton pattern to make them compatible with DCS-BIOS callbacks (addresses: rqrmt 8)
+ *          - The generic Panel class (Panel.h) is the base class for all panels. Each panel must be inherit from it.
+ *          - For each panel in the pit, there is one specific panel class in the panels folder.
+ *          - These panels classes (1) inherit the common behaviour from the generic Panel class;
+ *                                 (2) additionally implement DCS-BIOS callbacks that are unique to this panel
+ *                                 (3) adhere to a singleton pattern for compatibility with DCS-BIOS callbacks (rqrmt 8)
  *          - Panels classes store their LED role info in PROGMEM to save SRAM, of which only 8KB are available
- *          - Channels class implements logical LED strip mgmt and automatic indices calculation (addresses: rqrmt 4, 5, 7)
- *          - Board class implements the main logic and handles mode changes (addresses: rqrmt 1, 2, 3)
- *          - LedUpdateState class implements central point for LED update calls, ensuring high performance (addresses: rqrmt 6)
- *          - LedStruct class prepares LedText struct for future PREFLT function (addresses: rqrmt 9)
+ *          - Panel classes encapsulate all there is to know (LED roles, DCS-BIOS methods) about them in one spot
+ *          - Channels class implements logical LED strip mgmt and automatic indices calculation (rqrmt 4, 5, 7)
+ *          - Board class implements the main logic and handles mode changes (rqrmt 1, 2, 3)
+ *          - LedUpdateState class implements central point for LED update calls, ensuring high performance (rqrmt 6)
+ *          - LedStruct class prepares LedText struct for future PREFLT function (rqrmt 9)
  */
-
- /*************************************************************************************/
 
 /**********************************************************************************************************************
  * @brief  Preprocessor directives & library includes

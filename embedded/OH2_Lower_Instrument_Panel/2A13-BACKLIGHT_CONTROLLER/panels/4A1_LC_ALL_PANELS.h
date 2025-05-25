@@ -105,7 +105,7 @@ private:
     static void onConsolesDimmerChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer consolesDimmerBuffer{0x7544, 0xffff, 0, onConsolesDimmerChange};
+    DcsBios::IntegerBuffer consolesDimmerBuffer{FA_18C_hornet_CONSOLES_DIMMER, onConsolesDimmerChange};
 
     // Instance data
     static LcAllPanels* instance;

@@ -77,7 +77,7 @@ private:
     static void onInstrIntLtChangeRev3(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBufferRev3{0x7560, 0xffff, 0, onInstrIntLtChangeRev3};
+    DcsBios::IntegerBuffer instrIntLtBufferRev3{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChangeRev3};
 
     // Instance data
     static HudPanelRev3* instance;

@@ -88,10 +88,10 @@ private:
     }
 
     // Static callback functions for DCS-BIOS
-    static void onInstrIntLtChange(unsigned int newValue) {
+    static void onConsolesDimmerChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer consolesDimmerBuffer{FA_18C_hornet_CONSOLES_DIMMER, onConsolesDimmerChange};
 
     // Instance data
     static Rc1AllRemainingPanels* instance;

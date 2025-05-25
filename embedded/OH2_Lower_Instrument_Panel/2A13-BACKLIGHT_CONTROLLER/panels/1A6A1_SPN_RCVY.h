@@ -78,12 +78,12 @@ private:
     static void onInstrIntLtChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
 
     static void onSpinLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_SPIN, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer spinLtBuffer{0x742a, 0x0800, 11, onSpinLtChange};
+    DcsBios::IntegerBuffer spinLtBuffer{FA_18C_hornet_SPIN_LT, onSpinLtChange};
 
     // Instance data
     static SpnRcvyPanel* instance;

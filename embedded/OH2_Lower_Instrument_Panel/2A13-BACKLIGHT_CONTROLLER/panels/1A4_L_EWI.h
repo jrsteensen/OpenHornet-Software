@@ -72,72 +72,72 @@ private:
     static void onInstrIntLtChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
 
     static void onFireLeftLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_FIRE, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer fireLeftLtBuffer{0x7408, 0x0040, 6, onFireLeftLtChange};
+    DcsBios::IntegerBuffer fireLeftLtBuffer{FA_18C_hornet_FIRE_LEFT_LT, onFireLeftLtChange};
 
     static void onMasterCautionLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_CAUTION, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer masterCautionLtBuffer{0x7408, 0x0200, 9, onMasterCautionLtChange};
+    DcsBios::IntegerBuffer masterCautionLtBuffer{FA_18C_hornet_MASTER_CAUTION_LT, onMasterCautionLtChange};
 
     static void onLhAdvAspjOhChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_ASPJ_ON, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvAspjOhBuffer{0x740a, 0x0008, 3, onLhAdvAspjOhChange};
+    DcsBios::IntegerBuffer lhAdvAspjOhBuffer{FA_18C_hornet_LH_ADV_ASPJ_OH, onLhAdvAspjOhChange};
 
     static void onLhAdvGoChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_GO, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvGoBuffer{0x740a, 0x0010, 4, onLhAdvGoChange};
+    DcsBios::IntegerBuffer lhAdvGoBuffer{FA_18C_hornet_LH_ADV_GO, onLhAdvGoChange};
 
     static void onLhAdvLBarGreenChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_L_BAR2, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvLBarGreenBuffer{0x740a, 0x0002, 1, onLhAdvLBarGreenChange};
+    DcsBios::IntegerBuffer lhAdvLBarGreenBuffer{FA_18C_hornet_LH_ADV_L_BAR_GREEN, onLhAdvLBarGreenChange};
 
     static void onLhAdvLBarRedChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_L_BAR1, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvLBarRedBuffer{0x7408, 0x8000, 15, onLhAdvLBarRedChange};
+    DcsBios::IntegerBuffer lhAdvLBarRedBuffer{FA_18C_hornet_LH_ADV_L_BAR_RED, onLhAdvLBarRedChange};
 
     static void onLhAdvLBleedChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_L_BLEED, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvLBleedBuffer{0x7408, 0x0800, 11, onLhAdvLBleedChange};
+    DcsBios::IntegerBuffer lhAdvLBleedBuffer{FA_18C_hornet_LH_ADV_L_BLEED, onLhAdvLBleedChange};
 
     static void onLhAdvNoGoChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_NO_GO, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvNoGoBuffer{0x740a, 0x0020, 5, onLhAdvNoGoChange};
+    DcsBios::IntegerBuffer lhAdvNoGoBuffer{FA_18C_hornet_LH_ADV_NO_GO, onLhAdvNoGoChange};
 
     static void onLhAdvRBleedChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_R_BLEED, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvRBleedBuffer{0x7408, 0x1000, 12, onLhAdvRBleedChange};
+    DcsBios::IntegerBuffer lhAdvRBleedBuffer{FA_18C_hornet_LH_ADV_R_BLEED, onLhAdvRBleedChange};
 
     static void onLhAdvRecChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_REC, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvRecBuffer{0x740a, 0x0001, 0, onLhAdvRecChange};
+    DcsBios::IntegerBuffer lhAdvRecBuffer{FA_18C_hornet_LH_ADV_REC, onLhAdvRecChange};
 
     static void onLhAdvSpdBrkChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_SPD_BRK, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvSpdBrkBuffer{0x7408, 0x2000, 13, onLhAdvSpdBrkChange};
+    DcsBios::IntegerBuffer lhAdvSpdBrkBuffer{FA_18C_hornet_LH_ADV_SPD_BRK, onLhAdvSpdBrkChange};
 
     static void onLhAdvStbyChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_STBY, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvStbyBuffer{0x7408, 0x4000, 14, onLhAdvStbyChange};
+    DcsBios::IntegerBuffer lhAdvStbyBuffer{FA_18C_hornet_LH_ADV_STBY, onLhAdvStbyChange};
 
     static void onLhAdvXmitChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_XMIT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer lhAdvXmitBuffer{0x740a, 0x0004, 2, onLhAdvXmitChange};
+    DcsBios::IntegerBuffer lhAdvXmitBuffer{FA_18C_hornet_LH_ADV_XMIT, onLhAdvXmitChange};
 
     // Instance data
     static EwiPanel* instance;

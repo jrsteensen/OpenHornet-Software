@@ -82,12 +82,12 @@ private:
     static void onInstrIntLtChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
 
     static void onCmsdJetSelLChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_ECM_JETT_SEL, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer cmsdJetSelLBuffer{0x74d4, 0x8000, 15, onCmsdJetSelLChange};
+    DcsBios::IntegerBuffer cmsdJetSelLBuffer{FA_18C_hornet_CMSD_JET_SEL_L, onCmsdJetSelLChange};
 
     // Instance data
     static EcmPanel* instance;

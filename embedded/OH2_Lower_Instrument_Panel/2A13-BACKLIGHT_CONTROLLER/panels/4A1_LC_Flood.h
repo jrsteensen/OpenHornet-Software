@@ -84,7 +84,7 @@ private:
     static void onFloodDimmerChange(unsigned int newValue) {
         if (instance) instance->setFloodlights(newValue);
     }
-    DcsBios::IntegerBuffer floodDimmerBuffer{0x7548, 0xffff, 0, onFloodDimmerChange};
+    DcsBios::IntegerBuffer floodDimmerBuffer{FA_18C_hornet_FLOOD_DIMMER, onFloodDimmerChange};
 
     // Instance data
     static LcFloodPanel* instance;

@@ -34,9 +34,9 @@ const int R_EWI_LED_COUNT = 30;  // Total number of LEDs in the panel
 const Led rEwiLedTable[R_EWI_LED_COUNT] PROGMEM = {
     {0, LED_R_FIRE}, {1, LED_R_FIRE}, {2, LED_R_FIRE}, {3, LED_R_FIRE}, {4, LED_APU_FIRE},
     {5, LED_APU_FIRE}, {6, LED_APU_FIRE}, {7, LED_APU_FIRE}, {8, LED_DISP}, {9, LED_DISP},
-    {10, LED_RCDRON}, {11, LED_RCDRON}, {12, LED_BLANK1}, {13, LED_BLANK1}, {14, LED_BLANK2},
-    {15, LED_BLANK2}, {16, LED_BLANK3}, {17, LED_BLANK3}, {18, LED_BLANK4}, {19, LED_BLANK4},
-    {20, LED_BLANK5}, {21, LED_BLANK5}, {22, LED_SAM}, {23, LED_SAM}, {24, LED_AAA},
+    {10, LED_RCDRON}, {11, LED_RCDRON}, {12, LED_SPARE1}, {13, LED_SPARE1}, {14, LED_SPARE2},
+    {15, LED_SPARE2}, {16, LED_SPARE3}, {17, LED_SPARE3}, {18, LED_SPARE4}, {19, LED_SPARE4},
+    {20, LED_SPARE5}, {21, LED_SPARE5}, {22, LED_SAM}, {23, LED_SAM}, {24, LED_AAA},
     {25, LED_AAA}, {26, LED_AI}, {27, LED_AI}, {28, LED_CW}, {29, LED_CW}
 };
 
@@ -72,72 +72,72 @@ private:
     static void onInstrIntLtChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
 
     static void onFireRightLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_R_FIRE, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer fireRightLtBuffer{0x740c, 0x0010, 4, onFireRightLtChange};
+    DcsBios::IntegerBuffer fireRightLtBuffer{FA_18C_hornet_FIRE_RIGHT_LT, onFireRightLtChange};
 
     static void onFireApuLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_APU_FIRE, newValue ? NVIS_RED : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer fireApuLtBuffer{0x740c, 0x0004, 2, onFireApuLtChange};
+    DcsBios::IntegerBuffer fireApuLtBuffer{FA_18C_hornet_FIRE_APU_LT, onFireApuLtChange};
 
     static void onRhAdvAaaChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_AAA, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvAaaBuffer{0x740a, 0x0800, 11, onRhAdvAaaChange};
+    DcsBios::IntegerBuffer rhAdvAaaBuffer{FA_18C_hornet_RH_ADV_AAA, onRhAdvAaaChange};
 
     static void onRhAdvAiChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_AI, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvAiBuffer{0x740a, 0x0400, 10, onRhAdvAiChange};
+    DcsBios::IntegerBuffer rhAdvAiBuffer{FA_18C_hornet_RH_ADV_AI, onRhAdvAiChange};
 
     static void onRhAdvCwChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_CW, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvCwBuffer{0x740a, 0x1000, 12, onRhAdvCwChange};
+    DcsBios::IntegerBuffer rhAdvCwBuffer{FA_18C_hornet_RH_ADV_CW, onRhAdvCwChange};
 
     static void onRhAdvDispChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_DISP, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvDispBuffer{0x740a, 0x0100, 8, onRhAdvDispChange};
+    DcsBios::IntegerBuffer rhAdvDispBuffer{FA_18C_hornet_RH_ADV_DISP, onRhAdvDispChange};
 
     static void onRhAdvRcdrOnChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_RCDRON, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvRcdrOnBuffer{0x740a, 0x0080, 7, onRhAdvRcdrOnChange};
+    DcsBios::IntegerBuffer rhAdvRcdrOnBuffer{FA_18C_hornet_RH_ADV_RCDR_ON, onRhAdvRcdrOnChange};
 
     static void onRhAdvSamChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_SAM, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSamBuffer{0x740a, 0x0200, 9, onRhAdvSamChange};
+    DcsBios::IntegerBuffer rhAdvSamBuffer{FA_18C_hornet_RH_ADV_SAM, onRhAdvSamChange};
 
     static void onRhAdvSpareRh1Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK1, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE1, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSpareRh1Buffer{0x740a, 0x2000, 13, onRhAdvSpareRh1Change};
+    DcsBios::IntegerBuffer rhAdvSpareRh1Buffer{FA_18C_hornet_RH_ADV_SPARE_RH1, onRhAdvSpareRh1Change};
 
     static void onRhAdvSpareRh2Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK2, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE2, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSpareRh2Buffer{0x740a, 0x4000, 14, onRhAdvSpareRh2Change};
+    DcsBios::IntegerBuffer rhAdvSpareRh2Buffer{FA_18C_hornet_RH_ADV_SPARE_RH2, onRhAdvSpareRh2Change};
 
     static void onRhAdvSpareRh3Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK3, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE3, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSpareRh3Buffer{0x740a, 0x8000, 15, onRhAdvSpareRh3Change};
+    DcsBios::IntegerBuffer rhAdvSpareRh3Buffer{FA_18C_hornet_RH_ADV_SPARE_RH3, onRhAdvSpareRh3Change};
 
     static void onRhAdvSpareRh4Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK4, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE4, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSpareRh4Buffer{0x740c, 0x0001, 0, onRhAdvSpareRh4Change};
+    DcsBios::IntegerBuffer rhAdvSpareRh4Buffer{FA_18C_hornet_RH_ADV_SPARE_RH4, onRhAdvSpareRh4Change};
 
     static void onRhAdvSpareRh5Change(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_BLANK5, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_SPARE5, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer rhAdvSpareRh5Buffer{0x740c, 0x0002, 1, onRhAdvSpareRh5Change};
+    DcsBios::IntegerBuffer rhAdvSpareRh5Buffer{FA_18C_hornet_RH_ADV_SPARE_RH5, onRhAdvSpareRh5Change};
 
     // Instance data
     static REwiPanel* instance;

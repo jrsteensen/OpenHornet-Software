@@ -87,27 +87,27 @@ private:
     static void onInstrIntLtChange(unsigned int newValue) {
         if (instance) instance->setBacklights(newValue);
     }
-    DcsBios::IntegerBuffer instrIntLtBuffer{0x7560, 0xffff, 0, onInstrIntLtChange};
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
     
     static void onMcReadyChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_READY, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer mcReadyBuffer{0x740c, 0x8000, 15, onMcReadyChange};
+    DcsBios::IntegerBuffer mcReadyBuffer{FA_18C_hornet_MC_READY, onMcReadyChange};
 
     static void onMcDischChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_DISCH, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer mcDischBuffer{0x740c, 0x4000, 14, onMcDischChange};
+    DcsBios::IntegerBuffer mcDischBuffer{FA_18C_hornet_MC_DISCH, onMcDischChange};
 
     static void onMasterModeAgLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_AG, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer masterModeAgLtBuffer{0x740c, 0x0400, 10, onMasterModeAgLtChange};
+    DcsBios::IntegerBuffer masterModeAgLtBuffer{FA_18C_hornet_MASTER_MODE_AG_LT, onMasterModeAgLtChange};
 
     static void onMasterModeAaLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_AA, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer masterModeAaLtBuffer{0x740c, 0x0200, 9, onMasterModeAaLtChange};
+    DcsBios::IntegerBuffer masterModeAaLtBuffer{FA_18C_hornet_MASTER_MODE_AA_LT, onMasterModeAaLtChange};
 
     // Instance data
     static MasterArmPanel* instance;
