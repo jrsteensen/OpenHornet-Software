@@ -161,8 +161,8 @@ const uint8_t encB  =    23;
 Channel LIP_1(13, "Channel 1", 100);
 Channel LIP_2(12, "Channel 2", 120);
 Channel UIP_1(11, "Channel 3", 210);
-Channel UIP_2(9, "Channel 4", 210);                                   // Ulukaii deviation. Specification: pin 10
-Channel LC_1(10, "Channel 5", 304);              
+Channel UIP_2(10, "Channel 4", 210);                                   
+Channel LC_1(9, "Channel 5", 304);              
 Channel LC_2(5, "Channel 6", 150);
 Channel RC_1(7, "Channel 7", 170);               
 Channel RC_2(6, "Channel 8", 266);               
