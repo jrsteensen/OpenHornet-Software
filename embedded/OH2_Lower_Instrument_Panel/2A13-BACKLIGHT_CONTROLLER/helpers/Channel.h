@@ -20,7 +20,7 @@
  *            panels in the channel. The channel class does not hold an array of panels. Instead, panels are organized 
  *            in a linked list within each channel. This conserves stack memory. This approach avoids allocating 
  *            fixed-size arrays for panels in each channel, which would exhaust the limited stack space on the 
- *            Arduino Mega 2560 (I tested it). Instead, this class provides a pointer its first panel.
+ *            Arduino Mega 2560 (I tested it). Instead, this class provides a pointer to its first panel.
  *            Thus,the channels are still able to iterate through all of their panels.
  *********************************************************************************************************************/
 

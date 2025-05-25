@@ -14,8 +14,7 @@
  * @date      24.05.2025
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     This class is a supporting class that serves just one purpose:
- *            Track whether the LEDs need to be updated.
+ * @brief     This class serves just one purpose: track whether the LEDs need to be updated.
  *            The flag is read by board.h, and if TRUE, used to trigger the update of the LEDs.
  * @details   Technical implementation: singleton state machine and using interrupt pausing to ensure atomicity
  *            when writing the flag.

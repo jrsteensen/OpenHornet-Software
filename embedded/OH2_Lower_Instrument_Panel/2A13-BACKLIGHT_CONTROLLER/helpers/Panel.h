@@ -14,12 +14,12 @@
  * @date      24.05.2025
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Abstract base class for all panels.
- * @details   Each panel is a derived class from this base class.
- *            It provides the basic functionality for all panels.
+ * @brief     Abstract base class for all panels. Each panel must be a derived class from this base class.
+ * @details   It provides functions that are repeatedly required across all panels: 
+ *            setBacklights(), setIndicatorColor(), setFloodlights().
  *            Panels are added to Channels. But the channel class does not hold an array of panels.
  *            Instead, panels are organized in a linked list within each channel. This conserves stack memory.
- *            This approach avoids allocating fixed-size arrays for panel pointers in each channel,
+ *            This approach avoids allocating fixed-size arrays for panel pointers in each channel, 
  *            which would exhaust the limited stack space on the Arduino Mega 2560 (I tested it).
  *            Instead, this class provides a pointer to the next panel in its channel.
  *            Thus,the parent channels still can iterate through all of their panels.
