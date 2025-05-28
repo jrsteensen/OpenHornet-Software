@@ -86,13 +86,13 @@ enum LedRole {
     LED_BATT_SW,
     LED_FCS_HOT,
     LED_GEN_TIE,
-    LED_SPARE1,
+    LED_CSPARE1,
     LED_FUEL_LO,
     LED_FCES,
-    LED_SPARE2,
+    LED_CSPARE2,
     LED_L_GEN,
     LED_R_GEN,
-    LED_SPARE3
+    LED_CSPARE3
 };
 
 #endif 

@@ -37,13 +37,13 @@ const Led cautionLedTable[CAUTION_LED_COUNT] PROGMEM = {
     {4, LED_BATT_SW}, {5, LED_BATT_SW},           // BATT SW
     {6, LED_FCS_HOT}, {7, LED_FCS_HOT},           // FCS HOT
     {8, LED_GEN_TIE}, {9, LED_GEN_TIE},           // GEN TIE
-    {10, LED_SPARE1}, {11, LED_SPARE1},           // Spare1
+    {10, LED_CSPARE1}, {11, LED_CSPARE1},           // Spare1
     {12, LED_FUEL_LO}, {13, LED_FUEL_LO},         // FUEL LO
     {14, LED_FCES}, {15, LED_FCES},               // FCES
-    {16, LED_SPARE2}, {17, LED_SPARE2},           // Spare2
+    {16, LED_CSPARE2}, {17, LED_CSPARE2},           // Spare2
     {18, LED_L_GEN}, {19, LED_L_GEN},             // L GEN
     {20, LED_R_GEN}, {21, LED_R_GEN},             // R GEN
-    {22, LED_SPARE3}, {23, LED_SPARE3}            // Spare3
+    {22, LED_CSPARE3}, {23, LED_CSPARE3}            // Spare3
 };
 
 /********************************************************************************************************************
@@ -130,17 +130,17 @@ private:
     DcsBios::IntegerBuffer clipRGenLtBuffer{FA_18C_hornet_CLIP_R_GEN_LT, onClipRGenLtChange};
 
     static void onClipSpareCtn1LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE1, newValue ? NVIS_YELLOW : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CSPARE1, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn1LtBuffer{FA_18C_hornet_CLIP_SPARE_CTN1_LT, onClipSpareCtn1LtChange};
 
     static void onClipSpareCtn2LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE2, newValue ? NVIS_YELLOW : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CSPARE2, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn2LtBuffer{FA_18C_hornet_CLIP_SPARE_CTN2_LT, onClipSpareCtn2LtChange};
 
     static void onClipSpareCtn3LtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_SPARE3, newValue ? NVIS_YELLOW : NVIS_BLACK);
+        if (instance) instance->setIndicatorColor(LED_CSPARE3, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer clipSpareCtn3LtBuffer{FA_18C_hornet_CLIP_SPARE_CTN3_LT, onClipSpareCtn3LtChange};
 

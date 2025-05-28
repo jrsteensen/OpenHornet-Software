@@ -121,7 +121,6 @@
 
 #include "FastLED.h"
 #include "DcsBios.h"
-#include "RotaryEncoder.h"
 #include "helpers/Panel.h"
 #include "helpers/Channel.h"
 #include "helpers/Colors.h"
@@ -163,8 +162,8 @@ const uint8_t encB  =    23;
 Channel LIP_1(13, "Channel 1", 100);
 Channel LIP_2(12, "Channel 2", 120);
 Channel UIP_1(11, "Channel 3", 210);
-Channel UIP_2(10, "Channel 4", 210);                                   
-Channel LC_1(9, "Channel 5", 304);              
+Channel UIP_2(9, "Channel 4", 210);                                   
+Channel LC_1(10, "Channel 5", 304);                                   //Ulukaii deviation. Standard is 9.              
 Channel LC_2(5, "Channel 6", 150);
 Channel RC_1(7, "Channel 7", 170);               
 Channel RC_2(6, "Channel 8", 266);               
@@ -172,7 +171,6 @@ Channel AUX_1(8, "Channel 9", 100);                                   //Spare ch
 Channel AUX_2(4, "Channel 10", 100);                                  //Spare channel
 
 Board* board;                                                         // Pointer to singleton board instance
-RotaryEncoder encoder(encA, encB, RotaryEncoder::LatchMode::TWO03);
 
 
 /********************************************************************************************************************
@@ -181,6 +179,7 @@ RotaryEncoder encoder(encA, encB, RotaryEncoder::LatchMode::TWO03);
  ********************************************************************************************************************/
 void setup() {
     board = Board::getInstance();                                      // Get board instance
+    board->initialize(encSw, encA, encB);                             // Initialize board with encoder pins
     board->initAndRegisterChannel(&LIP_1);                            // Initializing channels will block RAM according 
     board->initAndRegisterChannel(&LIP_2);                            //   to max LED count
     board->initAndRegisterChannel(&UIP_1);
@@ -191,8 +190,6 @@ void setup() {
     board->initAndRegisterChannel(&RC_2);
     board->initAndRegisterChannel(&AUX_1);
     board->initAndRegisterChannel(&AUX_2);
-
-    pinMode(encSw, INPUT_PULLUP);                                     // Initialize mode change pin
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
@@ -218,32 +215,7 @@ void setup() {
 }
 
 void loop() {
-    int currentMode = board->handleModeChange(encSw);                 // Handle mode changes and get current mode
-    static int rotary_pos = 0;                                        // Static to persist between loop iterations
-    int newPos = 0;                                                   // Declare outside switch
-    
-    switch(currentMode) {
-        case Board::MODE_NORMAL:                                      // LEDs controlled by DCS BIOS
-            DcsBios::loop();
-            break;
-        case Board::MODE_MANUAL:                                      // LEDs controlled manually through BKLT switch
-            encoder.tick();
-            newPos = encoder.getPosition();
-            if (newPos != rotary_pos) {
-                RotaryEncoder::Direction direction = encoder.getDirection();
-                if (direction == RotaryEncoder::Direction::CLOCKWISE) {
-                    board->incrBrightness();
-                } else {
-                    board->decrBrightness();
-                }
-                rotary_pos = newPos;
-                board->fillSolid(NVIS_GREEN_A);                       // Only call fillSolid when brightness changes
-            }
-            break;   
-        case Board::MODE_RAINBOW:                                     //Rainbow test mode
-            board->fillRainbow();
-            break;
-    }
-
+    board->handleModeChange();                                        // Handle mode changes
+    board->processMode();                                             // Process current mode
     board->updateLeds();                                              // Update LEDs as needed
 }

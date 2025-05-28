@@ -28,11 +28,18 @@
 #ifndef __BOARD_H
 #define __BOARD_H
 
+#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
+  #define DCSBIOS_IRQ_SERIAL
+#else
+  #define DCSBIOS_DEFAULT_SERIAL
+#endif
+
 #include "FastLED.h"
 #include "Channel.h"
 #include "DcsBios.h"
 #include "Colors.h"
 #include "LedUpdateState.h"
+#include "RotaryEncoder.h"
 
 class Board {
 public:
@@ -48,6 +55,11 @@ public:
         channels[channelCount++] = channel;
     }
 
+    void initialize(uint8_t encSwPin, uint8_t encAPin, uint8_t encBPin) {
+        this->encSwPin = encSwPin;
+        pinMode(encSwPin, INPUT_PULLUP);                             // Initialize mode change pin
+        encoder = new RotaryEncoder(encAPin, encBPin, RotaryEncoder::LatchMode::TWO03);
+    }
 
     void updateLeds() {                                                // Method to update LEDs if needed
         if (LedUpdateState::getInstance()->getUpdateFlag()) {
@@ -60,7 +72,6 @@ public:
         }
     }
 
-    
     void fillSolid(const CRGB& color) {                               // Fill backlights of all channels with a solid color
         if (currentMode != MODE_MANUAL) return;                       // Only applicable in manual mode
         for (int i = 0; i < channelCount; i++) {
@@ -76,7 +87,6 @@ public:
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
-    
     void fillRainbow() {                                              // Fill all channels with a rainbow pattern
         for (int i = 0; i < channelCount; i++) {
             fill_rainbow(channels[i]->getLeds(), channels[i]->getLedCount(), thisHue, deltaHue);
@@ -86,9 +96,9 @@ public:
     }
 
     // Handle mode change button press and return current mode
-    int handleModeChange(uint8_t buttonPin) {
+    int handleModeChange() {
         static bool lastButtonState = HIGH;
-        bool currentButtonState = digitalRead(buttonPin);
+        bool currentButtonState = digitalRead(encSwPin);
         if (currentButtonState == LOW && lastButtonState == HIGH) {   // Button has just been pressed
             int previousMode = currentMode;                           // Store previous mode
             currentMode = (currentMode % 3) + 1;                      // Cycle to next mode
@@ -99,8 +109,14 @@ public:
                 LedUpdateState::getInstance()->setUpdateFlag(true);   // Register an LED update is needed
             }
             if (currentMode == MODE_NORMAL) {
+                // Reset brightness to a known good state for DCS-BIOS
+                brightness = 128;  // Reset to 50% brightness
                 fillBlack();
                 LedUpdateState::getInstance()->setUpdateFlag(true);   // Register an LED update is needed
+            }
+            if (currentMode == MODE_RAINBOW) {
+                fillBlack();  // Clear any previous state
+                LedUpdateState::getInstance()->setUpdateFlag(true);
             }
 
             lastButtonState = currentButtonState;
@@ -109,6 +125,33 @@ public:
             lastButtonState = currentButtonState;
         }
         return currentMode;
+    }
+
+    // Process the current mode
+    void processMode() {
+        int newPos = 0;  
+        switch(currentMode) {
+            case MODE_NORMAL:                                      // LEDs controlled by DCS BIOS
+                DcsBios::loop();
+                break;
+            case MODE_MANUAL:                                      // LEDs controlled manually through BKLT switch
+                encoder->tick();
+                newPos = encoder->getPosition();
+                if (newPos != rotary_pos) {
+                    RotaryEncoder::Direction direction = encoder->getDirection();
+                    if (direction == RotaryEncoder::Direction::CLOCKWISE) {
+                        incrBrightness();
+                    } else {
+                        decrBrightness();
+                    }
+                    rotary_pos = newPos;
+                    fillSolid(NVIS_GREEN_A);                       // Only call fillSolid when brightness changes
+                }
+                break;   
+            case MODE_RAINBOW:                                     //Rainbow test mode
+                fillRainbow();
+                break;
+        }
     }
 
     // Get current mode
@@ -147,6 +190,8 @@ private:
         deltaHue = 3;     // Hue change between LEDs
         currentMode = MODE_NORMAL;  // Initialize to normal mode
         brightness = 128;  // Initialize manual mode brightness to 50%
+        rotary_pos = 0;   // Initialize rotary encoder position
+        encoder = nullptr;
     }
 
     // LED update state
@@ -166,6 +211,11 @@ private:
 
     // Brightness control
     uint8_t brightness;  // Current brightness level (0-255)
+
+    // Encoder management
+    uint8_t encSwPin;    // Encoder switch pin
+    RotaryEncoder* encoder;  // Pointer to encoder instance
+    int rotary_pos;      // Current rotary encoder position
 
     // Static instance pointer
     static Board* instance;
