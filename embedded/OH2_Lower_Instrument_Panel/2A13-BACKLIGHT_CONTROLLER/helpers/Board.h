@@ -181,6 +181,36 @@ public:
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
+    // Update all channels with new instrument lighting value
+    void updateInstrumentLights(uint16_t newValue) {
+        if (currentMode != MODE_NORMAL) return;  // Only update in normal mode
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->updateBacklights(newValue);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+    }
+
+    // Update all channels with new console lighting value
+    void updateConsoleLights(uint16_t newValue) {
+        if (currentMode != MODE_NORMAL) return;  // Only update in normal mode
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->updateConsoleLights(newValue);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+    }
+
+    // Static callback functions for DCS-BIOS
+    static void onInstrIntLtChange(unsigned int newValue) {
+        if (instance) instance->updateInstrumentLights(newValue);
+    }
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
+
+    static void onConsolesDimmerChange(unsigned int newValue) {
+        if (instance) instance->updateConsoleLights(newValue);
+    }
+    DcsBios::IntegerBuffer consolesDimmerBuffer{FA_18C_hornet_CONSOLES_DIMMER, onConsolesDimmerChange};
+
+
 private:
     // Private constructor to enforce singleton pattern
     Board() {

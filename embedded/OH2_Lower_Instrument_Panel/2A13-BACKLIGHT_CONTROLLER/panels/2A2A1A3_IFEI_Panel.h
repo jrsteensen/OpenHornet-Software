@@ -9,17 +9,17 @@
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file      5A2A4_RADAR_ALT.h
+ * @file      2A2A1A3_IFEI_Panel.h
  * @author    Ulukaii
- * @date      24.05.2025
- * @version   u 0.3.2
+ * @date      29.05.2025
+ * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Implements backlighting for the Radar Altimeter panel.
+ * @brief     Implements backlighting for the IFEI panel.
  *********************************************************************************************************************/
 
 
-#ifndef __RADAR_ALT_H
-#define __RADAR_ALT_H
+#ifndef __IFEI_PANEL_H
+#define __IFEI_PANEL_H
 
 #include "DcsBios.h"
 #include "../helpers/Panel.h"
@@ -30,56 +30,53 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int RADAR_ALT_LED_COUNT = 2;  // Total number of LEDs in the panel
-const Led radarAltLedTable[RADAR_ALT_LED_COUNT] PROGMEM = {
-    {0, LED_INSTR_BL}, {1, LED_INSTR_BL}
+const int IFEI_LED_COUNT = 39;  // Total number of LEDs in the panel
+const Led ifeiLedTable[IFEI_LED_COUNT] PROGMEM = {
+    {0, LED_INSTR_BL}, {1, LED_INSTR_BL}, {2, LED_INSTR_BL}, {3, LED_INSTR_BL}, {4, LED_INSTR_BL}, 
+    {5, LED_INSTR_BL}, {6, LED_INSTR_BL}, {7, LED_INSTR_BL}, {8, LED_INSTR_BL}, {9, LED_INSTR_BL},
+    {10, LED_INSTR_BL}, {11, LED_INSTR_BL}, {12, LED_INSTR_BL}, {13, LED_INSTR_BL}, {14, LED_INSTR_BL}, 
+    {15, LED_INSTR_BL}, {16, LED_INSTR_BL}, {17, LED_INSTR_BL}, {18, LED_INSTR_BL}, {19, LED_INSTR_BL},
+    {20, LED_INSTR_BL}, {21, LED_INSTR_BL}, {22, LED_INSTR_BL}, {23, LED_INSTR_BL}, {24, LED_INSTR_BL}, 
+    {25, LED_INSTR_BL}, {26, LED_INSTR_BL}, {27, LED_INSTR_BL}, {28, LED_INSTR_BL}, {29, LED_INSTR_BL},
+    {30, LED_INSTR_BL}, {31, LED_INSTR_BL}, {32, LED_INSTR_BL}, {33, LED_INSTR_BL}, {34, LED_INSTR_BL}, 
+    {35, LED_INSTR_BL}, {36, LED_INSTR_BL}, {37, LED_INSTR_BL}, {38, LED_INSTR_BL}
 };
 
 /********************************************************************************************************************
- * @brief   This table defines the optional legend text for specific backlight LEDs.
- * @details Only LEDs that need text are included in this table.
- * @remark  This table is stored in PROGMEM for memory efficiency.
- ********************************************************************************************************************/
-const int RADAR_ALT_TEXT_COUNT = 0;  // Number of LEDs that need text
-const LedText radarAltTextTable[RADAR_ALT_TEXT_COUNT] PROGMEM = {
-    // No text needed for this panel
-};
-
-/********************************************************************************************************************
- * @brief   Radar Altimeter Panel class
- * @details Backlighting controller for the Radar Altimeter panel.
- *          Total LEDs: 2
- *          Backlight LEDs: 2 (all LEDs are backlights)
+ * @brief   IFEI Panel class
+ * @details Backlighting controller for the IFEI panel.
+ *          Total LEDs: 39
+ *          Backlight LEDs: 39 (all LEDs are backlights)
  *          Indicator LEDs: 0 (no indicators in this panel)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class RadarAltPanel : public Panel {
+class IfeiPanel : public Panel {
 public:
-    static RadarAltPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
+    static IfeiPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
-            instance = new RadarAltPanel(startIndex, ledStrip);
+            instance = new IfeiPanel(startIndex, ledStrip);
         }
         return instance;
     }
 
 private:
     // Private constructor
-    RadarAltPanel(int startIndex, CRGB* ledStrip) {
+    IfeiPanel(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;
-        ledCount = RADAR_ALT_LED_COUNT;
-        ledTable = radarAltLedTable;
+        ledCount = IFEI_LED_COUNT;
+        ledTable = ifeiLedTable;
     }
 
     // Static callback functions for DCS-BIOS
     // NIL
 
     // Instance data
-    static RadarAltPanel* instance;
+    static IfeiPanel* instance;
 };
 
 // Initialize static instance pointer
-RadarAltPanel* RadarAltPanel::instance = nullptr;
+IfeiPanel* IfeiPanel::instance = nullptr;
 
 #endif 

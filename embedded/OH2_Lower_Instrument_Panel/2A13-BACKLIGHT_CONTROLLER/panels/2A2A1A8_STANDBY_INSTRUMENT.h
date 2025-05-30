@@ -29,8 +29,8 @@ const int STANDBY_INSTRUMENT_LED_COUNT = 6;
 
 // LED table definition
 const Led standbyInstrumentLedTable[STANDBY_INSTRUMENT_LED_COUNT] PROGMEM = {
-    {0, LED_BACKLIGHT}, {1, LED_BACKLIGHT}, {2, LED_BACKLIGHT},
-    {3, LED_BACKLIGHT}, {4, LED_BACKLIGHT}, {5, LED_BACKLIGHT}
+    {0, LED_INSTR_BL}, {1, LED_INSTR_BL}, {2, LED_INSTR_BL},
+    {3, LED_INSTR_BL}, {4, LED_INSTR_BL}, {5, LED_INSTR_BL}
 };
 
 /********************************************************************************************************************
@@ -61,10 +61,7 @@ private:
     }
 
     // Static callback functions for DCS-BIOS
-    static void onInstrIntLtChange(unsigned int newValue) {
-        if (instance) instance->setBacklights(newValue);
-    }
-    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
+    // NIL
 
     // Instance data
     static StandbyInstrumentPanel* instance;

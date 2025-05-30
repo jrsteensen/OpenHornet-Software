@@ -144,6 +144,9 @@
 #include "panels/5A3A1_CAUTION.h"
 #include "panels/5A2A3_RC1_ALL_REMAINING_PANELS.h"
 #include "panels/5A5_RC2_ALL_PANELS.h"
+#include "panels/2A2A1A3_IFEI_Panel.h"
+#include "panels/2A2A1A3_Video_Record_Panel.h"
+#include "panels/2A2A1A1_Jett_Station_Panel.h"
 
 
 /********************************************************************************************************************
@@ -158,17 +161,29 @@ const uint8_t encSw =    22;
 const uint8_t encA  =    24;              
 const uint8_t encB  =    23;  
 
+// Static LED arrays for each channel
+CRGB LIP_1_leds[100];    // 100 LEDs
+CRGB LIP_2_leds[120];    // 120 LEDs
+CRGB UIP_1_leds[210];    // 210 LEDs
+CRGB UIP_2_leds[210];    // 210 LEDs
+CRGB LC_1_leds[304];     // 304 LEDs
+CRGB LC_2_leds[150];     // 150 LEDs
+CRGB RC_1_leds[170];     // 170 LEDs
+CRGB RC_2_leds[266];     // 266 LEDs
+CRGB AUX_1_leds[100];    // 100 LEDs
+CRGB AUX_2_leds[100];    // 100 LEDs
+
 // Define channel objects (and create them)
-Channel LIP_1(13, "Channel 1", 100);
-Channel LIP_2(12, "Channel 2", 120);
-Channel UIP_1(11, "Channel 3", 210);
-Channel UIP_2(9, "Channel 4", 210);                                   
-Channel LC_1(10, "Channel 5", 304);                                   //Ulukaii deviation. Standard is 9.              
-Channel LC_2(5, "Channel 6", 150);
-Channel RC_1(7, "Channel 7", 170);               
-Channel RC_2(6, "Channel 8", 266);               
-Channel AUX_1(8, "Channel 9", 100);                                   //Spare channel
-Channel AUX_2(4, "Channel 10", 100);                                  //Spare channel
+Channel LIP_1(13, "Channel 1", LIP_1_leds, 100);
+Channel LIP_2(12, "Channel 2", LIP_2_leds, 120);
+Channel UIP_1(11, "Channel 3", UIP_1_leds, 210);
+Channel UIP_2(9, "Channel 4", UIP_2_leds, 210);                                   
+Channel LC_1(10, "Channel 5", LC_1_leds, 304);                                   //Ulukaii deviation. Standard is 9.              
+Channel LC_2(5, "Channel 6", LC_2_leds, 150);
+Channel RC_1(7, "Channel 7", RC_1_leds, 170);               
+Channel RC_2(6, "Channel 8", RC_2_leds, 266);               
+Channel AUX_1(8, "Channel 9", AUX_1_leds, 100);                                   //Spare channel
+Channel AUX_2(4, "Channel 10", AUX_2_leds, 100);                                  //Spare channel
 
 Board* board;                                                         // Pointer to singleton board instance
 
@@ -196,9 +211,16 @@ void setup() {
     //UIP_1.addPanel<HudPanel>();                                     // Do not exceed the channel's LED count defined above.
     UIP_1.addPanel<REwiPanel>();
     UIP_1.addPanel<SpnRcvyPanel>();
+
+    LIP_1.addPanel<IfeiPanel>();
+    LIP_1.addPanel<VideoRecordPanel>();
+    LIP_1.addPanel<JettStationPanel>();
+
     LIP_2.addPanel<EcmPanel>();
     LIP_2.addPanel<RwrControlPanel>();
     LIP_2.addPanel<StandbyInstrumentPanel>();
+
+
     LC_1.addPanel<LdgGearPanel>();
     LC_1.addPanel<SelectJettPanel>();
     LC_1.addPanel<LcAllPanels>();

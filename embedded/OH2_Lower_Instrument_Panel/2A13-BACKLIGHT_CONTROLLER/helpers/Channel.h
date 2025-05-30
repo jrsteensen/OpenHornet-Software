@@ -44,19 +44,17 @@ private:
     uint8_t panelCount;    // Number of panels in the channel
     
 public:
-    Channel(uint8_t p, const char* pcb, uint16_t count) {
+    Channel(uint8_t p, const char* pcb, CRGB* ledArray, uint16_t count) {
         pin = p;
         pcbName = pcb;
+        leds = ledArray;   // Store pointer to the static array
         ledCount = count;
-        leds = NULL;
         currentIndex = 0;  // Initialize currentIndex to 0
         firstPanel = nullptr;  // Initialize first panel pointer
         panelCount = 0;    // Initialize panel count
     }
 
     void initialize() {
-        leds = new CRGB[ledCount];
-
         // Use a switch statement to overcome strange behaviour of FastLED to have a pin number at compile time
         switch(pin) {
             case 4:  FastLED.addLeds<WS2812B, 4, GRB>(leds, ledCount); break;
@@ -120,6 +118,15 @@ public:
         Panel* current = firstPanel;
         while (current != nullptr) {
             current->setBacklights(brightness);
+            current = current->nextPanel;
+        }
+    }
+
+    // Update console lights for all panels in this channel
+    void updateConsoleLights(uint16_t brightness) {
+        Panel* current = firstPanel;
+        while (current != nullptr) {
+            current->setConsoleLights(brightness);
             current = current->nextPanel;
         }
     }

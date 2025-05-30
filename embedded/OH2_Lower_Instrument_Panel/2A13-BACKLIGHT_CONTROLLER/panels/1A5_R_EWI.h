@@ -69,11 +69,6 @@ private:
     }
 
     // Static callback functions for DCS-BIOS
-    static void onInstrIntLtChange(unsigned int newValue) {
-        if (instance) instance->setBacklights(newValue);
-    }
-    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
-
     static void onFireRightLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_R_FIRE, newValue ? NVIS_RED : NVIS_BLACK);
     }

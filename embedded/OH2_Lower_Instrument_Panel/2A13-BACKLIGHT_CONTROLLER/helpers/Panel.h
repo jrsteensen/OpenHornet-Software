@@ -70,7 +70,7 @@ protected:
     //The following methods are used to set LEDs
     //They are SHARED across all panels.
 
-    void setBacklights(uint16_t newValue) {                           // Set the color of all LEDs with role LED_BACKLIGHT
+    void setBacklights(uint16_t newValue) {                           // Set the color of all LEDs with role LED_INSTR_BL
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
@@ -83,7 +83,28 @@ protected:
             Led led;
             memcpy_P(&led, &getLedTable()[i], sizeof(Led));           // getLedTable() accesses the panel's LED table
             uint16_t ledIndex = led.index + getStartIndex();
-            if (led.role == LED_BACKLIGHT) {
+            if (led.role == LED_INSTR_BL) {
+                getLedStrip()[ledIndex] = target;
+            }
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+    }
+
+
+    void setConsoleLights(uint16_t newValue) {                        // Set the color of all LEDs with role LED_CONSOLE_BL
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        if (newValue == current_backl_brightness) return;             // Exit if no brightness change
+        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
+        CRGB target = NVIS_GREEN_A;
+        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        current_backl_brightness = newValue;                          // Update and save the current brightness value
+                 
+        int n = getLedCount();
+        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is BACKLIGHT, set color
+            Led led;
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));           // getLedTable() accesses the panel's LED table
+            uint16_t ledIndex = led.index + getStartIndex();
+            if (led.role == LED_CONSOLE_BL) {
                 getLedStrip()[ledIndex] = target;
             }
         }

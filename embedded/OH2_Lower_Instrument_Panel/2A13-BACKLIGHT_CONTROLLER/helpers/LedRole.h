@@ -29,7 +29,8 @@
  * @remark  This enum is used for memory efficiency and type safety.
  *********************************************************************************************************************/
 enum LedRole {
-    LED_BACKLIGHT,
+    LED_INSTR_BL,
+    LED_CONSOLE_BL,
     LED_READY,
     LED_DISCH,
     LED_AG,
@@ -92,7 +93,24 @@ enum LedRole {
     LED_CSPARE2,
     LED_L_GEN,
     LED_R_GEN,
-    LED_CSPARE3
+    LED_CSPARE3,
+    // Jett Station Panel specific types
+    LED_JETT_RO_1,
+    LED_JETT_RO_2,
+    LED_JETT_RI_1,
+    LED_JETT_RI_2,
+    LED_JETT_CTR_1,
+    LED_JETT_CTR_2,
+    LED_JETT_LI_1,
+    LED_JETT_LI_2,
+    LED_JETT_LO_1,
+    LED_JETT_LO_2,
+    LED_JETT_NOSE,
+    LED_JETT_LEFT,
+    LED_JETT_RIGHT,
+    LED_JETT_HALF,
+    LED_JETT_FULL,
+    LED_JETT_FLAPS
 };
 
 #endif 
