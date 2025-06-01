@@ -160,7 +160,7 @@ public:
     /**
      * @brief Updates backlights for all panels in this channel
      * @param brightness The brightness value to set
-     * @see This method is called by Board::fillSolid() in manual mode
+     * @see This method is called by Board::fillSolid() and Board::updateInstrumentLights()
      */
     void updateBacklights(uint16_t brightness) {
         Panel* current = firstPanel;
@@ -173,7 +173,7 @@ public:
     /**
      * @brief Updates console lights for all panels in this channel
      * @param brightness The brightness value to set
-     * @see This method is called by Board::updateConsoleLights() in normal mode
+     * @see This method is called by Board::updateConsoleLights() 
      */
     void updateConsoleLights(uint16_t brightness) {
         Panel* current = firstPanel;

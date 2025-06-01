@@ -17,8 +17,8 @@
  * @brief     Abstract base class for all panels. Each panel must be a derived class from this base class.
  * @details   It provides functions that are repeatedly required across all panels: 
  *            setBacklights(), setIndicatorColor(), setFloodlights().
- *            Panels are added to Channels. But the channel class does not hold an array of panels.
- *            Instead, panels are organized in a linked list within each channel. This conserves stack memory.
+ *            Panels are added to Channels. For memory efficiency, panels are organized in a linked list within each 
+ *            channel. This conserves stack memory.
  *            This approach avoids allocating fixed-size arrays for panel pointers in each channel, 
  *            which would exhaust the limited stack space on the Arduino Mega 2560 (I tested it).
  *            Instead, this class provides a pointer to the next panel in its channel.
@@ -40,24 +40,45 @@
 
 class Panel {
 public:
-    //Virtual methods. Specific panels must implement them INDIVIDUALLY.
+    /**
+     * @brief Gets the start index of this panel on the LED strip
+     * @return The start index
+     */
     virtual int getStartIndex() const { return panelStartIndex; }
+
+    /**
+     * @brief Gets the number of LEDs in this panel
+     * @return The LED count
+     */
     virtual int getLedCount() const { return ledCount; }
+
+    /**
+     * @brief Gets the LED table for this panel
+     * @return Pointer to the LED table
+     */
     virtual const Led* getLedTable() const { return ledTable; }
+
+    /**
+     * @brief Gets the LED strip for this panel
+     * @return Pointer to the LED strip
+     */
     virtual CRGB* getLedStrip() const { return ledStrip; }
     
     // Add friend declaration to allow Channel to access nextPanel and its protected methods
     friend class Channel;
     
 protected:
-    // Protected constructor to prevent direct instantiation
+    /**
+     * @brief Protected constructor to prevent direct instantiation
+     * @see This method is called by derived panel classes
+     */
     Panel() {
         current_backl_brightness = 64;
         current_flood_brightness = 64;
         nextPanel = nullptr;  // Initialize next panel pointer
     }
 
-    // Protected variables. Specific panels must set them INDIVIDUALLY.
+
     int panelStartIndex;                                              // Start index of the panel on the LED strip
     int ledCount;                                                     // Number of LEDs in the panel
     const Led* ledTable;                                              // Pointer to the LED table
@@ -67,10 +88,12 @@ protected:
     Panel* nextPanel;                                                 // Pointer to next panel in the channel
 
 
-    //The following methods are used to set LEDs
-    //They are SHARED across all panels.
-
-    void setBacklights(uint16_t newValue) {                           // Set the color of all LEDs with role LED_INSTR_BL
+    /**
+     * @brief Set the color of all backlight LEDs
+     * @param newValue The new brightness value (0-65535)
+     * @see This method is called by Board::updateInstrumentLights() and Board::fillSolid()
+     */
+    void setBacklights(uint16_t newValue) {                           
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
@@ -90,7 +113,11 @@ protected:
         LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
-
+    /**
+     * @brief Sets the color of all console backlight LEDs
+     * @param newValue The new brightness value (0-65535)
+     * @see This method is called by Board::updateConsoleLights()
+     */
     void setConsoleLights(uint16_t newValue) {                        // Set the color of all LEDs with role LED_CONSOLE_BL
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
@@ -111,7 +138,12 @@ protected:
         LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
-
+    /**
+     * @brief Sets the color of LEDs with a specific role
+     * @param role The role of LEDs to update
+     * @param color The color to set
+     * @see This method is called by derived panel classes to update indicator lights
+     */
     void setIndicatorColor(LedRole role, const CRGB& color) {         // Set color of specific LEDs ("role" parameter)
         if (!getLedStrip() || !getLedTable()) return;                 
         int n = getLedCount();                                        
@@ -126,7 +158,11 @@ protected:
         LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
-
+    /**
+     * @brief Sets the brightness of floodlight LEDs
+     * @param newValue The new brightness value (0-65535)
+     * @see This method is called by derived panel classes to update floodlights
+     */
     void setFloodlights(uint16_t newValue) {                          // Set the brightness of LEDs with role LED_FLOOD
         if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setBacklights()
         if (newValue == current_flood_brightness) return;             
