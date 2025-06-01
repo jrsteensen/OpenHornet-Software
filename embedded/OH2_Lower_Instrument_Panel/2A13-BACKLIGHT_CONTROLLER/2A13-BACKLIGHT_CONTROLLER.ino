@@ -65,6 +65,7 @@
  *          If you are building according to spec, you only need to work with this file:
  *          - In the setup() function, add only those panels that you are using.
  *          - Make sure to add the panels to the channel and in the order that you have physically connected them.
+ *          - Make sure that the pins defined below match your physical wiring.
  *          - There is no need to adapt any indexes or LED counts, anyhwere.
  *          If you want to change the colors:
  *          - Open the Colors.h file and change the color definitions.
@@ -178,12 +179,12 @@ Channel LIP_1(13, "Channel 1", LIP_1_leds, 100);
 Channel LIP_2(12, "Channel 2", LIP_2_leds, 120);
 Channel UIP_1(11, "Channel 3", UIP_1_leds, 210);
 Channel UIP_2(9, "Channel 4", UIP_2_leds, 210);                                   
-Channel LC_1(10, "Channel 5", LC_1_leds, 304);                                   //Ulukaii deviation. Standard is 9.              
+Channel LC_1(10, "Channel 5", LC_1_leds, 304);                        //Ulukaii deviation. Standard is 9.              
 Channel LC_2(5, "Channel 6", LC_2_leds, 150);
 Channel RC_1(7, "Channel 7", RC_1_leds, 170);               
 Channel RC_2(6, "Channel 8", RC_2_leds, 266);               
-Channel AUX_1(8, "Channel 9", AUX_1_leds, 100);                                   //Spare channel
-Channel AUX_2(4, "Channel 10", AUX_2_leds, 100);                                  //Spare channel
+Channel AUX_1(8, "Channel 9", AUX_1_leds, 100);                       //Spare channel
+Channel AUX_2(4, "Channel 10", AUX_2_leds, 100);                      //Spare channel
 
 Board* board;                                                         // Pointer to singleton board instance
 
@@ -193,9 +194,9 @@ Board* board;                                                         // Pointer
  * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
  ********************************************************************************************************************/
 void setup() {
-    board = Board::getInstance();                                      // Get board instance
-    board->initialize(encSw, encA, encB);                             // Initialize board with encoder pins
-    board->initAndRegisterChannel(&LIP_1);                            // Initializing channels will block RAM according 
+    board = Board::getInstance();                                     // Get board instance
+    board->initializeBoard(encSw, encA, encB);                        // Initialize board with encoder pins
+    board->initAndRegisterChannel(&LIP_1);                            // Initializing channels will consume RAM according 
     board->initAndRegisterChannel(&LIP_2);                            //   to max LED count
     board->initAndRegisterChannel(&UIP_1);
     board->initAndRegisterChannel(&UIP_2);
@@ -224,13 +225,15 @@ void setup() {
     LC_1.addPanel<LdgGearPanel>();
     LC_1.addPanel<SelectJettPanel>();
     LC_1.addPanel<LcAllPanels>();
-    LC_2.addPanel<LcFloodPanel>();
+
     RC_1.addPanel<LdgChecklistPanel>();
     RC_1.addPanel<RadarAltPanel>();
     RC_1.addPanel<HydPressGauge>();
     RC_1.addPanel<CautionPanel>();
     RC_1.addPanel<Rc1AllRemainingPanels>();
     RC_2.addPanel<Rc2AllPanels>();
+
+    AUX_1.addPanel<LcFloodPanel>();
 
     FastLED.show();                                                   // Show the LEDs
     DcsBios::setup();                                                 // Run DCS Bios setup function
