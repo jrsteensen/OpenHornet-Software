@@ -44,6 +44,13 @@ private:
     uint8_t panelCount;    // Number of panels in the channel
     
 public:
+    /**
+     * @brief Constructor for the Channel class
+     * @param p Pin number for the LED strip
+     * @param pcb Name of the PCB this channel is connected to
+     * @param ledArray Pointer to the LED array
+     * @param count Number of LEDs in the strip
+     */
     Channel(uint8_t p, const char* pcb, CRGB* ledArray, uint16_t count) {
         pin = p;
         pcbName = pcb;
@@ -54,6 +61,10 @@ public:
         panelCount = 0;    // Initialize panel count
     }
 
+    /**
+     * @brief Initializes the LED strip with FastLED
+     * @see This method is called by Board::initAndRegisterChannel()
+     */
     void initialize() {
         // Use a switch statement to overcome strange behaviour of FastLED to have a pin number at compile time
         switch(pin) {
@@ -73,7 +84,11 @@ public:
         fill_solid(leds, ledCount, NVIS_BLACK);
     }
 
-    //Add panel to channel
+    /**
+     * @brief Adds a panel to the channel's linked list
+     * @tparam PanelType The type of panel to add
+     * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
+     */
     template<typename PanelType>
     void addPanel() {
         PanelType* panel = PanelType::getInstance(currentIndex, leds);
@@ -94,11 +109,11 @@ public:
             firstPanel = panel;  // First panel in the channel
         } else {
             // Find the last panel
-            Panel* current = firstPanel;
-            while (current->nextPanel != nullptr) {
-                current = current->nextPanel;
+            Panel* currentPanel = firstPanel;
+            while (currentPanel->nextPanel != nullptr) {
+                currentPanel = currentPanel->nextPanel;
             }
-            current->nextPanel = panel;  // Add new panel at the end
+            currentPanel->nextPanel = panel;  // Add new panel at the end
         }
         
         panelCount++;
@@ -106,14 +121,47 @@ public:
     }
 
     // Getters
+    /**
+     * @brief Gets the pin number for this channel
+     * @return The pin number
+     */
     uint8_t getPin() const { return pin; }
+
+    /**
+     * @brief Gets the PCB name for this channel
+     * @return The PCB name
+     */
     const char* getPcbName() const { return pcbName; }
+
+    /**
+     * @brief Gets the number of LEDs in this channel
+     * @return The LED count
+     */
     uint16_t getLedCount() const { return ledCount; }
+
+    /**
+     * @brief Gets the LED array for this channel
+     * @return Pointer to the LED array
+     */
     CRGB* getLeds() const { return leds; }
+
+    /**
+     * @brief Gets the first panel in the channel's linked list
+     * @return Pointer to the first panel
+     */
     Panel* getFirstPanel() const { return firstPanel; }
+
+    /**
+     * @brief Gets the number of panels in this channel
+     * @return The panel count
+     */
     uint8_t getPanelCount() const { return panelCount; }
 
-    // Update backlights for all panels in this channel (only used in manual mode)
+    /**
+     * @brief Updates backlights for all panels in this channel
+     * @param brightness The brightness value to set
+     * @see This method is called by Board::fillSolid() in manual mode
+     */
     void updateBacklights(uint16_t brightness) {
         Panel* current = firstPanel;
         while (current != nullptr) {
@@ -122,7 +170,11 @@ public:
         }
     }
 
-    // Update console lights for all panels in this channel
+    /**
+     * @brief Updates console lights for all panels in this channel
+     * @param brightness The brightness value to set
+     * @see This method is called by Board::updateConsoleLights() in normal mode
+     */
     void updateConsoleLights(uint16_t brightness) {
         Panel* current = firstPanel;
         while (current != nullptr) {

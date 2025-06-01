@@ -42,6 +42,7 @@
 #include "RotaryEncoder.h"
 
 class Board {
+
 private:
 
     /**
@@ -63,11 +64,9 @@ private:
     static const int MAX_CHANNELS = 10;                               // Maximum number of channels
     Channel* channels[MAX_CHANNELS];                                  // Array of channel pointers
     int channelCount;                                                 // Current number of channels
-
     uint8_t thisHue;                                                  // Current hue value for rainbow effect
     uint8_t deltaHue;                                                 // Hue change between LEDs for rainbow effect
     int currentMode;                                                  // Current operating mode
-
     uint8_t brightness;                                               // Current brightness level (0-255)
 
     uint8_t encSwPin;                                                  // Encoder switch pin
@@ -200,6 +199,7 @@ public:
      * @brief Fills all channels with a solid color
      * @param color The color to fill with
      * @see This method is called by handleModeChange() and processMode() in Board.h, conditionally in MODE_MANUAL case
+     * @todo Remove parameter, check if deprecated, merge with incrBrightness() and decrBrightness()
      */
     void fillSolid(const CRGB& color) {                               // Fill backlights of all channels with a solid color
         for (int i = 0; i < channelCount; i++) {
