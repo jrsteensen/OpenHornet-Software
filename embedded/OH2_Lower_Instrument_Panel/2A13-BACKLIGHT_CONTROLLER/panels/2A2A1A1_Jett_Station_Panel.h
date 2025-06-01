@@ -84,58 +84,58 @@ private:
     static void onSjRoLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_RO_1, newValue ? NVIS_WHITE : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer sjRoLtBuffer{0x7430, 0x0400, 10, onSjRoLtChange};
+    DcsBios::IntegerBuffer sjRoLtBuffer{FA_18C_hornet_SJ_RO_LT, onSjRoLtChange};
 
     static void onSjRiLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_RI_1, newValue ? NVIS_WHITE : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer sjRiLtBuffer{0x7430, 0x0200, 9, onSjRiLtChange};
+    DcsBios::IntegerBuffer sjRiLtBuffer{FA_18C_hornet_SJ_RI_LT, onSjRiLtChange};
 
     static void onSjCtrLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_CTR_1, newValue ? NVIS_WHITE : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer sjCtrLtBuffer{0x742e, 0x4000, 14, onSjCtrLtChange};
+    DcsBios::IntegerBuffer sjCtrLtBuffer{FA_18C_hornet_SJ_CTR_LT, onSjCtrLtChange};
 
     static void onSjLiLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_LI_1, newValue ? NVIS_WHITE : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer sjLiLtBuffer{0x742e, 0x8000, 15, onSjLiLtChange};
+    DcsBios::IntegerBuffer sjLiLtBuffer{FA_18C_hornet_SJ_LI_LT, onSjLiLtChange};
 
     static void onSjLoLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_LO_1, newValue ? NVIS_WHITE : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer sjLoLtBuffer{0x7430, 0x0100, 8, onSjLoLtChange};
+    DcsBios::IntegerBuffer sjLoLtBuffer{FA_18C_hornet_SJ_LO_LT, onSjLoLtChange};
 
     // STORES INDICATOR panel
     static void onFlpLgNoseGearLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_NOSE, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgNoseGearLtBuffer{0x7430, 0x0800, 11, onFlpLgNoseGearLtChange};
+    DcsBios::IntegerBuffer flpLgNoseGearLtBuffer{FA_18C_hornet_FLP_LG_NOSE_GEAR_LT, onFlpLgNoseGearLtChange};
 
     static void onFlpLgRightGearLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_RIGHT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgRightGearLtBuffer{0x7430, 0x2000, 13, onFlpLgRightGearLtChange};
+    DcsBios::IntegerBuffer flpLgRightGearLtBuffer{FA_18C_hornet_FLP_LG_RIGHT_GEAR_LT, onFlpLgRightGearLtChange};
 
     static void onFlpLgLeftGearLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_LEFT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgLeftGearLtBuffer{0x7430, 0x1000, 12, onFlpLgLeftGearLtChange};
+    DcsBios::IntegerBuffer flpLgLeftGearLtBuffer{FA_18C_hornet_FLP_LG_LEFT_GEAR_LT, onFlpLgLeftGearLtChange};
 
     static void onFlpLgHalfFlapsLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_HALF, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgHalfFlapsLtBuffer{0x7432, 0x4000, 14, onFlpLgHalfFlapsLtChange};
+    DcsBios::IntegerBuffer flpLgHalfFlapsLtBuffer{FA_18C_hornet_FLP_LG_HALF_FLAPS_LT, onFlpLgHalfFlapsLtChange};
 
     static void onFlpLgFullFlapsLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_FULL, newValue ? NVIS_GREEN_A : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgFullFlapsLtBuffer{0x7432, 0x8000, 15, onFlpLgFullFlapsLtChange};
+    DcsBios::IntegerBuffer flpLgFullFlapsLtBuffer{FA_18C_hornet_FLP_LG_FULL_FLAPS_LT, onFlpLgFullFlapsLtChange};
 
     static void onFlpLgFlapsLtChange(unsigned int newValue) {
         if (instance) instance->setIndicatorColor(LED_JETT_FLAPS, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
-    DcsBios::IntegerBuffer flpLgFlapsLtBuffer{0x7466, 0x0001, 0, onFlpLgFlapsLtChange};
+    DcsBios::IntegerBuffer flpLgFlapsLtBuffer{FA_18C_hornet_FLP_LG_FLAPS_LT, onFlpLgFlapsLtChange};
 
     // Instance data
     static JettStationPanel* instance;
