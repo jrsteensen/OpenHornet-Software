@@ -165,6 +165,7 @@
 #include "panels/2A2A1A3_IFEI_Panel.h"
 #include "panels/2A2A1A3_Video_Record_Panel.h"
 #include "panels/2A2A1A1_Jett_Station_Panel.h"
+#include "panels/2A2A1A4_Jett_Placard_Panel.h"
 
 
 /********************************************************************************************************************
@@ -252,6 +253,7 @@ void setup() {
     LIP_2.addPanel<EcmPanel>();
     LIP_2.addPanel<RwrControlPanel>();
     LIP_2.addPanel<StandbyInstrumentPanel>();
+    //LIP_2.addPanel<JettPlacardPanel>();
 
 
     LC_1.addPanel<LdgGearPanel>();

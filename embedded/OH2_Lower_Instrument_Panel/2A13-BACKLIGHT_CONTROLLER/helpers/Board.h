@@ -179,9 +179,9 @@ public:
                 if (newPos != rotary_pos) {
                     RotaryEncoder::Direction direction = encoder->getDirection();
                     if (direction == RotaryEncoder::Direction::CLOCKWISE) {
-                        incrBrightness();
+                        brightness = (brightness < 224) ? brightness + 32 : 255;  // Add 32 or cap at 255
                     } else {
-                        decrBrightness();
+                        brightness = (brightness > 32) ? brightness - 32 : 0;  // Subtract 32 or cap at 0
                     }
                     rotary_pos = newPos;
                     fillSolid(NVIS_GREEN_A);                          
@@ -234,37 +234,9 @@ public:
 
 
     /**
-     * @brief Increases brightness by 32 levels
-     * @see This method is called by processMode() in Board.h
-     */
-    void incrBrightness() {
-        if (currentMode != MODE_MANUAL) return;  // Only allow in manual mode
-        if (brightness < 224) {  // Leave room for 32 more steps
-            brightness += 32;
-        } else {
-            brightness = 255;    // Cap at maximum
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
-    }
-
-    /**
-     * @brief Decreases brightness by 32 levels
-     * @see This method is conditionallycalled by processMode() in Board.h
-     */
-    void decrBrightness() {
-        if (currentMode != MODE_MANUAL) return;  // Only allow in manual mode
-        if (brightness > 32) {   // Leave room for 32 more steps
-            brightness -= 32;
-        } else {
-            brightness = 0;      // Cap at minimum
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
-    }
-
-    /**
      * @brief Updates all channels with new instrument lighting value
      * @param newValue The new brightness value
-     * @see This method is conditionallycalled by onInstrIntLtChange() in Board.h
+     * @see This method is conditionally called by onInstrIntLtChange() in Board.h
      */
     void updateInstrumentLights(uint16_t newValue) {
         if (currentMode != MODE_NORMAL) return;  // Only update in normal mode
