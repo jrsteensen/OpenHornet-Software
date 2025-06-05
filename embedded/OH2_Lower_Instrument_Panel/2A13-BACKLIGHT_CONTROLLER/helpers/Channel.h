@@ -160,12 +160,13 @@ public:
     /**
      * @brief Updates backlights for all panels in this channel
      * @param brightness The brightness value to set
+     * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::fillSolid() and Board::updateInstrumentLights()
      */
-    void updateBacklights(uint16_t brightness) {
+    void updateBacklights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setBacklights(brightness);
+            current->setBacklights(brightness, color);
             current = current->nextPanel;
         }
     }
@@ -173,12 +174,13 @@ public:
     /**
      * @brief Updates console lights for all panels in this channel
      * @param brightness The brightness value to set
+     * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::updateConsoleLights() 
      */
-    void updateConsoleLights(uint16_t brightness) {
+    void updateConsoleLights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setConsoleLights(brightness);
+            current->setConsoleLights(brightness, color);
             current = current->nextPanel;
         }
     }

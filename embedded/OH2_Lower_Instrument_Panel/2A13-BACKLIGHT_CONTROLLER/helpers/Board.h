@@ -64,12 +64,12 @@ private:
     static const int MAX_CHANNELS = 10;                               // Maximum number of channels
     Channel* channels[MAX_CHANNELS];                                  // Array of channel pointers
     int channelCount;                                                 // Current number of channels
-    uint8_t thisHue;                                                  // Current hue value for rainbow effect
-    uint8_t deltaHue;                                                 // Hue change between LEDs for rainbow effect
+    int thisHue;                                                      // Current hue value for rainbow effect
+    int deltaHue;                                                     // Hue change between LEDs for rainbow effect
     int currentMode;                                                  // Current operating mode
-    uint8_t brightness;                                               // Current brightness level (0-255)
+    int brightness;                                                   // Current brightness level (0-255)
 
-    uint8_t encSwPin;                                                  // Encoder switch pin
+    int encSwPin;                                                  // Encoder switch pin
     RotaryEncoder* encoder;                                            // Pointer to encoder instance
     int rotary_pos;                                                    // Current rotary encoder position
 
@@ -96,30 +96,29 @@ public:
      * @param encBPin Pin number for encoder B
      * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
      */
-    void initializeBoard(uint8_t encSwPin, uint8_t encAPin, uint8_t encBPin) {
+    void initializeBoard(int encSwPin, int encAPin, int encBPin) {
         this->encSwPin = encSwPin;
         pinMode(encSwPin, INPUT_PULLUP);                              // Initialize mode change pin
         encoder = new RotaryEncoder(encAPin, encBPin, RotaryEncoder::LatchMode::TWO03);
     }
 
     /**
-     * @brief Initializes and registers a channel with the board
+     * @brief Registers a channel with the board
      * @param channel Pointer to the channel to register
      * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
      */
-    void initAndRegisterChannel(Channel* channel) {                   // Initialize and register a channel in one step
-        channel->initialize();
+    void registerChannel(Channel* channel) {
         channels[channelCount++] = channel;
     }
 
     /**
-     * @brief Updates the physical LED state if needed
+     * @brief Update the physical LED state
      * @see This method is called by loop() in 2A13-BACKLIGHT_CONTROLLER.ino
      */
     void updateLeds() {                                               // Triggers physical LED update (FastLED.show())
         if (LedUpdateState::getInstance()->getUpdateFlag()) {
-            updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // Countdown logic allows to collect data
-            updCountdown--;                                           // from multiple DCS Bios cycles
+            updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // Countdown logic allows to collect LED updates
+            updCountdown--;                                           // from 8 DCS Bios cycles into one FastLED.show()
             if (updCountdown == 0) {                                  // Trigger FastLED.show() at end of countdown
                 FastLED.show();                                       
                 LedUpdateState::getInstance()->setUpdateFlag(false);  
@@ -198,12 +197,14 @@ public:
     /**
      * @brief Fills all channels with a solid color
      * @param color The color to fill with
+     * @param brightness Optional brightness value (0-255). If not provided, uses current brightness
      * @see This method is called by handleModeChange() and processMode() in Board.h, conditionally in MODE_MANUAL case
-     * @todo Remove parameter, check if deprecated, merge with incrBrightness() and decrBrightness()
      */
-    void fillSolid(const CRGB& color) {                               // Fill backlights of all channels with a solid color
+    void fillSolid(const CRGB& color, int brightness = -1) {          // Fill all channels with a solid color
+        int targetBrightness = (brightness >= 0) ? brightness : this->brightness;
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateBacklights(map(brightness, 0, 255, 0, 65535));
+            channels[i]->updateBacklights(map(targetBrightness, 0, 255, 0, 65535), color);
+            channels[i]->updateConsoleLights(map(targetBrightness, 0, 255, 0, 65535), color);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }

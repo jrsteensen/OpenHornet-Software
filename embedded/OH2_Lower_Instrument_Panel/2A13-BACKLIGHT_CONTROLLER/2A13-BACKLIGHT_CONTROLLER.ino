@@ -64,46 +64,63 @@
  *          **How to use**
  *          If you are building according to spec, you only need to work with this file:
  *          - In the setup() function, add only those panels that you are using.
- *          - Make sure to add the panels to the channel and in the order that you have physically connected them.
+ *          - When adding, adjust the panel order according to your physical connections.
  *          - Make sure that the pins defined below match your physical wiring.
  *          - There is no need to adapt any indexes or LED counts, anyhwere.
  *          If you want to change the colors:
  *          - Open the Colors.h file and change the color definitions.
- *          - Colors are according MIL-STD-3099. Adapt individually as needed for your build and LEDs in use.
- *          - Note that methods that are dimming these LEDs are using FastLED's nscale8_video() function.
- *            This function provides a more color-preserving dimming effect than pure RGB value recalculation.
+ *          - Adapt individually as needed for your build and LEDs in use.
+ *          - Colors are according MIL-STD-3099.
+ *          - Note: LEDs dimming uses FastLED's nscale8_video() function. It provides a
+ *            more color-preserving dimming effect than pure RGB value recalculation.
  *          If you have an non-standard wiring / pinout of your backlight controller:
  *          - Adapt the pinout in the "Define pinouts and channels" section in this file.
  *          If you are using custom panels: 
- *          - Adapt or create a new panel class in the "panels" folder. You may use the 1A2A1_MASTER_ARM.h as template. 
- *          - Make sure to use the same concepts (Inherit from panel class, singleton, PROGMEM etc.) as the other panels.
- *          - Add the panel to the setup() function.
- *          - Adapt the max LED count of the affected channel as needed in the "Define pinouts and channels" section.
+ *          - Adapt or create a new panel class in the "panels" folder; 
+ *            you may use the 1A2A1_MASTER_ARM.h as template. 
+ *          - Make sure to use the same concepts (Inherit from panel class, singleton, 
+ *            PROGMEM etc.) as the other panels. Creating of a LED_TEXT table is optional.
+ *          - Add the panel to a channel in the setup() function.
+ *          - Adapt the max LED count of the affected channel as needed in the 
+ *            "Define pinouts and channels" section.
  * 
  *          **Technical Background**
- *          This sketch addresses the following OH requirements:
+ *          This sketch addresses the following functional OH requirements:
  *          1. Enable control of OH backlights and indicators with DCS-BIOS.
- *          2. Enable control of OH backlights manually with a rotary encoder, if no DCS-BIOS connection is available.
- *          3. Provide a function to test all backlights and indicators with a rainbow pattern.
+ *          2. Enable control of OH backlights manually, if DCS-BIOS is not available.
+ *          3. Enable test of all backlights and indicators with a rainbow pattern.
  *          4. Backlights and indicators share the same LED strip.
- *          5. Not all panels are used in all builds; the code must be modular enough to allow for this.
- *          6. Fast code execution to avoid LED flickering (output side) or dropping DCS-BIOS updates (input side).
- *          7. Use shall not need to recalculate LED indices or LED counts as their builds evolve.
- *          8. DCS-BIOS callbacks expect to call 'static' functions - no dynamic allocation is allowed.
- *          9. Extensible for a future use of the PREFLT function (feasibility study ongoing).
+ *          5. Different users may build a different subset of panels and connect them 
+ *             in varying orders as their build progresses; the code must be modular
+ *             enough to allow this. 
+ *          6. As the users' build progresses:
+ *             - She/he shall not needc to recalculate LED indices/counts
+ *             - She/he shall not need to reprogram this BL controller (if build to spec)
+ *          7. Code execution must be fast to avoid LED flickering (output side) or loss 
+ *              of updates coming from DCS-BIOS (input side).
+ *          8. Extensible for a future use of the PREFLT function (feasibility TBD)
+ *          This sketch respects the following technical  limitations:
+ *          A. DCS-BIOS callbacks expect 'static' functions; dynamic alloc not allowed.
+ *          B. Arduino MEGA 2560 has 8KB of SRAM.
+ *          C. FastLED.show() command is time-sensitive 
  *          Solutions:
- *          - An OOP programming paradigm is used, as many functions are repeating across panels.
- *          - The generic Panel class (Panel.h) is the base class for all panels. Each panel must be inherit from it.
- *          - For each panel in the pit, there is one specific panel class in the panels folder.
- *          - These panels classes (1) inherit the common behaviour from the generic Panel class;
- *                                 (2) additionally implement DCS-BIOS callbacks that are unique to this panel
- *                                 (3) adhere to a singleton pattern for compatibility with DCS-BIOS callbacks (rqrmt 8)
- *          - Panels classes store their LED role info in PROGMEM to save SRAM, of which only 8KB are available
- *          - Panel classes encapsulate all there is to know (LED roles, DCS-BIOS methods) about them in one spot
- *          - Channels class implements logical LED strip mgmt and automatic indices calculation (rqrmt 4, 5, 7)
- *          - Board class implements the main logic and handles mode changes (rqrmt 1, 2, 3)
- *          - LedUpdateState class implements central point for LED update calls, ensuring high performance (rqrmt 6)
- *          - LedStruct class prepares LedText struct for future PREFLT function (rqrmt 9)
+ *          - An OOP programming paradigm is used, as functions may repeat across panels
+ *          - The generic Panel class (Panel.h) is the base class for all panels 
+ *            Each panel must be inherit from it.
+ *          - For each panel in the pit, one panel class exists in the panel folder.
+ *          - These panels classes encapsulate all there is to know (LED roles, DCS-BIOS
+ *            methods) about the panel in one spot. In particular, they:
+ *            (1) inherit the common behaviour from the generic Panel class;
+ *            (2) contain a table with LED indices (panel-local) and their roles;
+ *            (3) provide a method to recalculate panel-local indices to strip indices;
+ *            (4) additionally implement DCS-BIOS callbacks unique to this panel;
+ *            (5) are singletons for compatibility with DCS-BIOS callbacks (rqrmt 5, 6)
+ *          - Channels class implements logical LED strip mgmt (rqrmt 4, 7)
+ *          - Board class implements mode change logic and mode control (= steer what 
+ *            happens during a loop of the Arduino) (rqrmt 1, 2, 3)
+ *          - LedUpdateState class implements central point for LED update calls,
+ *            ensuring high performance (rqrmt 6)
+ *          - LedStruct class prepares LedText struct for future PREFLT function (rqrmt 8)
  */
 
 /**********************************************************************************************************************
@@ -158,9 +175,9 @@
  ********************************************************************************************************************/
 
 // Hardware pin definitions
-const uint8_t encSw =    22;              
-const uint8_t encA  =    24;              
-const uint8_t encB  =    23;  
+const int encSw =    22;              
+const int encA  =    24;              
+const int encB  =    23;  
 
 // Static LED arrays for each channel
 CRGB LIP_1_leds[100];    // 100 LEDs
@@ -175,8 +192,8 @@ CRGB AUX_1_leds[100];    // 100 LEDs
 CRGB AUX_2_leds[100];    // 100 LEDs
 
 // Define channel objects (and create them)
-Channel LIP_1(13, "Channel 1", LIP_1_leds, 100);
-Channel LIP_2(12, "Channel 2", LIP_2_leds, 120);
+Channel LIP_1(12, "Channel 1", LIP_1_leds, 100);
+Channel LIP_2(13, "Channel 2", LIP_2_leds, 120);
 Channel UIP_1(11, "Channel 3", UIP_1_leds, 210);
 Channel UIP_2(9, "Channel 4", UIP_2_leds, 210);                                   
 Channel LC_1(10, "Channel 5", LC_1_leds, 304);                        //Ulukaii deviation. Standard is 9.              
@@ -192,20 +209,35 @@ Board* board;                                                         // Pointer
 /********************************************************************************************************************
  * @brief Standard Arduino setup and loop functions.
  * @remark Setup runs once, loop runs continuously. Conversion CRGB --> GRB is done by FastLED.
+ *         Note that the call to DCS-Bios::loop() is done in the Board.h, where the mode logic resides.
  ********************************************************************************************************************/
 void setup() {
     board = Board::getInstance();                                     // Get board instance
     board->initializeBoard(encSw, encA, encB);                        // Initialize board with encoder pins
-    board->initAndRegisterChannel(&LIP_1);                            // Initializing channels will consume RAM according 
-    board->initAndRegisterChannel(&LIP_2);                            //   to max LED count
-    board->initAndRegisterChannel(&UIP_1);
-    board->initAndRegisterChannel(&UIP_2);
-    board->initAndRegisterChannel(&LC_1);
-    board->initAndRegisterChannel(&LC_2);
-    board->initAndRegisterChannel(&RC_1);
-    board->initAndRegisterChannel(&RC_2);
-    board->initAndRegisterChannel(&AUX_1);
-    board->initAndRegisterChannel(&AUX_2);
+    
+    // Initialize all channels
+    LIP_1.initialize();                                               // Initialize channels with FastLED
+    LIP_2.initialize();
+    UIP_1.initialize();
+    UIP_2.initialize();
+    LC_1.initialize();
+    LC_2.initialize();
+    RC_1.initialize();
+    RC_2.initialize();
+    AUX_1.initialize();
+    AUX_2.initialize();
+
+    // Register all channels with the board
+    board->registerChannel(&LIP_1);                                   // Register channels with the board
+    board->registerChannel(&LIP_2);
+    board->registerChannel(&UIP_1);
+    board->registerChannel(&UIP_2);
+    board->registerChannel(&LC_1);
+    board->registerChannel(&LC_2);
+    board->registerChannel(&RC_1);
+    board->registerChannel(&RC_2);
+    board->registerChannel(&AUX_1);
+    board->registerChannel(&AUX_2);
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
@@ -241,6 +273,6 @@ void setup() {
 
 void loop() {
     board->handleModeChange();                                        // Handle mode changes
-    board->processMode();                                             // Process current mode
+    board->processMode();                                             // Process current mode, incl. DCS-Bios::loop()
     board->updateLeds();                                              // Update LEDs as needed
 }

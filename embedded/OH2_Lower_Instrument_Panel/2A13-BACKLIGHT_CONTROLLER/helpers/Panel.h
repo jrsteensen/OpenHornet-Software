@@ -74,6 +74,7 @@ protected:
      */
     Panel() {
         current_backl_brightness = 64;
+        current_console_brightness = 64;
         current_flood_brightness = 64;
         nextPanel = nullptr;  // Initialize next panel pointer
     }
@@ -84,6 +85,7 @@ protected:
     const Led* ledTable;                                              // Pointer to the LED table
     CRGB* ledStrip;                                                   // Pointer to the LED strip
     uint16_t current_backl_brightness;                                // Current br. value for backlights (0-65535)
+    uint16_t current_console_brightness;                              // Current br. value for console lights (0-65535)
     uint16_t current_flood_brightness;                                // Current br. value for floodlights (0-65535)
     Panel* nextPanel;                                                 // Pointer to next panel in the channel
 
@@ -91,13 +93,14 @@ protected:
     /**
      * @brief Set the color of all backlight LEDs
      * @param newValue The new brightness value (0-65535)
+     * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::updateInstrumentLights() and Board::fillSolid()
      */
-    void setBacklights(uint16_t newValue) {                           
+    void setBacklights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                           
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
-        CRGB target = NVIS_GREEN_A;
+        CRGB target = color;
         target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
         current_backl_brightness = newValue;                          // Update and save the current brightness value
                  
@@ -116,15 +119,16 @@ protected:
     /**
      * @brief Sets the color of all console backlight LEDs
      * @param newValue The new brightness value (0-65535)
+     * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::updateConsoleLights()
      */
-    void setConsoleLights(uint16_t newValue) {                        // Set the color of all LEDs with role LED_CONSOLE_BL
+    void setConsoleLights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                        // Set the color of all LEDs with role LED_CONSOLE_BL
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
-        if (newValue == current_backl_brightness) return;             // Exit if no brightness change
+        if (newValue == current_console_brightness) return;           // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
-        CRGB target = NVIS_GREEN_A;
+        CRGB target = color;
         target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
-        current_backl_brightness = newValue;                          // Update and save the current brightness value
+        current_console_brightness = newValue;                        // Update and save the current brightness value
                  
         int n = getLedCount();
         for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is BACKLIGHT, set color
