@@ -1,0 +1,28 @@
+var 4_a5_a2__a_p_u___p_a_n_e_l_8ino =
+[
+    [ "DCSBIOS_DEFAULT_SERIAL", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a7a569225b9579d94efd84f1dd616cc89", null ],
+    [ "TXENABLE_PIN", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#ab6b34ada3c72aac2cfffa114ca0ee74b", null ],
+    [ "UART1_SELECT", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#aa8a054bfadfd6fb4eddc4cf2126ab11d", null ],
+    [ "APU_SW1", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a6e721ac1a0775667bf97528b108cec68", null ],
+    [ "APU_LAMP", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#aa9cff1160061f95bcfc6c1537efe47b0", null ],
+    [ "CRANK_SW1", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a0f67c61a6a22ff6871916f3483ce0f30", null ],
+    [ "CRANK_SW2", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a48270b310591099a7777968ceb082fcc", null ],
+    [ "FCS_CH1", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a7d9a1cd07461e16f890f7a5c9ff0c5c3", null ],
+    [ "FCS_CH2", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a194db28a2d1071419516f7a58ec7c0a5", null ],
+    [ "LCSPDBRK", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#ab5dd70a3109a9c27be597520c43b1357", null ],
+    [ "LCLBAR", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#adf5b3720b4fb7bc55da1aefd2f39784c", null ],
+    [ "APU_SW_MAG", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#ae5027bcabb78c930476cbdeccdbe3216", null ],
+    [ "ENG_CRANK_MAG", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a4bba6a6382d2c0b0eb0d46ebd9f0bb49", null ],
+    [ "onApuReadyLtChange", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#acdf3ea3b4a9ca8e66c17f6dd02aa4af9", null ],
+    [ "onApuControlSwChange", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a020e86e6e3c629a390f89567b7dcced8", null ],
+    [ "onEngineCrankSwChange", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#af50a1ae07325f1c0d5ff1fc8d11eb69f", null ],
+    [ "setup", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a4fc01d736fe50cf5b977f755b675f11d", null ],
+    [ "loop", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#afe461d27b9c48d5921c00d521181f12f", null ],
+    [ "apuHold", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#aab102600959261a383bd6423a19780cd", null ],
+    [ "apuState", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a744d1e45b0377c6c5a0238bcbbc8499d", null ],
+    [ "apuLightSate", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a73e53869a2027d57672ca8c244d9d0e4", null ],
+    [ "engCrankHold", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a398f06c2e4e50bb89bec1f3a7d16adb2", null ],
+    [ "engCrankState", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#ab6dc604b7d6a113e352876729d4ed068", null ],
+    [ "rpmL", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a1c12f2dae4d5fa0c4ebdb999b05cdec2", null ],
+    [ "rpmR", "d2/d8e/4_a5_a2-_a_p_u___p_a_n_e_l_8ino.html#a97b699fa368797bd694db65d670e1e2b", null ]
+];
