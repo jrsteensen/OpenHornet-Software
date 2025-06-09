@@ -110,6 +110,10 @@ void onExtWowLeftChange(unsigned int newValue) {
 * only once at the programm start, belongs in this function.
 */
 void setup() {
+  #if (not defined( DCSBIOS_RS485_SLAVE) || not defined(DCSBIOS_RS485_MASTER ))   // Disable RS485 TRANSCEIVER IF NOT BEING USED
+    pinMode(TXENABLE_PIN, OUTPUT);    // WILL DISABLE TX ONLY
+    digitalWrite(TXENABLE_PIN, HIGH); // SET TX HIGH TO DISABLE TX ON TRANSCEIVER
+  #endif
 
   // Run DCS Bios setup function
   DcsBios::setup();
