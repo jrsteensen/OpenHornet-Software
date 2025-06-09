@@ -70,7 +70,7 @@
  *          If you want to change the colors:
  *          - Open the Colors.h file and change the color definitions.
  *          - Adapt individually as needed for your build and LEDs in use.
- *          - Colors are according MIL-STD-3099.
+ *          - Colors according MIL-STD-3099 are documented in the Colors.h file.
  *          - Note: LEDs dimming uses FastLED's nscale8_video() function. It provides a
  *            more color-preserving dimming effect than pure RGB value recalculation.
  *          If you have an non-standard wiring / pinout of your backlight controller:
@@ -94,7 +94,7 @@
  *             in varying orders as their build progresses; the code must be modular
  *             enough to allow this. 
  *          6. As the users' build progresses:
- *             - She/he shall not needc to recalculate LED indices/counts
+ *             - She/he shall not need to recalculate LED indices/counts
  *             - She/he shall not need to reprogram this BL controller (if build to spec)
  *          7. Code execution must be fast to avoid LED flickering (output side) or loss 
  *              of updates coming from DCS-BIOS (input side).
@@ -104,7 +104,7 @@
  *          B. Arduino MEGA 2560 has 8KB of SRAM.
  *          C. FastLED.show() command is time-sensitive 
  *          Solutions:
- *          - An OOP programming paradigm is used, as functions may repeat across panels
+ *          - An OOP programming paradigm is used, as functionalities repeat across panels
  *          - The generic Panel class (Panel.h) is the base class for all panels 
  *            Each panel must be inherit from it.
  *          - For each panel in the pit, one panel class exists in the panel folder.
@@ -135,7 +135,7 @@
 #ifdef __AVR__                                                        // Include AVR power library if we're on an AVR
   #include <avr/power.h>
 #endif
-#define FASTLED_INTERRUPT_RETRY_COUNT 1                               // Define the number of retries for the interrupt
+#define FASTLED_INTERRUPT_RETRY_COUNT 1                               // Define the number of retries for FastLED update
 
 #include "FastLED.h"
 #include "DcsBios.h"
@@ -193,15 +193,15 @@ CRGB AUX_1_leds[100];    // 100 LEDs
 CRGB AUX_2_leds[100];    // 100 LEDs
 
 // Define channel objects (and create them)
-Channel LIP_1(12, "Channel 1", LIP_1_leds, 100);
-Channel LIP_2(13, "Channel 2", LIP_2_leds, 120);
+Channel LIP_1(13, "Channel 1", LIP_1_leds, 100);
+Channel LIP_2(12, "Channel 2", LIP_2_leds, 120);
 Channel UIP_1(11, "Channel 3", UIP_1_leds, 210);
-Channel UIP_2(9, "Channel 4", UIP_2_leds, 210);                                   
-Channel LC_1(10, "Channel 5", LC_1_leds, 304);                        //Ulukaii deviation. Standard is 9.              
-Channel LC_2(5, "Channel 6", LC_2_leds, 150);
+Channel UIP_2(10, "Channel 4", UIP_2_leds, 210);                                   
+Channel LC_1(9, "Channel 5", LC_1_leds, 304);                                      
+Channel LC_2(8, "Channel 6", LC_2_leds, 150);
 Channel RC_1(7, "Channel 7", RC_1_leds, 170);               
 Channel RC_2(6, "Channel 8", RC_2_leds, 266);               
-Channel AUX_1(8, "Channel 9", AUX_1_leds, 100);                       //Spare channel
+Channel AUX_1(5, "Channel 9", AUX_1_leds, 100);                       //Spare channel
 Channel AUX_2(4, "Channel 10", AUX_2_leds, 100);                      //Spare channel
 
 Board* board;                                                         // Pointer to singleton board instance

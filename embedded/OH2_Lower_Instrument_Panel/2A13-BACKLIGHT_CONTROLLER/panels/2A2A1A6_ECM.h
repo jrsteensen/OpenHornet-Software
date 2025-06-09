@@ -15,6 +15,9 @@
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Implements backlighting and indicators for the ECM panel.
+ *            It consists of two parts:
+ *            - An array with the LEDs and their roles (LED_INSTR_BL, LED_ECM_JETT_SEL)
+ *            - A class that implements the panel's functionality
  *********************************************************************************************************************/
 
 
@@ -26,8 +29,9 @@
 
 /********************************************************************************************************************
  * @brief   This table defines the panel's LEDs.
- * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
+ * @details "Role" in this context refers to the LED role enum in the LedRole.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
+ * @see     LedRole.h for the list of LED roles and LedStruct.h for the Led structure.
  ********************************************************************************************************************/
 const int ECM_LED_COUNT = 79;  // Total number of LEDs in the panel
 const Led ecmLedTable[ECM_LED_COUNT] PROGMEM = {
@@ -59,9 +63,17 @@ const Led ecmLedTable[ECM_LED_COUNT] PROGMEM = {
  *          Indicator LEDs: 4 (ECM JETT SEL: 74-77)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
+ * @see     Panel.h for the base class implementation
  ********************************************************************************************************************/
 class EcmPanel : public Panel {
 public:
+    /**
+     * @brief Gets the singleton instance of the EcmPanel class
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @return Pointer to the singleton instance
+     * @see This method is called by the main .ino file's addPanel() method to create the panel instance
+     */
     static EcmPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
             instance = new EcmPanel(startIndex, ledStrip);
@@ -70,7 +82,12 @@ public:
     }
 
 private:
-    // Private constructor
+    /**
+     * @brief Private constructor to enforce singleton pattern
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @see This method is called by the public getInstance() if and only if no instance exists yet
+     */
     EcmPanel(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;

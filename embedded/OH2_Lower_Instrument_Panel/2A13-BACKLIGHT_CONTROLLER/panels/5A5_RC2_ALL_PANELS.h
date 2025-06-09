@@ -131,6 +131,13 @@ const LedText rc2AllPanelsTextTable[RC2_ALL_PANELS_TEXT_COUNT] PROGMEM = {
  ********************************************************************************************************************/
 class Rc2AllPanels : public Panel {
 public:
+    /**
+     * @brief Gets the singleton instance of the Rc2AllPanels class
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @return Pointer to the singleton instance
+     * @see This method is called by the main .ino file's addPanel() method to create the panel instance
+     */
     static Rc2AllPanels* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
             instance = new Rc2AllPanels(startIndex, ledStrip);
@@ -139,7 +146,12 @@ public:
     }
 
 private:
-    // Private constructor
+    /**
+     * @brief Private constructor to enforce singleton pattern
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @see This method is called by the public getInstance() if and only if no instance exists yet
+     */
     Rc2AllPanels(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;

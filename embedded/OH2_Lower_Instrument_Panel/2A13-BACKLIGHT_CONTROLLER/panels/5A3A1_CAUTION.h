@@ -15,6 +15,9 @@
  * @version   u 0.3.1
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Implements backlighting for the Caution panel.
+ *            It consists of two parts:
+ *            - An array with the LEDs and their roles (LED_CK_SEAT, LED_APU_ACC, ...)
+ *            - A class that implements the panel's functionality
  *********************************************************************************************************************/
 
 
@@ -67,6 +70,13 @@ const LedText cautionTextTable[CAUTION_TEXT_COUNT] PROGMEM = {
  ********************************************************************************************************************/
 class CautionPanel : public Panel {
 public:
+    /**
+     * @brief Gets the singleton instance of the CautionPanel class
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @return Pointer to the singleton instance
+     * @see This method is called by the main .ino file's addPanel() method to create the panel instance
+     */
     static CautionPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
             instance = new CautionPanel(startIndex, ledStrip);
@@ -75,7 +85,12 @@ public:
     }
 
 private:
-    // Private constructor
+    /**
+     * @brief Private constructor to enforce singleton pattern
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @see This method is called by the public getInstance() if and only if no instance exists yet
+     */
     CautionPanel(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;

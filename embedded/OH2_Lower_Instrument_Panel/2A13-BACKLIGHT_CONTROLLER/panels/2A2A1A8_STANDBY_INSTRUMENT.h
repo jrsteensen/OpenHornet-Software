@@ -14,7 +14,10 @@
  * @date      24.05.2025
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Implements backlighting and indicators for the Standby Instrument panel.
+ * @brief     Implements backlighting and indicators for the Standby Instruments panel.
+ *            It consists of two parts:
+ *            - An array with the LEDs and their roles (LED_INSTR_BL, LED_STBY_ATT, LED_STBY_HDG)
+ *            - A class that implements the panel's functionality
  *********************************************************************************************************************/
 
 
@@ -27,7 +30,12 @@
 // Total number of LEDs in the panel
 const int STANDBY_INSTRUMENT_LED_COUNT = 6;
 
-// LED table definition
+/********************************************************************************************************************
+ * @brief   This table defines the panel's LEDs.
+ * @details "Role" in this context refers to the LED role enum in the LedRole.h file (enum used for memory efficiency).
+ * @remark  This table is stored in PROGMEM for memory efficiency.
+ * @see     LedRole.h for the list of LED roles and LedStruct.h for the Led structure.
+ ********************************************************************************************************************/
 const Led standbyInstrumentLedTable[STANDBY_INSTRUMENT_LED_COUNT] PROGMEM = {
     {0, LED_INSTR_BL}, {1, LED_INSTR_BL}, {2, LED_INSTR_BL},
     {3, LED_INSTR_BL}, {4, LED_INSTR_BL}, {5, LED_INSTR_BL}
@@ -44,6 +52,13 @@ const Led standbyInstrumentLedTable[STANDBY_INSTRUMENT_LED_COUNT] PROGMEM = {
  ********************************************************************************************************************/
 class StandbyInstrumentPanel : public Panel {
 public:
+    /**
+     * @brief Gets the singleton instance of the StandbyInstrumentPanel class
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @return Pointer to the singleton instance
+     * @see This method is called by the main .ino file's addPanel() method to create the panel instance
+     */
     static StandbyInstrumentPanel* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
             instance = new StandbyInstrumentPanel(startIndex, ledStrip);
@@ -52,7 +67,12 @@ public:
     }
 
 private:
-    // Private constructor
+    /**
+     * @brief Private constructor to enforce singleton pattern
+     * @param startIndex The starting index for this panel's LEDs on the strip
+     * @param ledStrip Pointer to the LED strip array
+     * @see This method is called by the public getInstance() if and only if no instance exists yet
+     */
     StandbyInstrumentPanel(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;
