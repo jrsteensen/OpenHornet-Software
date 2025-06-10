@@ -1,5 +1,5 @@
 # Any extra libraries included by this sketch (space separated)
-LIBRARIES = FastLED dcs-bios-arduino-library RotaryEncoder
+LIBRARIES = FastLED dcs-bios-arduino-library RotaryEncoder Servo
 
 # Uncomment one of the following to choose the target board
 include $(ROOTDIR)/include/mega2560.mk
