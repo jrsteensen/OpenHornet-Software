@@ -136,6 +136,7 @@
   #include <avr/power.h>
 #endif
 #define FASTLED_INTERRUPT_RETRY_COUNT 1                               // Define the number of retries for FastLED update
+#define DCSBIOS_DISABLE_SERVO                                         // Disable DCS-BIOS servo support (not used)
 
 #include "FastLED.h"
 #include "DcsBios.h"
