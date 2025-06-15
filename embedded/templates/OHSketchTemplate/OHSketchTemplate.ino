@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2025 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -34,8 +34,8 @@
  * @file OHSketchTemplate.ino
  * @author <Replace with author's name>
  * @date <MM.DD.YYYY>
- * @version u.0.0.1 (untested)
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @version u.0.0.3
+ * @copyright Copyright 2016-2025 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
  * @brief <A short description of the PCB, will appear in the list of files.>
  *
@@ -57,9 +57,7 @@
  * It also sets the address of this slave device. The slave address should be
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
- * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
-
-   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+ * @bug DCSBIOS_RS485_MASTER Currently does not work with the Pro Micro (32U4), Fails to compile. 
 */
 
 /**
@@ -84,6 +82,21 @@
 #define TXENABLE_PIN 5 ///< Sets TXENABLE_PIN to Arduino Pin 5
 #define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
+/**
+* 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
+* Be sure to set slave address per INTERCONNECT
+*/
+//#define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, 
+
+/**
+ * If using a SERVO Motor (only used in Radar Altimeter) leave un-comment
+ * otherwise comment out to not include the SERVO.H library
+*/
+#define DCSBIOS_DISABLE_SERVO
+
+/**
+ * We must to include the DcsBios.h header file
+*/
 #include "DcsBios.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
@@ -100,36 +113,10 @@ DcsBios::Switch2Pos emergencyGearRotate("EMERGENCY_GEAR_ROTATE", PIN_NAME1); //d
 // DCSBios reads to save airplane state information. <update comment as needed>
 void onExtWowLeftChange(unsigned int newValue) {
   wowLeft = newValue;
-} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
+} 
 
-
-/**
-* Arduino Setup Function
-*
-* Arduino standard Setup Function. Code who should be executed
-* only once at the programm start, belongs in this function.
-*/
-void setup() {
-  #if (not defined( DCSBIOS_RS485_SLAVE) || not defined(DCSBIOS_RS485_MASTER ))   // Disable RS485 TRANSCEIVER IF NOT BEING USED
-    pinMode(TXENABLE_PIN, OUTPUT);    // WILL DISABLE TX ONLY
-    digitalWrite(TXENABLE_PIN, HIGH); // SET TX HIGH TO DISABLE TX ON TRANSCEIVER
-  #endif
-
-  // Run DCS Bios setup function
-  DcsBios::setup();
-}
-
-/**
-* Arduino Loop Function
-*
-* Arduino standard Loop Function. Code who should be executed
-* over and over in a loop, belongs in this function.
-*/
-void loop() {
-
-  //Run DCS Bios loop function
-  DcsBios::loop();
-}
+// Use the Values in Addresses.h instead of hard coding addresses.   
+DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
 
 /**
 * A brief description on a single line, ended by a period or blank line.
@@ -163,8 +150,39 @@ void loop() {
 * @param myParam1 Description of 1st parameter.
 * @param myParam2 Description of 2nd parameter.
 * @returns Description of returned value.
+* 
+* **Standard C/C++ requires all functions be declared before first use.
+* While Arduino allows this it's bad programming practice to declare after first use**
 */
-int sampleFunction(int myParam1, int myParam2) {
-  int myReturn;
+int sampleFunction(int myParam1 = 1, int myParam2 = 2) {
+  int myReturn = myParam1 + myParam2;
   return myReturn;
+}
+
+/**
+* Arduino Setup Function
+*
+* Arduino standard Setup Function. Code who should be executed
+* only once at the programm start, belongs in this function.
+*/
+void setup() {
+  #if (not defined( DCSBIOS_RS485_SLAVE) || not defined(DCSBIOS_RS485_MASTER ))   // Disable RS485 TRANSCEIVER IF NOT BEING USED
+    pinMode(TXENABLE_PIN, OUTPUT);    // WILL DISABLE TX ONLY
+    digitalWrite(TXENABLE_PIN, HIGH); // SET TX HIGH TO DISABLE TX ON TRANSCEIVER
+  #endif
+
+  // Run DCS Bios setup function
+  DcsBios::setup(); // Must be called once in setup();
+}
+
+/**
+* Arduino Loop Function
+*
+* Arduino standard Loop Function. Code who should be executed
+* over and over in a loop, belongs in this function.
+*/
+void loop() {
+
+  //Run DCS Bios loop function
+  DcsBios::loop(); // Must be called once in loop();
 }
