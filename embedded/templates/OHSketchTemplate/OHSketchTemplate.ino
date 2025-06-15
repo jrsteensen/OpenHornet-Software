@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2025 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -114,6 +114,7 @@ DcsBios::Switch2Pos emergencyGearRotate("EMERGENCY_GEAR_ROTATE", PIN_NAME1); //d
 void onExtWowLeftChange(unsigned int newValue) {
   wowLeft = newValue;
 } 
+
 // Use the Values in Addresses.h instead of hard coding addresses.   
 DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
 

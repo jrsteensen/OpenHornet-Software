@@ -10,7 +10,7 @@
  *   ----------------------------------------------------------------------------------
  *   Copyright 2016-2024 OpenHornet
  *
- *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   Licensed under the Apache License, Version 2.0 (the "License");d:\OpenHornet-Software\embedded\OH2_Lower_Instrument_Panel\2A13-BACKLIGHT_CONTROLLER\1A6A1_SPN_RCVY_BL.h
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
@@ -29,41 +29,50 @@
  *   This Project uses Doxygen as a documentation generator.
  *   Please use Doxygen capable comments.
  **************************************************************************************/
-
 /**
- * @file 5A6A1-INTR_LT_PANEL.ino
+ * @file 2A13-BACKLIGHT_CONTROLLER.ino
  * @author Arribe
- * @date 03.11.2024
- * @version 0.0.1
+ * @date 03.25.2024
+ * @version u.0.0.1 (untested)
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Controls the INTR LT panel.
+ * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
+ * @brief Controls the backlighting (and some annunciators) for the entire pit.
+ *
+ * @Ttodo
  *
  * @details
  * 
- *  * **Reference Designator:** 5A6A1
- *  * **Intended Board:** ABSIS ALE
- *  * **RS485 Bus Address:** 5
+ *  * **Reference Designator:** 2A13
+ *  * **Intended Board:** ABSIS BACKLIGHT CONTROLLER
+ *  * **RS485 Bus Address:** NA
  * 
- * ### Wiring diagram:
+ *  * **Intended Board:**
+ * ABSIS BACKLIGHT CONTROLLER
+ * 
+ *  * ** Processor **
+ *  Arduino Mega + Backlight Shield
+ * 
+ * **Wiring diagram:**
+ * 
  * PIN | Function
  * --- | ---
- * A3  | Light Test
- * 2   | NVG Mode
- * 3   | Day Mode
- * A2  | Warning / Caution Brightness
- * A1  | Chart Brightness
- * A7   | Console Brightness
- * 8   | Intrument Panel Brightness
- * A10  | Flood Brightness
- * 
- * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
- * It also sets the address of this slave device. The slave address should be
- * between 1 and 126 and must be unique among all devices on the same bus.
- *
- * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
-
-   #define DCSBIOS_RS485_SLAVE 5 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
-*/
+ * 13  | J2 LIP_BL_CH1
+ * 12  | J3 LIP_BL_CH2
+ * 11  | J4 UIP_BL_CH1
+ * 10  | J5 UIP_BL_CH2
+ * 9   | J6 LC_BL_CH1
+ * 8   | J7 LC_BL_CH2
+ * 7   | J8 RC_BL_CH1
+ * 6   | J9 RC_BL_CH2
+ * 5   | J10 NC
+ * 4   | J11 NC
+ * 24  | J14 SIMPWR_BLM_A
+ * 23  | J14 SIMPWR_BLM_B
+ * 22  | J14 SIMPWR_PUSH
+ * SDA | TEMP SNSR
+ * SCL | TEMP SNSR
+ * 2   | J12 & J13 Cooling fan headers.
+ */
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
@@ -80,33 +89,31 @@
 #include <avr/power.h>
 #endif
 
-/**
- * The Arduino pin that is connected to the
- * RE and DE pins on the RS-485 transceiver.
-*/
-#define TXENABLE_PIN 5  ///< Sets TXENABLE_PIN to Arduino Pin 5
-#define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
-
 #include "DcsBios.h"
+#include "Adafruit_NeoPixel.h"
 
-// Define pins for DCS-BIOS per interconnect diagram.
-#define TEST A3      ///< Light Test
-#define NVG 2        ///< NVG Mode
-#define DAY 3        ///< Day Mode
-#define WAR_CAUT A2  ///< Warning / Caution Brightness
-#define CHART A1     ///< Chart Brightness
-#define CONSOLES A7   ///< Console Brightness
-#define INST_PNL 8   ///< Intrument Panel Brightness
-#define FLOOD A10     ///< Flood Brightness
 
-// Connect switches to DCS-BIOS
-DcsBios::Potentiometer chartDimmer("CHART_DIMMER", CHART);
-DcsBios::Switch3Pos cockkpitLightModeSw("COCKKPIT_LIGHT_MODE_SW", NVG, DAY);
-DcsBios::Potentiometer consolesDimmer("CONSOLES_DIMMER", CONSOLES);
-DcsBios::Potentiometer floodDimmer("FLOOD_DIMMER", FLOOD);
-DcsBios::Potentiometer instPnlDimmer("INST_PNL_DIMMER", INST_PNL);
-DcsBios::Switch2Pos lightsTestSw("LIGHTS_TEST_SW", TEST);
-DcsBios::Potentiometer warnCautionDimmer("WARN_CAUTION_DIMMER", WAR_CAUT);
+// Define pins for DCS-BIOS per interconnect diagram, and Bakclight control kicad sketch.
+#define LIP_BL_CH1 13  ///< J2 LIP_BL_CH1
+#define LIP_BL_CH2 12  ///< J3 LIP_BL_CH2
+#define UIP_BL_CH1 11  ///< J4 UIP_BL_CH1
+#define UIP_BL_CH2 10  ///< J5 UIP_BL_CH2
+#define LC_BL_CH1 9    ///< J6 LC_BL_CH1
+#define LC_BL_CH2 8    ///< J7 LC_BL_CH2
+#define RC_BL_CH1 7    ///< J8 RC_BL_CH1
+#define RC_BL_CH2 6    ///< J9 RC_BL_CH2
+//#define 5   ///< J10 NC
+//#define 4   ///< J11 NC
+#define SIMPWR_BLM_A 24  ///< J14 SIMPWR_BLM_A
+#define SIMPWR_BLM_B 23  ///< J14 SIMPWR_BLM_B
+#define SIMPWR_PUSH 22   ///< J14 SIMPWR_PUSH
+//#define SDA | TEMP SNSR
+//#define SCL | TEMP SNSR
+#define COOLING_FANS 2  ///< J12 & J13 Cooling fan headers.
+
+#define BRIGHTNESS 50  ///< Brightness value used by the panels.
+
+#include "2A13-BACKLIGHT_CONTROLLER.h"
 
 /**
 * Arduino Setup Function
@@ -118,6 +125,7 @@ void setup() {
 
   // Run DCS Bios setup function
   DcsBios::setup();
+  OpenHornet::setup();
 }
 
 /**

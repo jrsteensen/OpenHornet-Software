@@ -25,3 +25,6 @@
 [submodule "libraries/ArduinoJoystickLibrary"]
 	path = libraries/ArduinoJoystickLibrary
 	url = https://github.com/MHeironimus/ArduinoJoystickLibrary.git
+[submodule "libraries/Stepper"]
+	path = libraries/Stepper
+	url = https://github.com/arduino-libraries/Stepper.git

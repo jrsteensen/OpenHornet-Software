@@ -31,30 +31,39 @@
  **************************************************************************************/
 
 /**
- * @file 5A6A1-INTR_LT_PANEL.ino
+ * @file 2A2A1-LEFT_LIP_MODULE.ino
  * @author Arribe
- * @date 03.11.2024
+ * @date 03.21.2024
  * @version 0.0.1
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Controls the INTR LT panel.
+ * @brief Controls the LEFT LIP module.
  *
  * @details
  * 
- *  * **Reference Designator:** 5A6A1
+ *  * **Reference Designator:** 2A2A1
  *  * **Intended Board:** ABSIS ALE
- *  * **RS485 Bus Address:** 5
+ *  * **RS485 Bus Address:** 1
  * 
  * ### Wiring diagram:
  * PIN | Function
  * --- | ---
- * A3  | Light Test
- * 2   | NVG Mode
- * 3   | Day Mode
- * A2  | Warning / Caution Brightness
- * A1  | Chart Brightness
- * A7   | Console Brightness
- * 8   | Intrument Panel Brightness
- * A10  | Flood Brightness
+ * A3  | LI Switch
+ * 2   | LO Switch
+ * A2  | CTR Switch
+ * A1  | RI Switch
+ * 4   | RO Switch
+ * 3   | UP Switch
+ * A0  | DOWN Switch
+ * 15  | QTY Switch
+ * 6   | ZONE Switch
+ * 14  | MODE Switch
+ * 7   | ET Switch
+ * 16  | VR MAN
+ * 8   | VR Auto
+ * 10  | VR LDDI - switch in sim is 3 position
+ * A9   | VR IFEI Brightness
+ * 
+ * @todo When Video Record panel's two remaining 3 positon switches are incorporated into OpenHornet, the sketch should be updated to include them.  Currently VR LDDI not programmed.
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
@@ -62,7 +71,7 @@
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
 
-   #define DCSBIOS_RS485_SLAVE 5 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+   #define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
 */
 
 /**
@@ -90,23 +99,38 @@
 #include "DcsBios.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
-#define TEST A3      ///< Light Test
-#define NVG 2        ///< NVG Mode
-#define DAY 3        ///< Day Mode
-#define WAR_CAUT A2  ///< Warning / Caution Brightness
-#define CHART A1     ///< Chart Brightness
-#define CONSOLES A7   ///< Console Brightness
-#define INST_PNL 8   ///< Intrument Panel Brightness
-#define FLOOD A10     ///< Flood Brightness
+#define LI_SW A3      ///< LI Switch
+#define LO_SW 2      ///< LO Switch
+#define CTR_SW A2    ///< CTR Switch
+#define RI_SW A1     ///< RI Switch
+#define RO_SW 4      ///< RO Switch
+#define UP_SW 3      ///< UP Switch
+#define DOWN_SW A0   ///< DOWN Switch
+#define QTY_SW 15    ///< QTY Switch
+#define ZONE_SW 6    ///< ZONE Switch
+#define MODE_SW 14   ///< MODE Switch
+#define ET_SW 7      ///< ET Switch
+#define VR_MAN 16    ///< VR MAN
+#define VR_AUTO 8    ///< VR Auto
+#define VR_LDDI 10   ///< VR LDDI - Switch in SIM is 3 position
+#define VR_A_IFEI A9  ///< VR IFEI Brightness
 
 // Connect switches to DCS-BIOS
-DcsBios::Potentiometer chartDimmer("CHART_DIMMER", CHART);
-DcsBios::Switch3Pos cockkpitLightModeSw("COCKKPIT_LIGHT_MODE_SW", NVG, DAY);
-DcsBios::Potentiometer consolesDimmer("CONSOLES_DIMMER", CONSOLES);
-DcsBios::Potentiometer floodDimmer("FLOOD_DIMMER", FLOOD);
-DcsBios::Potentiometer instPnlDimmer("INST_PNL_DIMMER", INST_PNL);
-DcsBios::Switch2Pos lightsTestSw("LIGHTS_TEST_SW", TEST);
-DcsBios::Potentiometer warnCautionDimmer("WARN_CAUTION_DIMMER", WAR_CAUT);
+DcsBios::Potentiometer ifei("IFEI", VR_A_IFEI);
+DcsBios::Switch3Pos modeSelectorSw("MODE_SELECTOR_SW", VR_AUTO, VR_MAN);
+
+DcsBios::Switch2Pos ifeiDwnBtn("IFEI_DWN_BTN", DOWN_SW);
+DcsBios::Switch2Pos ifeiEtBtn("IFEI_ET_BTN", ET_SW);
+DcsBios::Switch2Pos ifeiModeBtn("IFEI_MODE_BTN", MODE_SW);
+DcsBios::Switch2Pos ifeiQtyBtn("IFEI_QTY_BTN", QTY_SW);
+DcsBios::Switch2Pos ifeiUpBtn("IFEI_UP_BTN", UP_SW);
+DcsBios::Switch2Pos ifeiZoneBtn("IFEI_ZONE_BTN", ZONE_SW);
+
+DcsBios::ActionButton sjCtrToggle("SJ_CTR", "TOGGLE", CTR_SW);
+DcsBios::ActionButton sjLiToggle("SJ_LI", "TOGGLE", LI_SW);
+DcsBios::ActionButton sjLoToggle("SJ_LO", "TOGGLE", LO_SW);
+DcsBios::ActionButton sjRiToggle("SJ_RI", "TOGGLE", RI_SW);
+DcsBios::ActionButton sjRoToggle("SJ_RO", "TOGGLE", RO_SW);
 
 /**
 * Arduino Setup Function

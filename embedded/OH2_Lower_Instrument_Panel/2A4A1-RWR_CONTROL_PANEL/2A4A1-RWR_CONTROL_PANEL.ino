@@ -31,30 +31,34 @@
  **************************************************************************************/
 
 /**
- * @file 5A6A1-INTR_LT_PANEL.ino
+ * @file 2A4A1-RWR_CONTROL_PANEL.ino
  * @author Arribe
- * @date 03.11.2024
+ * @date 03.21.2024
  * @version 0.0.1
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Controls the INTR LT panel.
+ * @brief Controls the RWR CONTROL panel.
  *
  * @details
  * 
- *  * **Reference Designator:** 5A6A1
+ *  * **Reference Designator:** 2A4A1
  *  * **Intended Board:** ABSIS ALE
- *  * **RS485 Bus Address:** 5
+ *  * **RS485 Bus Address:** 3
  * 
  * ### Wiring diagram:
  * PIN | Function
  * --- | ---
- * A3  | Light Test
- * 2   | NVG Mode
- * 3   | Day Mode
- * A2  | Warning / Caution Brightness
- * A1  | Chart Brightness
- * A7   | Console Brightness
- * 8   | Intrument Panel Brightness
- * A10  | Flood Brightness
+ * A3  | RWR Audio Volume
+ * 2   | POWER
+ * A2  | RWR Dimmer
+ * 3   | RWR LIMIT Switch
+ * A1  | SPECIAL
+ * 4   | RWR Offset
+ * A0  | BIT Switch
+ * 15  | RWR Dis I
+ * 6   | RWR Dis A
+ * 14  | RWR Dis U
+ * 7   | RWR Dis F
+ * 
  * 
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
@@ -62,7 +66,7 @@
  *
  * @bug Currently does not work with the Pro Micro (32U4), Fails to compile. 
 
-   #define DCSBIOS_RS485_SLAVE 5 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
+   #define DCSBIOS_RS485_SLAVE 3 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
 */
 
 /**
@@ -84,29 +88,36 @@
  * The Arduino pin that is connected to the
  * RE and DE pins on the RS-485 transceiver.
 */
-#define TXENABLE_PIN 5  ///< Sets TXENABLE_PIN to Arduino Pin 5
-#define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
+
 
 #include "DcsBios.h"
+#include "2A4A1-RWR_CONTROL_PANEL.h"
 
 // Define pins for DCS-BIOS per interconnect diagram.
-#define TEST A3      ///< Light Test
-#define NVG 2        ///< NVG Mode
-#define DAY 3        ///< Day Mode
-#define WAR_CAUT A2  ///< Warning / Caution Brightness
-#define CHART A1     ///< Chart Brightness
-#define CONSOLES A7   ///< Console Brightness
-#define INST_PNL 8   ///< Intrument Panel Brightness
-#define FLOOD A10     ///< Flood Brightness
+#define RWR_A_AUDIO A3  ///< RWR Audio Volume
+#define POWER_SW 2      ///< POWER
+#define RWR_A_DMR A2    ///< RWR Dimmer
+#define RWR_LIMIT_SW 3  ///< RWR LIMIT Switch
+#define SPECIAL A1      ///< SPECIAL
+#define RWR_OFFSET 4    ///< RWR Offset
+#define BIT_SW A0       ///< BIT Switch
+#define RWR_DIS_I 15    ///< RWR Dis I
+#define RWR_DIS_A 6     ///< RWR Dis A
+#define RWR_DIS_U 14    ///< RWR Dis U
+#define RWR_DIS_F 7     ///< RWR Dis F
 
 // Connect switches to DCS-BIOS
-DcsBios::Potentiometer chartDimmer("CHART_DIMMER", CHART);
-DcsBios::Switch3Pos cockkpitLightModeSw("COCKKPIT_LIGHT_MODE_SW", NVG, DAY);
-DcsBios::Potentiometer consolesDimmer("CONSOLES_DIMMER", CONSOLES);
-DcsBios::Potentiometer floodDimmer("FLOOD_DIMMER", FLOOD);
-DcsBios::Potentiometer instPnlDimmer("INST_PNL_DIMMER", INST_PNL);
-DcsBios::Switch2Pos lightsTestSw("LIGHTS_TEST_SW", TEST);
-DcsBios::Potentiometer warnCautionDimmer("WARN_CAUTION_DIMMER", WAR_CAUT);
+DcsBios::Potentiometer rwrAudioCtrl("RWR_AUDIO_CTRL", RWR_A_AUDIO);
+DcsBios::Switch2Pos rwrBitBtn("RWR_BIT_BTN", BIT_SW);
+DcsBios::Switch2Pos rwrDisplayBtn("RWR_DISPLAY_BTN", RWR_LIMIT_SW);
+DcsBios::Potentiometer rwrDmrCtrl("RWR_DMR_CTRL", RWR_A_DMR);
+DcsBios::Switch2Pos rwrOffsetBtn("RWR_OFFSET_BTN", RWR_OFFSET);
+DcsBios::ActionButton rwrPowerBtnToggle("RWR_POWER_BTN", "TOGGLE", POWER_SW);
+DcsBios::Switch2Pos rwrSpecialBtn("RWR_SPECIAL_BTN", SPECIAL);
+
+const byte rwrDisTypeSwPins[5] = { DcsBios::PIN_NC, RWR_DIS_I, RWR_DIS_A, RWR_DIS_U, RWR_DIS_F };
+/// @todo Replace with DCSBios version of DcsBios::SwitchMultiPos if/when fixed.
+SwitchMultiPosDebounce rwrDisTypeSw("RWR_DIS_TYPE_SW", rwrDisTypeSwPins, 5, false, 100);
 
 /**
 * Arduino Setup Function
@@ -130,4 +141,7 @@ void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
+
+   ///@todo If/When DCS Skunkworks fixes the multiposition switch remove the rwrDisTypeSw.pollThisInput(); call.
+   rwrDisTypeSw.pollThisInput();
 }
