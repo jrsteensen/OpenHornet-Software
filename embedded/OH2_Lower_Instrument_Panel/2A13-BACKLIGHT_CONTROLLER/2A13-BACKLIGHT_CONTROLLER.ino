@@ -42,24 +42,24 @@
 
  *          **Wiring Diagram:** 
  * 
- *          | Pin | Function                      |
- *          |-----|-------------------------------|
- *          | 13  | J2 LIP_CH1                    |
- *          | 12  | J3 LIP_CH2                    |
- *          | 11  | J4 UIP_CH1                    |
- *          | 10  | J5 UIP_CH2                    |
- *          | 9   | J6 LC_CH1                     |
- *          | 8   | J7 LC_CH2                     |
- *          | 7   | J8 RC_CH1                     |
- *          | 6   | J9 RC_CH2                     |
- *          | 5   | J10 NC                        |
- *          | 4   | J11 NC                        |
- *          | 24  | J14 SIMPWR_BLM_A              |
- *          | 23  | J14 SIMPWR_BLM_B              |
- *          | 22  | J14 SIMPWR_BLM_PUSH           |
- *          | SDA | TEMP SNSR                     |
- *          | SCL | TEMP SNSR                     |
- *          | 2   | J12 & J13 Cooling fan headers |
+ *          | Pin | Function                      | Channel on PCB   |
+ *          |-----|-------------------------------|------------------|
+ *          | 13  | J2 LIP_CH1                    | Channel 1        |
+ *          | 12  | J3 LIP_CH2                    | Channel 2        |
+ *          | 11  | J4 UIP_CH1                    | Channel 3        |
+ *          | 10  | J5 UIP_CH2                    | Channel 4        |
+ *          | 9   | J6 LC_CH1                     | Channel 5        |
+ *          | 8   | J7 LC_CH2                     | Channel 6        |
+ *          | 7   | J8 RC_CH1                     | Channel 7        |
+ *          | 6   | J9 RC_CH2                     | Channel 8        |
+ *          | 5   | J10 NC                        | Channel 9        |
+ *          | 4   | J11 NC                        | Channel 10       |
+ *          | 22  | J14 SIMPWR_BLM_A              |                  |
+ *          | 23  | J14 SIMPWR_BLM_B              |                  |
+ *          | 24  | J14 SIMPWR_BLM_PUSH           |                  |
+ *          | SDA | TEMP SNSR                     |                  |
+ *          | SCL | TEMP SNSR                     |                  |
+ *          | 2   | J12 & J13 Cooling fan headers |                  |
  *   
  *          **How to use**
  *          If you are building according to spec, you only need to work with this file:
@@ -177,8 +177,8 @@
  ********************************************************************************************************************/
 
 // Hardware pin definitions
-const int encSw =    22;              
-const int encA  =    24;              
+const int encSw =    24;              
+const int encA  =    22;              
 const int encB  =    23;  
 
 // Static LED arrays for each channel
