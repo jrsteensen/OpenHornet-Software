@@ -188,6 +188,29 @@ protected:
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
+
+    /**
+     * @brief Turns off all lights in this panel, irrespective of their role, and resets brightness state
+     * @see This method is called by Board::fillBlack() to properly reset panel state
+     */
+    void setAllLightsOff() {                                          // Turn off all lights and reset brightness state
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        
+        CRGB* ledArray = getLedStrip();
+        int startIndex = getStartIndex();
+        int panelLedCount = getLedCount();
+        
+        for (int i = 0; i < panelLedCount; i++) {
+            ledArray[startIndex + i] = NVIS_BLACK;
+        }
+        
+        // Reset all brightness variables to 0
+        current_backl_brightness = 0;
+        current_console_brightness = 0;
+        current_flood_brightness = 0;
+        
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+    }
 };
 
 #endif 

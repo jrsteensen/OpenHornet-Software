@@ -147,11 +147,11 @@ public:
             if (currentMode == MODE_NORMAL) {
                 // Reset brightness to a known good state for DCS-BIOS
                 brightness = 128;  // Reset to 50% brightness
-                fillBlack();
+                setAllLightsOff();
                 LedUpdateState::getInstance()->setUpdateFlag(true);   // Activate "update is needed" flag
             }
             if (currentMode == MODE_RAINBOW) {
-                fillBlack();  // Clear any previous state
+                setAllLightsOff();  // Clear any previous state
                 LedUpdateState::getInstance()->setUpdateFlag(true);   // Activate "update is needed" flag
             }
 
@@ -210,12 +210,12 @@ public:
     }
 
     /**
-     * @brief Fills all channels with black
+     * @brief Turns off all lights in all channels and resets brightness state
      * @see This method is called by handleModeChange() in Board.h
      */
-    void fillBlack() {                                                // Fill all channels with black (works in any mode)
+    void setAllLightsOff() {                                         // Turn off all lights and reset brightness state
         for (int i = 0; i < channelCount; i++) {
-            fill_solid(channels[i]->getLeds(), channels[i]->getLedCount(), NVIS_BLACK);
+            channels[i]->setAllLightsOff();
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
