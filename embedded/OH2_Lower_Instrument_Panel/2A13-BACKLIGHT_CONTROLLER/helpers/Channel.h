@@ -185,6 +185,18 @@ public:
         }
     }
 
+    /**
+     * @brief Turns off all lights in all panels of this channel and resets brightness state
+     * @see This method is called by Board::fillBlack() to properly reset panel state
+     */
+    void setAllLightsOff() {
+        Panel* current = firstPanel;
+        while (current != nullptr) {
+            current->setAllLightsOff();
+            current = current->nextPanel;
+        }
+    }
+
 };
 
 #endif 
