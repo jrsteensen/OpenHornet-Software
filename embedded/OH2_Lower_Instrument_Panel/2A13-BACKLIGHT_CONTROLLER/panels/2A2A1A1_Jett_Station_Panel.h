@@ -47,9 +47,9 @@ const Led jettStationLedTable[JETT_STATION_LED_COUNT] PROGMEM = {
     // LO (Left Outer) Station LEDs
     {16, LED_JETT_LO_1}, {17, LED_JETT_LO_1}, {18, LED_JETT_LO_2}, {19, LED_JETT_LO_2},
     // Nose Station LED
-    {20, LED_JETT_NOSE},
+    {20, LED_JETT_NOSE}, {31, LED_JETT_NOSE},
     // Left/Right Station LEDs
-    {21, LED_JETT_LEFT}, {22, LED_JETT_LEFT}, {23, LED_JETT_RIGHT}, {24, LED_JETT_RIGHT},
+    {23, LED_JETT_LEFT}, {24, LED_JETT_LEFT}, {21, LED_JETT_RIGHT}, {22, LED_JETT_RIGHT},
     // Half/Full Station LEDs
     {25, LED_JETT_HALF}, {26, LED_JETT_HALF}, {27, LED_JETT_FULL}, {28, LED_JETT_FULL},
     // Flaps Station LEDs

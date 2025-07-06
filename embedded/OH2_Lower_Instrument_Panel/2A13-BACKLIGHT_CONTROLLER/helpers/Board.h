@@ -67,11 +67,14 @@ private:
     int thisHue;                                                      // Current hue value for rainbow effect
     int deltaHue;                                                     // Hue change between LEDs for rainbow effect
     int currentMode;                                                  // Current operating mode
-    int brightness;                                                   // Current brightness level (0-255)
+    int brightness;                                                   // Current brightness level (0-255), for manual mode
+    int dcs_brightness_console;                                        // Current brightness level (0-255), for DCS-BIOS controlled mode
+    int dcs_brightness_instrument;                                     // Current brightness level (0-255), for DCS-BIOS controlled mode
+    int dcs_brightness_flood;                                          // Current brightness level (0-255), for DCS-BIOS controlled mode
 
-    int encSwPin;                                                  // Encoder switch pin
-    RotaryEncoder* encoder;                                            // Pointer to encoder instance
-    int rotary_pos;                                                    // Current rotary encoder position
+    int encSwPin;                                                     // Encoder switch pin
+    RotaryEncoder* encoder;                                           // Pointer to encoder instance
+    int rotary_pos;                                                   // Current rotary encoder position
 
     // Static instance pointer
     static Board* instance;
@@ -146,9 +149,12 @@ public:
             }
             if (currentMode == MODE_NORMAL) {
                 // Reset brightness to a known good state for DCS-BIOS
-                brightness = 128;  // Reset to 50% brightness
+                //brightness = 128;  // Reset to 50% brightness
                 setAllLightsOff();
                 LedUpdateState::getInstance()->setUpdateFlag(true);   // Activate "update is needed" flag
+                sendDcsBiosMessage("CONSOLES_DIMMER", String(dcs_brightness_console).c_str());           // Send DCS-BIOS message to reset console dimmer
+                sendDcsBiosMessage("INST_PNL_DIMMER", String(dcs_brightness_instrument).c_str());              // Send DCS-BIOS message to reset instrument lighting
+                //sendDcsBiosMessage("FLOOD_DIMMER", dcs_brightness_flood);
             }
             if (currentMode == MODE_RAINBOW) {
                 setAllLightsOff();  // Clear any previous state
@@ -239,11 +245,13 @@ public:
      * @see This method is conditionally called by onInstrIntLtChange() in Board.h
      */
     void updateInstrumentLights(uint16_t newValue) {
-        if (currentMode != MODE_NORMAL) return;  // Only update in normal mode
+        dcs_brightness_instrument = newValue;                         // In any mode, store the DCS-BIOS brightness value
+        if (currentMode != MODE_NORMAL) return;                       // Only in normal mode, update the channels
         for (int i = 0; i < channelCount; i++) {
             channels[i]->updateBacklights(newValue);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
+        
     }
 
     /**
@@ -252,11 +260,13 @@ public:
      * @see This method is called by onConsolesDimmerChange() in Board.h
      */
     void updateConsoleLights(uint16_t newValue) {
-        if (currentMode != MODE_NORMAL) return;  // Only update in normal mode
+        dcs_brightness_console = newValue;                            // In any mode, store the DCS-BIOS brightness value
+        if (currentMode != MODE_NORMAL) return;                       // Only in normal mode, update the channels
         for (int i = 0; i < channelCount; i++) {
             channels[i]->updateConsoleLights(newValue);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
+        
     }
 
 
