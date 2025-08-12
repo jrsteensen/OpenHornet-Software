@@ -84,55 +84,127 @@ private:
         this->ledStrip = ledStrip;
         ledCount = RWR_CONTROL_LED_COUNT;
         ledTable = rwrControlLedTable;
+        
+        // Initialize state variables
+        rwrPanelOn = false;
+        rwrFailActive = false;
+        rwrOffsetEnableActive = false;
+        rwrSpecialEnableActive = false;
+        rwrLimitDisplayActive = false;
+    }
+
+    // State variables
+    bool rwrPanelOn;           // RWR panel power state
+    bool rwrFailActive;        // RWR fail indicator state
+    bool rwrOffsetEnableActive; // RWR offset enable state
+    bool rwrSpecialEnableActive; // RWR special enable state
+    bool rwrLimitDisplayActive; // RWR limit display state
+    /**
+     * @brief Updates all LED colors based on current state
+     * @details This method implements the state machine logic for LED colors
+     */
+    void updateLedColors() {
+        if (!rwrPanelOn) {
+            // When RWR panel is OFF, all indicator LEDs are black
+            setIndicatorColor(LED_RWR_POWER, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_BIT, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_BIT_FAIL, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_OFFSET, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_OFFSET_EN, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_DISPLAY, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_LIMIT, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_SPECIAL, NVIS_BLACK);
+            setIndicatorColor(LED_RWR_SPECIAL_EN, NVIS_BLACK);
+        } else {
+            // When RWR panel is ON, set colors based on state
+            // RWR POWER
+            setIndicatorColor(LED_RWR_POWER, NVIS_GREEN_A);
+            // RWR BIT and RWR BIT FAIL
+            if (rwrFailActive) {
+                setIndicatorColor(LED_RWR_BIT, NVIS_RED);
+                setIndicatorColor(LED_RWR_BIT_FAIL, NVIS_RED);
+            } else {
+                setIndicatorColor(LED_RWR_BIT, NVIS_WHITE);
+                setIndicatorColor(LED_RWR_BIT_FAIL, NVIS_WHITE);
+            }
+
+            // RWR OFFSET and RWR OFFSET EN
+            if (rwrOffsetEnableActive) {
+                setIndicatorColor(LED_RWR_OFFSET, NVIS_GREEN_A);
+                setIndicatorColor(LED_RWR_OFFSET_EN, NVIS_GREEN_A);
+            } else {
+                setIndicatorColor(LED_RWR_OFFSET, NVIS_WHITE);
+                setIndicatorColor(LED_RWR_OFFSET_EN, NVIS_WHITE);
+            }
+
+            // RWR SPECIAL and RWR SPECIAL EN
+            if (rwrSpecialEnableActive) {
+                setIndicatorColor(LED_RWR_SPECIAL, NVIS_GREEN_A);
+                setIndicatorColor(LED_RWR_SPECIAL_EN, NVIS_GREEN_A);
+            } else {
+                setIndicatorColor(LED_RWR_SPECIAL, NVIS_WHITE);
+                setIndicatorColor(LED_RWR_SPECIAL_EN, NVIS_WHITE);
+            }
+
+            // RWR LIMIT DISPLAY 
+            if (rwrLimitDisplayActive) {
+                setIndicatorColor(LED_RWR_DISPLAY, NVIS_GREEN_A);
+                setIndicatorColor(LED_RWR_LIMIT, NVIS_GREEN_A);
+            } else {
+                setIndicatorColor(LED_RWR_DISPLAY, NVIS_WHITE);
+                setIndicatorColor(LED_RWR_LIMIT, NVIS_WHITE);
+            }
+        }
     }
 
     // Static callback functions for DCS-BIOS
 
-    // RWR indicator callbacks
-    static void onRwrBitLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_BIT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+    // RWR power state callback - controls the main panel state
+    static void onRwrLowerLtChange(unsigned int newValue) {
+        if (instance) {
+            instance->rwrPanelOn = (newValue != 0);
+            instance->updateLedColors();
+        }
     }
-    DcsBios::IntegerBuffer rwrBitLtBuffer{FA_18C_hornet_RWR_BIT_LT, onRwrBitLtChange};
+    DcsBios::IntegerBuffer rwrLowerLtBuffer{FA_18C_hornet_RWR_LOWER_LT, onRwrLowerLtChange};
 
+    // RWR fail indicator callback
     static void onRwrFailLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_BIT_FAIL, newValue ? NVIS_RED : NVIS_BLACK);
+        if (instance) {
+            instance->rwrFailActive = (newValue != 0);
+            instance->updateLedColors();
+        }
     }
     DcsBios::IntegerBuffer rwrFailLtBuffer{FA_18C_hornet_RWR_FAIL_LT, onRwrFailLtChange};
 
-    static void onRwrOffsetLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+    // RWR offset enable callback
+    static void onRwrOffsetEnableLtChange(unsigned int newValue) {
+        if (instance) {
+            instance->rwrOffsetEnableActive = (newValue != 0);
+            instance->updateLedColors();
+        }
     }
-    DcsBios::IntegerBuffer rwrOffsetLtBuffer{FA_18C_hornet_RWR_OFFSET_LT, onRwrOffsetLtChange};
+    DcsBios::IntegerBuffer rwrEnableLtBuffer{FA_18C_hornet_RWR_ENABLE_LT, onRwrOffsetEnableLtChange};
 
-    static void onRwrEnableLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_OFFSET_EN, newValue ? NVIS_GREEN_A : NVIS_BLACK);
-    }
-    DcsBios::IntegerBuffer rwrEnableLtBuffer{FA_18C_hornet_RWR_ENABLE_LT, onRwrEnableLtChange};
-
-    static void onRwrSpecialLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL, newValue ? NVIS_GREEN_A : NVIS_BLACK);
-    }
-    DcsBios::IntegerBuffer rwrSpecialLtBuffer{FA_18C_hornet_RWR_SPECIAL_LT, onRwrSpecialLtChange};
-
+    // RWR special enable callback
     static void onRwrSpecialEnLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_SPECIAL_EN, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+        if (instance) {
+            instance->rwrSpecialEnableActive = (newValue != 0);
+            instance->updateLedColors();
+        }
     }
     DcsBios::IntegerBuffer rwrSpecialEnLtBuffer{FA_18C_hornet_RWR_SPECIAL_EN_LT, onRwrSpecialEnLtChange};
 
-    static void onRwrDisplayLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_DISPLAY, newValue ? NVIS_GREEN_A : NVIS_BLACK);
-    }
-    DcsBios::IntegerBuffer rwrDisplayLtBuffer{FA_18C_hornet_RWR_DISPLAY_LT, onRwrDisplayLtChange};
 
-    static void onRwrLimitLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_LIMIT, newValue ? NVIS_GREEN_A : NVIS_BLACK);
+    // RWR LIMIT DISPLAY callback
+    static void onRwrLimitDisplayLtChange(unsigned int newValue) {
+        if (instance) {
+            instance->rwrLimitDisplayActive = (newValue != 0);
+            instance->updateLedColors();
+        }
     }
-    DcsBios::IntegerBuffer rwrLimitLtBuffer{FA_18C_hornet_RWR_LIMIT_LT, onRwrLimitLtChange};
+    DcsBios::IntegerBuffer rwrLimitDisplayLtBuffer{FA_18C_hornet_RWR_LIMIT_LT, onRwrLimitDisplayLtChange};
 
-    static void onRwrLowerLtChange(unsigned int newValue) {
-        if (instance) instance->setIndicatorColor(LED_RWR_POWER, newValue ? NVIS_GREEN_A : NVIS_BLACK);
-    }
-    DcsBios::IntegerBuffer rwrLowerLtBuffer{FA_18C_hornet_RWR_LOWER_LT, onRwrLowerLtChange};
 
     // Instance data
     static RwrControlPanel* instance;
