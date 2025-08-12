@@ -288,6 +288,7 @@ void setup() {
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
     //UIP_1.addPanel<HudPanel>();                                     // Do not exceed the channel's LED count defined above.
+    //UIP_1.addPanel<HudPanelRev3>();
     UIP_1.addPanel<REwiPanel>();
     UIP_1.addPanel<SpnRcvyPanel>();
 
