@@ -4,23 +4,23 @@
  *      | |  | |_ __   ___ _ __ | |__| | ___  _ __ _ __   ___| |_
  *      | |  | | '_ \ / _ \ '_ \|  __  |/ _ \| '__| '_ \ / _ \ __|
  *      | |__| | |_) |  __/ | | | |  | | (_) | |  | | | |  __/ |_
- *       \____/| .__/ \___|_| |_|_|  |_|\___/|_|  |_| |_|\___|\__|
+ *       \____/| .__/ \___|_| |_|_|  |_|\___|_|  |_| |_|\___|\__|
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
  *  
- * @file      4A1_LC_ALL_PANELS.h
+ * @file      4A1_LC1_ALL_PANELS.h
  * @author    Ulukaii
  * @date      24.05.2025
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
- * @brief     Implements backlighting for all Left Console panels.
+ * @brief     Implements backlighting for Left Console 1 panels.
  * @warning   This is a shorthanded version; a future implementation foresees individual files for each panel on the LC.
  *********************************************************************************************************************/
 
 
-#ifndef __LC_ALL_PANELS_H
-#define __LC_ALL_PANELS_H
+#ifndef __LC1_ALL_PANELS_H
+#define __LC1_ALL_PANELS_H
 
 #include "DcsBios.h"
 #include "../helpers/Panel.h"
@@ -30,8 +30,8 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int LC_ALL_PANELS_LED_COUNT = 200;  // Total number of LEDs in the panel
-const Led lcAllPanelsLedTable[LC_ALL_PANELS_LED_COUNT] PROGMEM = {
+const int LC1_ALL_PANELS_LED_COUNT = 130;  // Total number of LEDs in the panel
+const Led lc1AllPanelsLedTable[LC1_ALL_PANELS_LED_COUNT] PROGMEM = {
     {0, LED_CONSOLE_BL}, {1, LED_CONSOLE_BL}, {2, LED_CONSOLE_BL}, {3, LED_CONSOLE_BL}, {4, LED_CONSOLE_BL}, 
     {5, LED_CONSOLE_BL}, {6, LED_CONSOLE_BL}, {7, LED_CONSOLE_BL}, {8, LED_CONSOLE_BL}, {9, LED_CONSOLE_BL},
     {10, LED_CONSOLE_BL}, {11, LED_CONSOLE_BL}, {12, LED_CONSOLE_BL}, {13, LED_CONSOLE_BL}, {14, LED_CONSOLE_BL}, 
@@ -57,44 +57,30 @@ const Led lcAllPanelsLedTable[LC_ALL_PANELS_LED_COUNT] PROGMEM = {
     {110, LED_CONSOLE_BL}, {111, LED_CONSOLE_BL}, {112, LED_CONSOLE_BL}, {113, LED_CONSOLE_BL}, {114, LED_CONSOLE_BL}, 
     {115, LED_CONSOLE_BL}, {116, LED_CONSOLE_BL}, {117, LED_CONSOLE_BL}, {118, LED_CONSOLE_BL}, {119, LED_CONSOLE_BL},
     {120, LED_CONSOLE_BL}, {121, LED_CONSOLE_BL}, {122, LED_CONSOLE_BL}, {123, LED_CONSOLE_BL}, {124, LED_CONSOLE_BL}, 
-    {125, LED_CONSOLE_BL}, {126, LED_CONSOLE_BL}, {127, LED_CONSOLE_BL}, {128, LED_CONSOLE_BL}, {129, LED_CONSOLE_BL},
-    {130, LED_CONSOLE_BL}, {131, LED_CONSOLE_BL}, {132, LED_CONSOLE_BL}, {133, LED_CONSOLE_BL}, {134, LED_CONSOLE_BL}, 
-    {135, LED_CONSOLE_BL}, {136, LED_CONSOLE_BL}, {137, LED_CONSOLE_BL}, {138, LED_CONSOLE_BL}, {139, LED_CONSOLE_BL},
-    {140, LED_CONSOLE_BL}, {141, LED_CONSOLE_BL}, {142, LED_CONSOLE_BL}, {143, LED_CONSOLE_BL}, {144, LED_CONSOLE_BL}, 
-    {145, LED_CONSOLE_BL}, {146, LED_CONSOLE_BL}, {147, LED_CONSOLE_BL}, {148, LED_CONSOLE_BL}, {149, LED_CONSOLE_BL},
-    {150, LED_CONSOLE_BL}, {151, LED_CONSOLE_BL}, {152, LED_CONSOLE_BL}, {153, LED_CONSOLE_BL}, {154, LED_CONSOLE_BL}, 
-    {155, LED_CONSOLE_BL}, {156, LED_CONSOLE_BL}, {157, LED_CONSOLE_BL}, {158, LED_CONSOLE_BL}, {159, LED_CONSOLE_BL},
-    {160, LED_CONSOLE_BL}, {161, LED_CONSOLE_BL}, {162, LED_CONSOLE_BL}, {163, LED_CONSOLE_BL}, {164, LED_CONSOLE_BL}, 
-    {165, LED_CONSOLE_BL}, {166, LED_CONSOLE_BL}, {167, LED_CONSOLE_BL}, {168, LED_CONSOLE_BL}, {169, LED_CONSOLE_BL},
-    {170, LED_CONSOLE_BL}, {171, LED_CONSOLE_BL}, {172, LED_CONSOLE_BL}, {173, LED_CONSOLE_BL}, {174, LED_CONSOLE_BL}, 
-    {175, LED_CONSOLE_BL}, {176, LED_CONSOLE_BL}, {177, LED_CONSOLE_BL}, {178, LED_CONSOLE_BL}, {179, LED_CONSOLE_BL},
-    {180, LED_CONSOLE_BL}, {181, LED_CONSOLE_BL}, {182, LED_CONSOLE_BL}, {183, LED_CONSOLE_BL}, {184, LED_CONSOLE_BL}, 
-    {185, LED_CONSOLE_BL}, {186, LED_CONSOLE_BL}, {187, LED_CONSOLE_BL}, {188, LED_CONSOLE_BL}, {189, LED_CONSOLE_BL},
-    {190, LED_CONSOLE_BL}, {191, LED_CONSOLE_BL}, {192, LED_CONSOLE_BL}, {193, LED_CONSOLE_BL}, {194, LED_CONSOLE_BL}, 
-    {195, LED_CONSOLE_BL}, {196, LED_CONSOLE_BL}, {197, LED_CONSOLE_BL}, {198, LED_CONSOLE_BL}, {199, LED_CONSOLE_BL}
+    {125, LED_CONSOLE_BL}, {126, LED_CONSOLE_BL}, {127, LED_CONSOLE_BL}, {128, LED_CONSOLE_BL}, {129, LED_CONSOLE_BL}
 };
 
 /********************************************************************************************************************
- * @brief   Left Console All Panels class
- * @details Backlighting controller for all Left Console panels.
- *          Total LEDs: 200
- *          Backlight LEDs: 200 (all LEDs are backlights)
+ * @brief   Left Console 1 All Panels class
+ * @details Backlighting controller for Left Console 1 panels.
+ *          Total LEDs: 130
+ *          Backlight LEDs: 130 (all LEDs are backlights)
  *          Indicator LEDs: 0 (no indicators in this panel)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.
  ********************************************************************************************************************/
-class LcAllPanels : public Panel {
+class Lc1AllPanels : public Panel {
 public:
     /**
-     * @brief Gets the singleton instance of the LcAllPanels class
+     * @brief Gets the singleton instance of the Lc1AllPanels class
      * @param startIndex The starting index for this panel's LEDs on the strip
      * @param ledStrip Pointer to the LED strip array
      * @return Pointer to the singleton instance
      * @see This method is called by the main .ino file's addPanel() method to create the panel instance
      */
-    static LcAllPanels* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
+    static Lc1AllPanels* getInstance(int startIndex = 0, CRGB* ledStrip = nullptr) {
         if (!instance) {
-            instance = new LcAllPanels(startIndex, ledStrip);
+            instance = new Lc1AllPanels(startIndex, ledStrip);
         }
         return instance;
     }
@@ -106,21 +92,21 @@ private:
      * @param ledStrip Pointer to the LED strip array
      * @see This method is called by the public getInstance() if and only if no instance exists yet
      */
-    LcAllPanels(int startIndex, CRGB* ledStrip) {
+    Lc1AllPanels(int startIndex, CRGB* ledStrip) {
         panelStartIndex = startIndex;
         this->ledStrip = ledStrip;
-        ledCount = LC_ALL_PANELS_LED_COUNT;
-        ledTable = lcAllPanelsLedTable;
+        ledCount = LC1_ALL_PANELS_LED_COUNT;
+        ledTable = lc1AllPanelsLedTable;
     }
 
     // Static callback functions for DCS-BIOS
     // NIL
 
     // Instance data
-    static LcAllPanels* instance;
+    static Lc1AllPanels* instance;
 };
 
 // Initialize static instance pointer
-LcAllPanels* LcAllPanels::instance = nullptr;
+Lc1AllPanels* Lc1AllPanels::instance = nullptr;
 
 #endif 

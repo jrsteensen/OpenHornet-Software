@@ -186,7 +186,8 @@
 #include "panels/2A2A1A8_STANDBY_INSTRUMENT.h"
 #include "panels/4A2A1_LDG_GEAR_PANEL.h"
 #include "panels/4A3A1_SELECT_JETT_PANEL.h"
-#include "panels/4A1_LC_ALL_PANELS.h"
+#include "panels/4A1_LC1_ALL_PANELS.h"
+#include "panels/4A1_LC2_ALL_PANELS.h"
 #include "panels/4A1_LC_Flood.h"
 #include "panels/5A2A7_LDG_CHECKLIST.h"
 #include "panels/5A2A4_RADAR_ALT.h"
@@ -217,8 +218,8 @@ const int LIP_1_LED_COUNT = 100;
 const int LIP_2_LED_COUNT = 120;
 const int UIP_1_LED_COUNT = 210;
 const int UIP_2_LED_COUNT = 210;
-const int LC_1_LED_COUNT = 304;
-const int LC_2_LED_COUNT = 150;
+const int LC_1_LED_COUNT = 250;
+const int LC_2_LED_COUNT = 215;
 const int RC_1_LED_COUNT = 170;
 const int RC_2_LED_COUNT = 266;
 const int AUX_1_LED_COUNT = 100;
@@ -229,8 +230,8 @@ CRGB LIP_1_leds[LIP_1_LED_COUNT];    // 100 LEDs
 CRGB LIP_2_leds[LIP_2_LED_COUNT];    // 120 LEDs
 CRGB UIP_1_leds[UIP_1_LED_COUNT];    // 210 LEDs
 CRGB UIP_2_leds[UIP_2_LED_COUNT];    // 210 LEDs
-CRGB LC_1_leds[LC_1_LED_COUNT];     // 304 LEDs
-CRGB LC_2_leds[LC_2_LED_COUNT];     // 150 LEDs
+CRGB LC_1_leds[LC_1_LED_COUNT];     // 250 LEDs
+CRGB LC_2_leds[LC_2_LED_COUNT];     // 215 LEDs
 CRGB RC_1_leds[RC_1_LED_COUNT];     // 170 LEDs
 CRGB RC_2_leds[RC_2_LED_COUNT];     // 266 LEDs
 CRGB AUX_1_leds[AUX_1_LED_COUNT];    // 100 LEDs
@@ -303,7 +304,9 @@ void setup() {
 
     LC_1.addPanel<LdgGearPanel>();
     LC_1.addPanel<SelectJettPanel>();
-    LC_1.addPanel<LcAllPanels>();
+    LC_1.addPanel<Lc1AllPanels>();
+    
+    LC_2.addPanel<Lc2AllPanels>();
 
     RC_1.addPanel<LdgChecklistPanel>();
     RC_1.addPanel<RadarAltPanel>();
