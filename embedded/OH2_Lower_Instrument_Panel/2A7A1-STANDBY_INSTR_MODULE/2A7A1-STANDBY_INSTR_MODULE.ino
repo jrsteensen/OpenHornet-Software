@@ -77,14 +77,14 @@
 #include "DcsBios.h"
 #include "Arduino.h"
 #include <Stepper.h>
-#include <MultiMap.h>
+#include <MultiMap.h>              // by Rob Tillart
 #include <FastLED.h>
 #include <SPI.h>
 #include <Wire.h>
 extern "C" {
-#include "utility/twi.h"  // from Wire library, so we can do bus scanning
+#include "utility/twi.h"           // from Wire library, so we can do bus scanning
 }
-#include <U8g2lib.h>
+#include <U8g2lib.h>               // by Oli Kraus
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -34,3 +34,9 @@
 [submodule "libraries/RotaryEncoder"]
 	path = libraries/RotaryEncoder
 	url = https://github.com/mathertel/RotaryEncoder.git
+[submodule "libraries/MultiMap"]
+	path = libraries/MultiMap
+	url = https://github.com/RobTillaart/MultiMap.git
+[submodule "libraries/U8g2"]
+	path = libraries/U8g2
+	url = https://github.com/olikraus/U8g2.git
