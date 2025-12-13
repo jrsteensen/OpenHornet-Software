@@ -1,0 +1,21 @@
+{
+    "files.associations": {
+        "*.ino": "cpp",
+        "__bit_reference": "cpp",
+        "array": "cpp",
+        "ios": "cpp",
+        "algorithm": "cpp",
+        "valarray": "cpp",
+        "ratio": "cpp",
+        "tuple": "cpp",
+        "__hash_table": "cpp",
+        "__tree": "cpp",
+        "type_traits": "cpp",
+        "limits": "cpp",
+        "variant": "cpp",
+        "__locale": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "vector": "cpp"
+    }
+}

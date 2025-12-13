@@ -8,3 +8,4 @@ html
 docs/html
 release/
 embedded/**/build/
+.cursorrules
