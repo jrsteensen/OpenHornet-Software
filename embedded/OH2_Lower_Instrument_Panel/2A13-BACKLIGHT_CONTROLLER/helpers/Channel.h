@@ -190,6 +190,10 @@ public:
      * @see This method is called by Board::fillBlack() to properly reset panel state
      */
     void setAllLightsOff() {
+        // Clear all LEDs in the entire channel array (not just panel-tracked ones)
+        fill_solid(leds, ledCount, NVIS_BLACK);
+        
+        // Also clear panel-tracked LEDs and reset brightness state
         Panel* current = firstPanel;
         while (current != nullptr) {
             current->setAllLightsOff();
