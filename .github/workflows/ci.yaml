@@ -46,7 +46,7 @@ jobs:
     # Recursively build all sketches with Makefiles
     - name: Compile Sketches
       run: |
-          cd embedded/OH4_Left_Console/4A9A1-THROTTLE_CONTROLLER
+          cd embedded
           make all
          
     # Upload .eep and .hex files as artifacts with expiration
