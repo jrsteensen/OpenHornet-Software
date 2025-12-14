@@ -1,3 +1,8 @@
+#include <MT6835Driver.h>
+#include <OpenhornetMT6835.h>
+#include <OpenhornetSensor.h>
+#include <Openhornetutils.h>
+
 /**************************************************************************************
  *        ____                   _    _                       _
  *       / __ \                 | |  | |                     | |
@@ -91,9 +96,8 @@
 
 #include <Wire.h>
 #include <SPI.h>
-#include "SimpleFOC.h"                             // https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
-#include "SimpleFOCDrivers.h"                      // https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
-#include "encoders/mt6835/MagneticSensorMT6835.h"  // https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
+
+#include "OpenhornetMT6835.h"
 #include "DcsBios.h"
 #include "Joystick_ESP32S2.h"
 
@@ -159,8 +163,8 @@ Joystick_ Joystick = Joystick_(
 const bool testAutoSendMode = false;
 
 SPISettings myMT6835SPISettings(1000000, MT6835_BITORDER, SPI_MODE3);
-MagneticSensorMT6835 outboardThrottle = MagneticSensorMT6835(OUTBD_CSX, myMT6835SPISettings);
-MagneticSensorMT6835 inboardThrottle = MagneticSensorMT6835(INBD_CSY, myMT6835SPISettings);
+OpenhornetMT6835 outboardThrottle = OpenhornetMT6835(OUTBD_CSX, myMT6835SPISettings);
+OpenhornetMT6835 inboardThrottle = OpenhornetMT6835(INBD_CSY, myMT6835SPISettings);
 
 // DCSBios reads to save airplane state information. <update comment as needed>
 void onExtWowLeftChange(unsigned int newValue) {
@@ -284,18 +288,19 @@ void loop() {
 
   outboardThrottle.update();                          // update the outboard hall sensor to prep for read.
   temp = outboardThrottle.readRawAngle21();           // read outboard hall sensor
-  Joystick.setRxAxis(mapHallSensor(temp, 0, 750000, 0, 65535));  //0 and 750000 came from reading the Serial Monitor for the min/max values to then plug into this line.
+  Joystick.setRxAxis(mapHallSensor(temp, 0, 838440, 0, 65535));  //0 and 838440 came from reading the Serial Monitor for the min/max values to then plug into this line.
   // Uncomment the code below if you wish to pass the outboard throttle's raw values to the serial monitor
   //Serial.print("outbThrottle: ");
   //Serial.print(temp);
+  //Serial.print("\n");
 
   inboardThrottle.update();                           // update the inboard hall sensor to prep for read
   temp = inboardThrottle.readRawAngle21();            // read inboard hall sensor
-  Joystick.setRyAxis(mapHallSensor(temp, 0, 750000, 0, 65535));  //0 and 740000 came from reading the Serial Monitor for the min/max values to then plug into this line.
+  Joystick.setRyAxis(mapHallSensor(temp, 0, 838440, 0, 65535));  //0 and 838440 came from reading the Serial Monitor for the min/max values to then plug into this line.
   // Uncomment the code below if you wish to pass the inboard throttle's raw values to the serial monitor
-  //Serial.print("  inbThrottle: ");
-  //Serial.print(temp);
-  //Serial.print("\n");
+  Serial.print("  inbThrottle: ");
+  Serial.print(temp);
+  Serial.print("\n");
 
   // determine if max limit switches are included or not
   #ifndef DISABLE_MAX_LIMIT_SWITCHES
