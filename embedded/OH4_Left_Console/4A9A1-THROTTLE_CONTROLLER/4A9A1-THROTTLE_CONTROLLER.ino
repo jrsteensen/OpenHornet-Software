@@ -46,7 +46,7 @@
  *
  * @details
  * 
- * @attention Uses Simple FOC libraries with license avialable here: https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
+ * @attention Uses Open Hornet MT6835 library derived from Simple FOC libraries with license avialable here: https://github.com/simplefoc/Arduino-FOC/blob/master/LICENSE
  * @todo Review Simple FOC library MIT copyright for compatibility.  Update copy right notice above as needed for the usage as a git-submodule.
  *
  * @todo Extract just the code for MT6935 hall sensors from the Simple FOC library.
@@ -298,9 +298,9 @@ void loop() {
   temp = inboardThrottle.readRawAngle21();            // read inboard hall sensor
   Joystick.setRyAxis(mapHallSensor(temp, 0, 838440, 0, 65535));  //0 and 838440 came from reading the Serial Monitor for the min/max values to then plug into this line.
   // Uncomment the code below if you wish to pass the inboard throttle's raw values to the serial monitor
-  Serial.print("  inbThrottle: ");
-  Serial.print(temp);
-  Serial.print("\n");
+  //Serial.print("  inbThrottle: ");
+  //Serial.print(temp);
+  //Serial.print("\n");
 
   // determine if max limit switches are included or not
   #ifndef DISABLE_MAX_LIMIT_SWITCHES
