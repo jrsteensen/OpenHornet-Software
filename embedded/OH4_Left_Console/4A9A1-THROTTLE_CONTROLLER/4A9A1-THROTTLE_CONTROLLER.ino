@@ -1,8 +1,3 @@
-#include <MT6835Driver.h>
-#include <OpenhornetMT6835.h>
-#include <OpenhornetSensor.h>
-#include <Openhornetutils.h>
-
 /**************************************************************************************
  *        ____                   _    _                       _
  *       / __ \                 | |  | |                     | |
