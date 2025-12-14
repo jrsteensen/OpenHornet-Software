@@ -47,7 +47,8 @@ jobs:
     - name: Compile Sketches
       run: |
           cd embedded
-          make all
+    # make all
+         make  /OH4_Left_Console/4A9A1-THROTTLE_CONTROLLER
 
     # Upload .eep and .hex files as artifacts with expiration
     - name: Prep Artifacts
