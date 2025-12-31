@@ -14,7 +14,7 @@
  *   you may not use this file except in compliance with the License.
  *   You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http: ///< www.apache.org/licenses/LICENSE-2.0
  *
  *   Unless required by applicable law or agreed to in writing, software
  *   distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,25 +32,25 @@
 
 /**
  * @file 3A3A1-STICK_CONTROLLER.ino
- * @author Thibaud Colodié @Thib-O
- * @date 12/31/2025
- * @version u.1.0.0
+ * @author Thibaud Colodié (@Thib-O)
+ * @date 12.31.2025
+ * @version u.0.1.0
  * @copyright Copyright 2016-2025 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the FLIGHT CONTROL STICK.
  *
  * @details
- * 
+ *
  *  * **Reference Designator:** 3A3A1
- *  * **Intended Board:** CONTROLLER_Stick
- *  * **RS485 Bus Address:** NA
- * 
- * **Wiring diagram:**
+ *  * **Intended Board:** SparkFun Pro Micro (ATmega32U4)
+ *  * **RS485 Bus Address:** N/A
+ *
+ * ### Wiring diagram:
  * PIN | Function
  * --- | ---
  * 6   | CSg Grip
  * 8   | CSy Pitch axis
  * 9   | CSx Roll axis
- * 
+ *
  */
 
 #include <SPI.h>
@@ -60,15 +60,15 @@
 // =====================================================
 // DEBUG
 // =====================================================
-#define DEBUG_SERIAL 0 // Activate to 1 to Enable DEBUG SERIAL. Keep 0 for Normal use
-#define DEBUG_PERIOD_MS 100  // print every N ms (avoid spamming)
+#define DEBUG_SERIAL 0 ///< Activate to 1 to Enable DEBUG SERIAL. Keep 0 for Normal use
+#define DEBUG_PERIOD_MS 100 ///< print every N ms (avoid spamming)
 
 // =====================================================
 // PINS
 // =====================================================
-static const uint8_t PIN_CS_ROLL  = 9;   // MT6835 Roll CS
-static const uint8_t PIN_CS_PITCH = 8;   // MT6835 Pitch CS
-static const uint8_t PIN_CS_GRIP  = 6;   // Grip CS
+static const uint8_t PIN_CS_ROLL  = 9; ///< MT6835 Roll CS
+static const uint8_t PIN_CS_PITCH = 8; ///< MT6835 Pitch CS
+static const uint8_t PIN_CS_GRIP  = 6; ///< Grip CS
 
 // =====================================================
 // SPI settings
@@ -82,9 +82,9 @@ SPISettings spiGRIP(1000000, MSBFIRST, SPI_MODE3);
 // =====================================================
 // MT6835 configuration
 // =====================================================
-#define MT6835_USE_CRC  1                              // 1 = verify CRC, 0 = ignore CRC
-static const uint8_t  MT_CMD_BURST_ANG = 0b1010;       // Burst read angle starting at 0x003
-static const uint32_t MT_ANGLE_FULL_SCALE = 2097152UL; // 2^21
+#define MT6835_USE_CRC  1 ///< 1 = verify CRC, 0 = ignore CRC
+static const uint8_t  MT_CMD_BURST_ANG = 0b1010; ///< Burst read angle starting at 0x003
+static const uint32_t MT_ANGLE_FULL_SCALE = 2097152UL; ///< 2^21
 
 // =====================================================
 // Axes configuration
@@ -94,12 +94,12 @@ static const float ROLL_TOTAL_DEG = 31.0f;
 static const float ROLL_HALF_DEG  = ROLL_TOTAL_DEG * 0.5f;
 
 // Roll sensor-to-mechanical scale factor
-static const float ROLL_SENSOR_TO_MECH_SCALE = 15.5f / 110.0f;  // ~0.140909
+static const float ROLL_SENSOR_TO_MECH_SCALE = 15.5f / 110.0f; ///< ~0.140909
 
 // Pitch total mechanical travel (asymmetric): 2/3 pull (aft), 1/3 push (forward)
 static const float PITCH_TOTAL_DEG  = 24.0f;
-static const float PITCH_CABRER_DEG = PITCH_TOTAL_DEG * (2.0f / 3.0f); // ~16° (aft / pull)
-static const float PITCH_PIQUER_DEG = PITCH_TOTAL_DEG * (1.0f / 3.0f); // ~8°  (fwd / push)
+static const float PITCH_CABRER_DEG = PITCH_TOTAL_DEG * (2.0f / 3.0f); ///< ~16° (aft / pull)
+static const float PITCH_PIQUER_DEG = PITCH_TOTAL_DEG * (1.0f / 3.0f); ///< ~8°  (fwd / push)
 
 // If your physical axis direction is reversed, flip here
 static const bool INVERT_ROLL  = false;
@@ -115,8 +115,8 @@ static float DEADZONE_PITCH_DEG = 0.3f;
 // =====================================================
 // Recenter (combo hold)
 // =====================================================
-static const uint32_t RECENTER_HOLD_MS       = 2000; // safe recenter hold time
-static const uint32_t RECENTER_FORCE_HOLD_MS = 6000; // forced recenter hold time (override safety)
+static const uint32_t RECENTER_HOLD_MS       = 2000; ///< safe recenter hold time
+static const uint32_t RECENTER_FORCE_HOLD_MS = 6000; ///< forced recenter hold time (override safety)
 
 // Safety: allow saving to EEPROM only if current position is close to the current center
 static const float RECENTER_MAX_ROLL_ERR_DEG  = 1.2f;
@@ -129,7 +129,7 @@ static const float RECENTER_MAX_PITCH_ERR_DEG = 1.2f;
 // 0..3  : magic
 // 4..7  : roll center (u32, 21-bit valid)
 // 8..11 : pitch center (u32, 21-bit valid)
-static const uint32_t EEPROM_MAGIC = 0x4A53434C; // "JSCL"
+static const uint32_t EEPROM_MAGIC = 0x4A53434C; ///< "JSCL"
 static const int EEPROM_ADDR_MAGIC = 0;
 static const int EEPROM_ADDR_ROLL  = EEPROM_ADDR_MAGIC + 4;
 static const int EEPROM_ADDR_PITCH = EEPROM_ADDR_ROLL + 4;
@@ -143,29 +143,29 @@ static const int16_t HID_MAX =  32767;
 // =====================================================
 // HID button indices
 // =====================================================
-const uint8_t HID_FIRE_TRIGGER_1E_CRAN    = 0;   // Btn 1
-const uint8_t HID_WEAPON_RELEASE          = 1;   // 2
-const uint8_t HID_UNDESIGNATE_NWS         = 2;   // 3
-const uint8_t HID_DISENSAGE_PADDLE        = 3;   // 4
-const uint8_t HID_RECCE_EVENT_MARK        = 4;   // 5
-const uint8_t HID_FIRE_TRIGGER_2E_CRAN    = 5;   // 6
+const uint8_t HID_FIRE_TRIGGER_1E_CRAN    = 0; ///< Btn 1
+const uint8_t HID_WEAPON_RELEASE          = 1; ///< 2
+const uint8_t HID_UNDESIGNATE_NWS         = 2; ///< 3
+const uint8_t HID_DISENSAGE_PADDLE        = 3; ///< 4
+const uint8_t HID_RECCE_EVENT_MARK        = 4; ///< 5
+const uint8_t HID_FIRE_TRIGGER_2E_CRAN    = 5; ///< 6
 
-const uint8_t HID_SENSOR_CONTROL_FORWARD  = 6;   // 7
-const uint8_t HID_SENSOR_CONTROL_RIGHT    = 7;   // 8
-const uint8_t HID_SENSOR_CONTROL_BACKWARD = 8;   // 9
-const uint8_t HID_SENSOR_CONTROL_LEFT     = 9;   // 10
+const uint8_t HID_SENSOR_CONTROL_FORWARD  = 6; ///< 7
+const uint8_t HID_SENSOR_CONTROL_RIGHT    = 7; ///< 8
+const uint8_t HID_SENSOR_CONTROL_BACKWARD = 8; ///< 9
+const uint8_t HID_SENSOR_CONTROL_LEFT     = 9; ///< 10
 
-const uint8_t HID_CASTER_UP               = 10;  // 11
-const uint8_t HID_CASTER_SWITCH           = 11;  // 12
-const uint8_t HID_CASTER_DOWN             = 12;  // 13
+const uint8_t HID_CASTER_UP               = 10; ///< 11
+const uint8_t HID_CASTER_SWITCH           = 11; ///< 12
+const uint8_t HID_CASTER_DOWN             = 12; ///< 13
 
-const uint8_t HID_SENSOR_CONTROL_CENTER   = 13;  // 14
+const uint8_t HID_SENSOR_CONTROL_CENTER   = 13; ///< 14
 
-const uint8_t HID_WEAPON_SELECT_FORWARD   = 14;  // 15
-const uint8_t HID_WEAPON_SELECT_RIGHT     = 15;  // 16
-const uint8_t HID_WEAPON_SELECT_BACKWARD  = 16;  // 17
-const uint8_t HID_WEAPON_SELECT_LEFT      = 17;  // 18
-const uint8_t HID_WEAPON_SELECT_CENTER    = 18;  // 19
+const uint8_t HID_WEAPON_SELECT_FORWARD   = 14; ///< 15
+const uint8_t HID_WEAPON_SELECT_RIGHT     = 15; ///< 16
+const uint8_t HID_WEAPON_SELECT_BACKWARD  = 16; ///< 17
+const uint8_t HID_WEAPON_SELECT_LEFT      = 17; ///< 18
+const uint8_t HID_WEAPON_SELECT_CENTER    = 18; ///< 19
 
 // =====================================================
 // Grip SPI bit mapping (24 bits)
@@ -205,10 +205,10 @@ const uint8_t BIT_TRIM_RWD                = 14;
 Joystick_ Joystick(
   JOYSTICK_DEFAULT_REPORT_ID,
   JOYSTICK_TYPE_JOYSTICK,
-  19,  // buttons
-  1,   // hat
-  true,  // X (roll)
-  true,  // Y (pitch)
+  19, ///< buttons
+  1, ///< hat
+  true, ///< X (roll)
+  true, ///< Y (pitch)
   false, false, false, false,
   false, false, false, false, false
 );
@@ -216,11 +216,14 @@ Joystick_ Joystick(
 // =====================================================
 // Types
 // =====================================================
+/**
+ * @brief Parsed result from an MT6835 burst angle read.
+ */
 struct MT6835_Result
 {
-  uint32_t angle21;  // 21-bit absolute angle
-  uint8_t  status3;  // 3 status bits
-  bool     crc_ok;   // CRC check result (or true if CRC disabled)
+  uint32_t angle21; ///< /< 21-bit absolute angle
+  uint8_t  status3; ///< /< 3 status bits
+  bool     crc_ok; ///< /< CRC check result (or true if CRC disabled)
 };
 
 // =====================================================
@@ -231,10 +234,10 @@ static int16_t  lastX = 0x7FFF;
 static int16_t  lastY = 0x7FFF;
 static int16_t  lastHat = -2;
 
-static uint32_t rollCenter  = 0; // 21-bit center reference
-static uint32_t pitchCenter = 0; // 21-bit center reference
+static uint32_t rollCenter  = 0; ///< 21-bit center reference
+static uint32_t pitchCenter = 0; ///< 21-bit center reference
 
-static bool     centersValid = false; // true if EEPROM calibration is valid
+static bool     centersValid = false; ///< true if EEPROM calibration is valid
 
 // Recenter hold detection
 static bool     recenterArmed = false;
@@ -245,12 +248,18 @@ static bool     recenterSafeTriedThisHold = false;
 // =====================================================
 // Utility helpers
 // =====================================================
+/**
+ * @brief Return the state of a single bit within a 24-bit value.
+ */
 static inline bool getBit24(uint32_t v, uint8_t bitIndex)
 {
   return (v >> bitIndex) & 0x01;
 }
 
 // Compute minimal signed difference of angles in degrees (wrap-around 0..360)
+/**
+ * @brief Wrap the difference between two angles (degrees) into a continuous range.
+ */
 static float wrapDiffDeg(float aDeg, float bDeg)
 {
   float d = aDeg - bDeg;
@@ -260,6 +269,9 @@ static float wrapDiffDeg(float aDeg, float bDeg)
 }
 
 // Convert 21-bit MT6835 angle to degrees
+/**
+ * @brief Convert a 21-bit MT6835 angle value into degrees.
+ */
 static float angle21ToDeg(uint32_t angle21)
 {
   angle21 &= 0x1FFFFF;
@@ -267,6 +279,9 @@ static float angle21ToDeg(uint32_t angle21)
 }
 
 // Symmetric axis mapping with deadzone and post-deadzone renormalization
+/**
+ * @brief Map a symmetric angle delta (degrees) to a signed 16-bit HID axis value.
+ */
 static int16_t mapDegToHID_Symmetric(float deltaDeg, float halfRangeDeg, float deadzoneDeg)
 {
   // Clamp
@@ -281,7 +296,7 @@ static int16_t mapDegToHID_Symmetric(float deltaDeg, float halfRangeDeg, float d
   if (a <= deadzoneDeg) return 0;
 
   // Renormalize to keep full output travel after deadzone
-  float scaled = (a - deadzoneDeg) / (halfRangeDeg - deadzoneDeg); // 0..1
+  float scaled = (a - deadzoneDeg) / (halfRangeDeg - deadzoneDeg); ///< 0..1
   float signedNorm = (deltaDeg < 0 ? -scaled : scaled);
 
   int32_t v = (int32_t)(signedNorm * 32767.0f);
@@ -292,6 +307,9 @@ static int16_t mapDegToHID_Symmetric(float deltaDeg, float halfRangeDeg, float d
 
 // Asymmetric axis mapping with deadzone and post-deadzone renormalization
 // deltaDeg >= 0 uses rangePosDeg (push/forward), deltaDeg < 0 uses rangeNegDeg (pull/aft)
+/**
+ * @brief Map an asymmetric angle delta (degrees) to a signed 16-bit HID axis value.
+ */
 static int16_t mapDegToHID_Asymmetric(float deltaDeg, float rangePosDeg, float rangeNegDeg, float deadzoneDeg)
 {
   float range = (deltaDeg >= 0) ? rangePosDeg : rangeNegDeg;
@@ -309,7 +327,7 @@ static int16_t mapDegToHID_Asymmetric(float deltaDeg, float rangePosDeg, float r
   if (a <= deadzoneDeg) return 0;
 
   // Renormalize to keep full output travel after deadzone
-  float scaled = (a - deadzoneDeg) / (range - deadzoneDeg); // 0..1
+  float scaled = (a - deadzoneDeg) / (range - deadzoneDeg); ///< 0..1
   float signedNorm = (deltaDeg < 0 ? -scaled : scaled);
 
   int32_t v = (int32_t)(signedNorm * 32767.0f);
@@ -321,6 +339,9 @@ static int16_t mapDegToHID_Asymmetric(float deltaDeg, float rangePosDeg, float r
 // =====================================================
 // EEPROM helpers
 // =====================================================
+/**
+ * @brief Write a 32-bit unsigned value to EEPROM (little-endian).
+ */
 static void eepromWriteU32(int addr, uint32_t v)
 {
   EEPROM.update(addr + 0, (uint8_t)(v >> 0));
@@ -328,6 +349,9 @@ static void eepromWriteU32(int addr, uint32_t v)
   EEPROM.update(addr + 2, (uint8_t)(v >> 16));
   EEPROM.update(addr + 3, (uint8_t)(v >> 24));
 }
+/**
+ * @brief Read a 32-bit unsigned value from EEPROM (little-endian).
+ */
 
 static uint32_t eepromReadU32(int addr)
 {
@@ -340,6 +364,9 @@ static uint32_t eepromReadU32(int addr)
 }
 
 // Returns true if EEPROM contains a valid calibration
+/**
+ * @brief Load stored roll/pitch center values from EEPROM.
+ */
 static bool loadCentersFromEEPROM(uint32_t &r, uint32_t &p)
 {
   uint32_t magic = eepromReadU32(EEPROM_ADDR_MAGIC);
@@ -356,12 +383,18 @@ static bool loadCentersFromEEPROM(uint32_t &r, uint32_t &p)
 }
 
 // Save calibration to EEPROM (writes only when you recenter)
+/**
+ * @brief Save roll/pitch center values to EEPROM.
+ */
 static void saveCentersToEEPROM(uint32_t r, uint32_t p)
 {
   eepromWriteU32(EEPROM_ADDR_MAGIC, EEPROM_MAGIC);
   eepromWriteU32(EEPROM_ADDR_ROLL,  r & 0x1FFFFF);
   eepromWriteU32(EEPROM_ADDR_PITCH, p & 0x1FFFFF);
 }
+/**
+ * @brief Print the stored EEPROM center values to Serial (debug only).
+ */
 
 static void debugDumpEEPROMCenters()
 {
@@ -388,6 +421,9 @@ static void debugDumpEEPROMCenters()
 // MT6835 CRC (CRC-8 poly 0x07, MSB-first over 24 bits)
 // The CRC covers 24 bits: ANGLE[20:0] + STATUS[2:0]
 // =====================================================
+/**
+ * @brief Compute CRC-8 over a 24-bit frame (MSB first) for MT6835.
+ */
 static uint8_t mt_crc8_24bits_msb(uint32_t data24)
 {
   uint8_t crc = 0x00;
@@ -402,6 +438,9 @@ static uint8_t mt_crc8_24bits_msb(uint32_t data24)
 }
 
 // Build MT6835 24-bit frame: [cmd(4) | addr(12) | data(8)]
+/**
+ * @brief Build a 24-bit MT6835 SPI command frame (with optional CRC).
+ */
 static inline uint32_t mt_frame(uint8_t cmd4, uint16_t addr12, uint8_t data8)
 {
   cmd4  &= 0x0F;
@@ -428,10 +467,10 @@ static MT6835_Result readMT6835_burstAngle(uint8_t csPin)
 
   (void)SPI.transfer(tx0);
   (void)SPI.transfer(tx1);
-  uint8_t r003 = SPI.transfer(tx2);   // 0x003
-  uint8_t r004 = SPI.transfer(0x00);  // 0x004
-  uint8_t r005 = SPI.transfer(0x00);  // 0x005
-  uint8_t r006 = SPI.transfer(0x00);  // 0x006 (CRC)
+  uint8_t r003 = SPI.transfer(tx2); ///< 0x003
+  uint8_t r004 = SPI.transfer(0x00); ///< 0x004
+  uint8_t r005 = SPI.transfer(0x00); ///< 0x005
+  uint8_t r006 = SPI.transfer(0x00); ///< 0x006 (CRC)
 
   digitalWrite(csPin, HIGH);
   SPI.endTransaction();
@@ -462,11 +501,14 @@ static MT6835_Result readMT6835_burstAngle(uint8_t csPin)
 // =====================================================
 // Grip read (24-bit) - Mode 3
 // =====================================================
+/**
+ * @brief Read the 24-bit Thrustmaster grip frame over SPI.
+ */
 static uint32_t readGrip24()
 {
   SPI.beginTransaction(spiGRIP);
   digitalWrite(PIN_CS_GRIP, LOW);
-  delayMicroseconds(1); // small settling time
+  delayMicroseconds(1); ///< small settling time
 
   uint8_t b2 = SPI.transfer(0x00);
   uint8_t b1 = SPI.transfer(0x00);
@@ -482,10 +524,13 @@ static uint32_t readGrip24()
 // POV hat from Trim bits
 // Note: Up/Down were inverted, so we swap those here.
 // =====================================================
+/**
+ * @brief Compute HID hat-switch value from trim bit states.
+ */
 static int16_t computeHatFromTrim(uint32_t grip24)
 {
-  bool up    = getBit24(grip24, BIT_TRIM_NOSE_DOWN); // swapped
-  bool down  = getBit24(grip24, BIT_TRIM_NOSE_UP);   // swapped
+  bool up    = getBit24(grip24, BIT_TRIM_NOSE_DOWN); ///< swapped
+  bool down  = getBit24(grip24, BIT_TRIM_NOSE_UP); ///< swapped
   bool left  = getBit24(grip24, BIT_TRIM_LWD);
   bool right = getBit24(grip24, BIT_TRIM_RWD);
 
@@ -508,6 +553,9 @@ static int16_t computeHatFromTrim(uint32_t grip24)
 // =====================================================
 // Apply grip bits to HID buttons
 // =====================================================
+/**
+ * @brief Update joystick button states based on the grip bitfield.
+ */
 static void updateButtonsFromGrip(uint32_t g)
 {
   Joystick.setButton(HID_FIRE_TRIGGER_1E_CRAN,    getBit24(g, BIT_FIRE_TRIGGER_1E_CRAN));
@@ -536,6 +584,9 @@ static void updateButtonsFromGrip(uint32_t g)
 
 // =====================================================
 // Recenter combo detection (RECCE EVENT + FIRE TRIGGER 1st detent)
+/**
+ * @brief Check whether the recenter button-combo is currently pressed.
+ */
 static bool recenterComboPressed(uint32_t grip24)
 {
   bool recce = getBit24(grip24, BIT_RECCE_EVENT_MARK);
@@ -546,6 +597,9 @@ static bool recenterComboPressed(uint32_t grip24)
 // =====================================================
 // Debug print (throttled)
 // =====================================================
+/**
+ * @brief Print current sensor/joystick state to Serial (debug only).
+ */
 static void debugPrint(uint32_t grip24,
                        const MT6835_Result& roll, float rollDeg, float rollDelta,
                        const MT6835_Result& pitch, float pitchDeg, float pitchDelta)
@@ -582,6 +636,9 @@ static void debugPrint(uint32_t grip24,
 // =====================================================
 // Setup
 // =====================================================
+/**
+ * @brief Arduino setup routine. Initializes peripherals and joystick interface.
+ */
 void setup()
 {
 #if DEBUG_SERIAL
@@ -643,6 +700,9 @@ void setup()
 // =====================================================
 // Main loop
 // =====================================================
+/**
+ * @brief Arduino main loop. Reads sensors/grip and updates the HID report.
+ */
 void loop()
 {
   // ----- Read MT6835 sensors -----
