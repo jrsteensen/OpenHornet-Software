@@ -25,6 +25,12 @@ This manual is about writing software for the OpenHornet project. It shows how t
 ### Arduino Libraries
 
 - dcs-bios-arduino-library-0.3.9+
+- Adafruit_NeoPixel
+- Servo
+- TCA9534
+- Wire
+- ArduinoJoystickLibrary
+- Stepper
 
 ### Suggested debug tools
 

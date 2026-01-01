@@ -49,7 +49,7 @@
  * PIN | Function
  * --- | ---
  * 15  | Defog - Anti-ice
- * 6   | Defog Lever Potentiometer
+ * A7   | Defog Lever Potentiometer
  * 14  | Defog - Rain 
  * 7   | Canopy Open
  * 16  | Canopy Close
@@ -101,7 +101,7 @@
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define DF_ANTIICE 15  ///< Defog - Anti-ice
-#define DF_A A0         ///< 6 Defog Lever Potentiometer
+#define DF_A A7         ///< 6 Defog Lever Potentiometer
 #define DF_RAIN 14     ///< Defog - Rain
 #define CN_OPEN 7      ///< Canopy Open
 #define CN_CLOSE 16    ///< Canopy Close
