@@ -23,6 +23,7 @@
 
 #include "DcsBios.h"
 #include "../helpers/Panel.h"
+#include "../helpers/Colors.h"
 
 
 /********************************************************************************************************************
@@ -68,6 +69,33 @@ public:
             instance = new RadarAltPanel(startIndex, ledStrip);
         }
         return instance;
+    }
+
+protected:
+    /**
+     * @brief Override setBacklights to use NVIS_CGRB_GREEN_A instead of NVIS_GREEN_A
+     * @param newValue The new brightness value (0-65535)
+     * @param color The color to set (defaults to NVIS_CGRB_GREEN_A for this panel)
+     * @see This method overrides Panel::setBacklights() to use the correct color for GRB LEDs
+     */
+    void setBacklights(uint16_t newValue, const CRGB& color = NVIS_CGRB_GREEN_A) {
+        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        if (newValue == current_backl_brightness) return;             // Exit if no brightness change
+        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
+        CRGB target = color;
+        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        current_backl_brightness = newValue;                          // Update and save the current brightness value
+                 
+        int n = getLedCount();
+        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is BACKLIGHT, set color
+            Led led;
+            memcpy_P(&led, &getLedTable()[i], sizeof(Led));           // getLedTable() accesses the panel's LED table
+            uint16_t ledIndex = led.index + getStartIndex();
+            if (led.role == LED_INSTR_BL) {
+                getLedStrip()[ledIndex] = target;
+            }
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
 
 private:
