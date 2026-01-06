@@ -82,7 +82,7 @@ protected:
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
-        CRGB target = color;
+        CRGB target = NVIS_CGRB_GREEN_A;                              // Use NVIS_CGRB_GREEN_A for GRB LEDs
         target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
         current_backl_brightness = newValue;                          // Update and save the current brightness value
                  

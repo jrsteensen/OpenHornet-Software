@@ -208,6 +208,7 @@
 #include "panels/5A2A4_RADAR_ALT.h"
 #include "panels/5A4A1_HYD_PRESS.h"
 #include "panels/5A3A1_CAUTION.h"
+#include "panels/5A2A3_AVCOOL_PANEL.h"
 #include "panels/5A2A3_RC1_ALL_REMAINING_PANELS.h"
 #include "panels/5A5_RC2_ALL_PANELS.h"
 #include "panels/2A2A1A3_IFEI_Panel.h"
@@ -242,8 +243,8 @@ const int LC_1_LED_COUNT = 250;
 const int LC_2_LED_COUNT = 215;
 const int RC_1_LED_COUNT = 171;
 const int RC_2_LED_COUNT = 349;
-//const int LC_FLOOD_LED_COUNT = 100;
-//const int RC_FLOOD_LED_COUNT = 100;
+//const int LC_FLOOD_LED_COUNT = 50;
+//const int RC_FLOOD_LED_COUNT = 50;
 
 // Static LED arrays for each channel, using the LED counts defined abv
 CRGB LIP_1_leds[LIP_1_LED_COUNT];    
@@ -335,6 +336,7 @@ void setup() {
     RC_1.addPanel<RadarAltPanel>();
     RC_1.addPanel<HydPressGauge>();
     RC_1.addPanel<CautionPanel>();
+    RC_1.addPanel<AvcoolPanel>();
     RC_1.addPanel<Rc1AllRemainingPanels>();
     RC_2.addPanel<Rc2AllPanels>();
 
