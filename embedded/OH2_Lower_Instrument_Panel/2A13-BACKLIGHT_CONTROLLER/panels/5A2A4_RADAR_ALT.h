@@ -33,7 +33,7 @@
  ********************************************************************************************************************/
 const int RADAR_ALT_LED_COUNT = 2;  // Total number of LEDs in the panel
 const Led radarAltLedTable[RADAR_ALT_LED_COUNT] PROGMEM = {
-    {0, LED_INSTR_BL}, {1, LED_INSTR_BL}
+    {0, LED_INSTR_BL_CGRB}, {1, LED_INSTR_BL_CGRB}
 };
 
 /********************************************************************************************************************
@@ -71,33 +71,6 @@ public:
         return instance;
     }
 
-protected:
-    /**
-     * @brief Override setBacklights to use NVIS_CGRB_GREEN_A instead of NVIS_GREEN_A
-     * @param newValue The new brightness value (0-65535)
-     * @param color The color to set (defaults to NVIS_CGRB_GREEN_A for this panel)
-     * @see This method overrides Panel::setBacklights() to use the correct color for GRB LEDs
-     */
-    void setBacklights(uint16_t newValue, const CRGB& color = NVIS_CGRB_GREEN_A) {
-        if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
-        if (newValue == current_backl_brightness) return;             // Exit if no brightness change
-        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
-        CRGB target = NVIS_CGRB_GREEN_A;                              // Use NVIS_CGRB_GREEN_A for GRB LEDs
-        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
-        current_backl_brightness = newValue;                          // Update and save the current brightness value
-                 
-        int n = getLedCount();
-        for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if LED is BACKLIGHT, set color
-            Led led;
-            memcpy_P(&led, &getLedTable()[i], sizeof(Led));           // getLedTable() accesses the panel's LED table
-            uint16_t ledIndex = led.index + getStartIndex();
-            if (led.role == LED_INSTR_BL) {
-                getLedStrip()[ledIndex] = target;
-            }
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
-    }
-
 private:
     /**
      * @brief Private constructor to enforce singleton pattern
@@ -113,7 +86,15 @@ private:
     }
 
     // Static callback functions for DCS-BIOS
-    // NIL
+    static void onInstrIntLtChange(unsigned int newValue) {
+        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
+        CRGB target = NVIS_CGRB_GREEN_A;                              // Use NVIS_CGRB_GREEN_A for GRB LEDs
+        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        if (instance) instance->setIndicatorColor(LED_INSTR_BL_CGRB, target);
+    }
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
+
+
 
     // Instance data
     static RadarAltPanel* instance;
