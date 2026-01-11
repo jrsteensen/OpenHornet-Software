@@ -16,7 +16,7 @@
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Abstract base class for all panels. Each panel must be a derived class from this base class.
  * @details   It provides functions that are repeatedly required across all panels: 
- *            setBacklights(), setIndicatorColor(), setFloodlights().
+ *            setInstrLights(), setIndicatorColor(), setFloodlights().
  *            Panels are added to Channels. For memory efficiency, panels are organized in a linked list within each 
  *            channel. This conserves stack memory.
  *            This approach avoids allocating fixed-size arrays for panel pointers in each channel, 
@@ -91,12 +91,12 @@ protected:
 
 
     /**
-     * @brief Set the color of all backlight LEDs
+     * @brief Set the color of all instrument backlight LEDs
      * @param newValue The new brightness value (0-65535)
      * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::updateInstrumentLights() and Board::fillSolid()
      */
-    void setBacklights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                           
+    void setInstrLights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                           
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
@@ -168,7 +168,7 @@ protected:
      * @see This method is called by derived panel classes to update floodlights
      */
     void setFloodlights(uint16_t newValue) {                          // Set the brightness of LEDs with role LED_FLOOD
-        if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setBacklights()
+        if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setInstrLights()
         if (newValue == current_flood_brightness) return;             
         current_flood_brightness = newValue;
         

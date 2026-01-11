@@ -163,10 +163,10 @@ public:
      * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::fillSolid() and Board::updateInstrumentLights()
      */
-    void updateBacklights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
+    void updateInstrLights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setBacklights(brightness, color);
+            current->setInstrLights(brightness, color);
             current = current->nextPanel;
         }
     }

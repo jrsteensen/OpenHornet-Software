@@ -233,7 +233,7 @@ public:
     void fillSolid(const CRGB& color, int brightness = -1) {          // Fill all channels with a solid color
         int targetBrightness = (brightness >= 0) ? brightness : this->mode2_brightness;
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateBacklights(map(targetBrightness, 0, 255, 0, 65535), color);
+            channels[i]->updateInstrLights(map(targetBrightness, 0, 255, 0, 65535), color);
             channels[i]->updateConsoleLights(map(targetBrightness, 0, 255, 0, 65535), color);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
@@ -259,7 +259,7 @@ public:
         dcs_brightness_instrument = newValue;                         // In any mode, store the DCS-BIOS brightness value
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateBacklights(newValue);
+            channels[i]->updateInstrLights(newValue);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
         

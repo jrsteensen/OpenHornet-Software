@@ -243,8 +243,8 @@ const int LC_1_LED_COUNT = 250;
 const int LC_2_LED_COUNT = 215;
 const int RC_1_LED_COUNT = 171;
 const int RC_2_LED_COUNT = 349;
-//const int LC_FLOOD_LED_COUNT = 50;
-//const int RC_FLOOD_LED_COUNT = 50;
+const int LC_FLOOD_LED_COUNT = 55;
+const int RC_FLOOD_LED_COUNT = 55;
 
 // Static LED arrays for each channel, using the LED counts defined abv
 CRGB LIP_1_leds[LIP_1_LED_COUNT];    
@@ -255,8 +255,8 @@ CRGB LC_1_leds[LC_1_LED_COUNT];
 CRGB LC_2_leds[LC_2_LED_COUNT];     
 CRGB RC_1_leds[RC_1_LED_COUNT];     
 CRGB RC_2_leds[RC_2_LED_COUNT];     
-//CRGB LC_FLOOD_leds[LC_FLOOD_LED_COUNT];    // 100 LEDs
-//CRGB RC_FLOOD_leds[RC_FLOOD_LED_COUNT];    // 100 LEDs
+CRGB LC_FLOOD_leds[LC_FLOOD_LED_COUNT];    
+CRGB RC_FLOOD_leds[RC_FLOOD_LED_COUNT];    
 
 // Create objects of "channel" class (with the right LED count)
 Channel LIP_1(13, "Channel 1", LIP_1_leds, LIP_1_LED_COUNT);
@@ -267,8 +267,8 @@ Channel LC_1(9, "Channel 5", LC_1_leds, LC_1_LED_COUNT);
 Channel LC_2(8, "Channel 6", LC_2_leds, LC_2_LED_COUNT);
 Channel RC_1(7, "Channel 7", RC_1_leds, RC_1_LED_COUNT);               
 Channel RC_2(6, "Channel 8", RC_2_leds, RC_2_LED_COUNT);               
-//Channel LC_FLOOD(5, "Channel 9", LC_FLOOD_leds, LC_FLOOD_LED_COUNT);           
-//Channel RC_FLOOD(4, "Channel 10", RC_FLOOD_leds, RC_FLOOD_LED_COUNT);          
+Channel LC_FLOOD(5, "Channel 9", LC_FLOOD_leds, LC_FLOOD_LED_COUNT);           
+Channel RC_FLOOD(4, "Channel 10", RC_FLOOD_leds, RC_FLOOD_LED_COUNT);          
 
 // Create pointer to singleton board instance
 Board* board;                                                         
@@ -292,8 +292,8 @@ void setup() {
     LC_2.initialize();
     RC_1.initialize();
     RC_2.initialize();
-    //LC_FLOOD.initialize();
-    //RC_FLOOD.initialize();
+    LC_FLOOD.initialize();
+    RC_FLOOD.initialize();
 
     board->registerChannel(&LIP_1);                                   // Register channels with the board, so they are
     board->registerChannel(&LIP_2);                                   // accessible by the board object
@@ -303,8 +303,8 @@ void setup() {
     board->registerChannel(&LC_2);
     board->registerChannel(&RC_1);
     board->registerChannel(&RC_2);
-    //board->registerChannel(&LC_FLOOD);
-    //board->registerChannel(&RC_FLOOD);
+    board->registerChannel(&LC_FLOOD);
+    board->registerChannel(&RC_FLOOD);
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
@@ -340,8 +340,8 @@ void setup() {
     RC_1.addPanel<Rc1AllRemainingPanels>();
     RC_2.addPanel<Rc2AllPanels>();
 
-    //LC_FLOOD.addPanel<LcFloodLights>();
-    //RC_FLOOD.addPanel<RcFloodLights>();
+    LC_FLOOD.addPanel<LcFloodLights>();
+    RC_FLOOD.addPanel<RcFloodLights>();
 
     FastLED.setMaxPowerInVoltsAndMilliamps(VOLTAGE, MAX_MILLIAMPS);   // Set the maximum power in volts and milliamps
     FastLED.setMaxRefreshRate(100);                                   // Set the maximum refresh rate to 100 Hz instead of std. 400 Hz. Slightly reduces CPU load.
