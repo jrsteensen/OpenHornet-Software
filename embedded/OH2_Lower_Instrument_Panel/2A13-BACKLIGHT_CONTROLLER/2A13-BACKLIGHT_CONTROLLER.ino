@@ -243,8 +243,8 @@ const int LC_1_LED_COUNT = 250;
 const int LC_2_LED_COUNT = 215;
 const int RC_1_LED_COUNT = 171;
 const int RC_2_LED_COUNT = 349;
-const int LC_FLOOD_LED_COUNT = 55;
-const int RC_FLOOD_LED_COUNT = 55;
+const int LC_FLOOD_LED_COUNT = 40;
+const int RC_FLOOD_LED_COUNT = 40;
 
 // Static LED arrays for each channel, using the LED counts defined abv
 CRGB LIP_1_leds[LIP_1_LED_COUNT];    
@@ -308,7 +308,7 @@ void setup() {
 
     UIP_1.addPanel<MasterArmPanel>();                                 // Instantiate the panels;
     UIP_1.addPanel<EwiPanel>();                                       // Adapt order according to your physical wiring; 
-    //UIP_1.addPanel<HudPanel>();                                     // Do not exceed the channel's LED count defined above.
+    UIP_1.addPanel<HudPanel>();                                       // Do not exceed the channel's LED count defined above.
     //UIP_1.addPanel<HudPanelRev3>();
     UIP_1.addPanel<REwiPanel>();
     UIP_1.addPanel<SpnRcvyPanel>();

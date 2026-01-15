@@ -29,7 +29,7 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int LCF_LED_COUNT = 55;  // Total number of LEDs in the panel
+const int LCF_LED_COUNT = 40;  // Total number of LEDs in the panel
 const Led lcFloodLedTable[LCF_LED_COUNT] PROGMEM = {
     {0, LED_FLOOD}, {1, LED_FLOOD}, {2, LED_FLOOD}, {3, LED_FLOOD}, {4, LED_FLOOD}, 
     {5, LED_FLOOD}, {6, LED_FLOOD}, {7, LED_FLOOD}, {8, LED_FLOOD}, {9, LED_FLOOD},
@@ -38,10 +38,7 @@ const Led lcFloodLedTable[LCF_LED_COUNT] PROGMEM = {
     {20, LED_FLOOD}, {21, LED_FLOOD}, {22, LED_FLOOD}, {23, LED_FLOOD}, {24, LED_FLOOD}, 
     {25, LED_FLOOD}, {26, LED_FLOOD}, {27, LED_FLOOD}, {28, LED_FLOOD}, {29, LED_FLOOD},
     {30, LED_FLOOD}, {31, LED_FLOOD}, {32, LED_FLOOD}, {33, LED_FLOOD}, {34, LED_FLOOD}, 
-    {35, LED_FLOOD}, {36, LED_FLOOD}, {37, LED_FLOOD}, {38, LED_FLOOD}, {39, LED_FLOOD},
-    {40, LED_FLOOD}, {41, LED_FLOOD}, {42, LED_FLOOD}, {43, LED_FLOOD}, {44, LED_FLOOD}, 
-    {45, LED_FLOOD}, {46, LED_FLOOD}, {47, LED_FLOOD}, {48, LED_FLOOD}, {49, LED_FLOOD},
-    {50, LED_FLOOD}, {51, LED_FLOOD}, {52, LED_FLOOD}, {53, LED_FLOOD}, {54, LED_FLOOD}
+    {35, LED_FLOOD}, {36, LED_FLOOD}, {37, LED_FLOOD}, {38, LED_FLOOD}, {39, LED_FLOOD}
 };
 
 /********************************************************************************************************************
@@ -83,18 +80,8 @@ private:
         ledTable = lcFloodLedTable;
     }
 
-    // Static callback functions for DCS-BIOS
-    /**
-     * @brief Callback for FLOOD DIMMER
-     * @param newValue The new state of the indicator (0-100)
-     * @see This method is called by DCS-BIOS when the FLOOD DIMMER state changes
-     */
-    static void onFloodDimmerChange(unsigned int newValue) {
-        if (instance) instance->setFloodlights(newValue);
-    }
-    DcsBios::IntegerBuffer floodDimmerBuffer{FA_18C_hornet_FLOOD_DIMMER, onFloodDimmerChange};
-
     // Instance data
+    // Note: Flood dimmer callback is handled centrally in Board.h
     static LcFloodLights* instance;
 };
 
