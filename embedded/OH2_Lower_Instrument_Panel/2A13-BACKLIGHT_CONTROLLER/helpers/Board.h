@@ -194,7 +194,11 @@ public:
                 {
                     bool dcsIsRunning = checkDcsRunning();
                     if (!dcsIsRunning && dcsWasRunning) {
-                        setAllLightsOff();
+                        for (int i = 0; i < channelCount; i++) {
+                            channels[i]->updateInstrLights(0);
+                            channels[i]->updateConsoleLights(0);
+                            channels[i]->updateFloodLights(0);
+                        }
                     } else if (dcsIsRunning && !dcsWasRunning) {
                         for (int i = 0; i < channelCount; i++) {
                             channels[i]->updateInstrLights(dcs_brightness_instrument);
