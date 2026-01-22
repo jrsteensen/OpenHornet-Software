@@ -40,3 +40,6 @@
 [submodule "libraries/U8g2"]
 	path = libraries/U8g2
 	url = https://github.com/olikraus/U8g2.git
+[submodule "libraries/AccelStepper"]
+	path = libraries/AccelStepper
+	url = https://github.com/waspinator/AccelStepper.git
