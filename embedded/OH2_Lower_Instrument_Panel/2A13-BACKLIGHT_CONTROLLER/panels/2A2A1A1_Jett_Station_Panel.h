@@ -37,15 +37,15 @@
 const int JETT_STATION_LED_COUNT = 32;  // Total number of LEDs in the panel
 const Led jettStationLedTable[JETT_STATION_LED_COUNT] PROGMEM = {
     // RO (Right Outer) Station LEDs
-    {0, LED_JETT_RO_1}, {1, LED_JETT_RO_1}, {2, LED_JETT_RO_2}, {3, LED_JETT_RO_2},
+    {0, LED_JETT_RO_1}, {3, LED_JETT_RO_1}, {1, LED_JETT_RO_2}, {2, LED_JETT_RO_2},
     // RI (Right Inner) Station LEDs
-    {4, LED_JETT_RI_1}, {5, LED_JETT_RI_1}, {6, LED_JETT_RI_2}, {7, LED_JETT_RI_2},
+    {4, LED_JETT_RI_1}, {7, LED_JETT_RI_1}, {5, LED_JETT_RI_2}, {6, LED_JETT_RI_2},
     // CTR (Center) Station LEDs
-    {8, LED_JETT_CTR_1}, {9, LED_JETT_CTR_1}, {10, LED_JETT_CTR_2}, {11, LED_JETT_CTR_2},
+    {11, LED_JETT_CTR_1}, {8, LED_JETT_CTR_1}, {10, LED_JETT_CTR_2}, {9, LED_JETT_CTR_2},
     // LI (Left Inner) Station LEDs
-    {12, LED_JETT_LI_1}, {13, LED_JETT_LI_1}, {14, LED_JETT_LI_2}, {15, LED_JETT_LI_2},
+    {14, LED_JETT_LI_1}, {13, LED_JETT_LI_1}, {12, LED_JETT_LI_2}, {15, LED_JETT_LI_2},
     // LO (Left Outer) Station LEDs
-    {16, LED_JETT_LO_1}, {17, LED_JETT_LO_1}, {18, LED_JETT_LO_2}, {19, LED_JETT_LO_2},
+    {18, LED_JETT_LO_1}, {17, LED_JETT_LO_1}, {16, LED_JETT_LO_2}, {19, LED_JETT_LO_2},
     // Nose Station LED
     {20, LED_JETT_NOSE}, {31, LED_JETT_NOSE},
     // Left/Right Station LEDs
@@ -153,6 +153,47 @@ private:
         if (instance) instance->setIndicatorColor(LED_JETT_FLAPS, newValue ? NVIS_YELLOW : NVIS_BLACK);
     }
     DcsBios::IntegerBuffer flpLgFlapsLtBuffer{FA_18C_hornet_FLP_LG_FLAPS_LT, onFlpLgFlapsLtChange};
+
+
+    // Member variables to track state
+    unsigned int cockpitLightMode = 0;  // 0=NVG, 1=NITE, 2=DAY
+    bool instrIntLtActive = false;       // Whether instrument lights are on
+
+    // Helper method to update LEDs based on both cockpit mode and instrument light state
+    void updateJettStationLeds() {
+        if (!instance) return;
+        
+        // Determine color based on cockpit light mode
+        // 0 = NVG, 1 = NITE -> NVIS_GREEN_A
+        // 2 = DAY -> NVIS_WHITE
+        CRGB activeColor = (cockpitLightMode <= 1) ? NVIS_GREEN_A : NVIS_WHITE;
+        CRGB targetColor = instrIntLtActive ? activeColor : NVIS_BLACK;
+        
+        instance->setIndicatorColor(LED_JETT_RO_2, targetColor);
+        instance->setIndicatorColor(LED_JETT_RI_2, targetColor);
+        instance->setIndicatorColor(LED_JETT_CTR_2, targetColor);
+        instance->setIndicatorColor(LED_JETT_LI_2, targetColor);
+        instance->setIndicatorColor(LED_JETT_LO_2, targetColor);
+    }
+
+    // Controlling the upper LEDs (RO_2, RI_2, CTR_2, LI_2, LO_2)
+    // These are controlled by backlight brightness value from DCS BIOS
+    // and the cockpit light mode (NVG/NITE vs DAY)
+    static void onInstrIntLtChange(unsigned int newValue) {
+        if (instance) {
+            instance->instrIntLtActive = (newValue > 0);
+            instance->updateJettStationLeds();
+        }
+    }
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
+
+    static void onCockkpitLightModeSwChange(unsigned int newValue) {
+        if (instance) {
+            instance->cockpitLightMode = newValue;
+            instance->updateJettStationLeds();
+        }
+    }
+    DcsBios::IntegerBuffer cockkpitLightModeSwBuffer{FA_18C_hornet_COCKKPIT_LIGHT_MODE_SW, onCockkpitLightModeSwChange};
 
     // Instance data
     static JettStationPanel* instance;
