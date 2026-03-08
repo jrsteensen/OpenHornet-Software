@@ -164,9 +164,9 @@ private:
         if (!instance) return;
         
         // Determine color based on cockpit light mode
-        // 0 = NVG, 1 = NITE -> NVIS_GREEN_A
-        // 2 = DAY -> NVIS_WHITE
-        CRGB activeColor = (cockpitLightMode <= 1) ? NVIS_GREEN_A : NVIS_WHITE;
+        // 2 = NVG, 1 = NITE -> NVIS_GREEN_A
+        // 0 = DAY -> NVIS_WHITE
+        CRGB activeColor = (cockpitLightMode >= 1) ? NVIS_GREEN_A : NVIS_WHITE;
         CRGB targetColor = instrIntLtActive ? activeColor : NVIS_BLACK;
         
         instance->setIndicatorColor(LED_JETT_RO_2, targetColor);
