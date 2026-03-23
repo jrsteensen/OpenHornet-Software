@@ -102,11 +102,6 @@
 */
 #define LBAR_SW_AUTORETRACT false
 
-/**
-* @brief Delay for Hook Bypass mag-switch auto-off when hook lever is lowered
-*/
-#define HOOK_DELAY 3200
-
 // Define pins for DCS-BIOS per interconnect diagram.
 #define HOOKB_SW A0 ///< Hook Bypass Switch
 #define LBAR_SW A1 ///< Launch Bar Switch
@@ -124,17 +119,8 @@
 #define SJET_SW4 16 ///< Selector Jettison Position 4
 
 //Declare variables for custom non-DCSBios logic for mag-switches
-bool hookBypassMagState = LOW;    ///< Initializing for correct cold/ground start position as switch releases on power off.
 bool hookBypassState = LOW;       ///< Initializing for correct cold/ground start position as switch releases on power off.
-bool launchBarMagState = LOW;     ///< Initializing for correct cold/ground start position as switch releases on power off.
 bool launchBarState = LOW;        ///< Initializing for correct cold/ground start position as switch releases on power off.
-bool hookLeverState = LOW;        ///< Initializing for correct cold/ground start position as switch releases on power off.
-unsigned long hookLeverTime = 0;  ///< Initializing variable to hold time of last hook change.
-bool wowLeft = true;              ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowRight = true;             ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowNose = true;              ///< Initializing weight-on-wheel value for cold/ground start.
-unsigned int rpmL = 0;            ///< Initializing engine RPM for cold start
-unsigned int rpmR = 0;            ///< Initializing engine RPM for cold start
 
 // Connect switches to DCS-BIOS
 DcsBios::Switch2Pos antiSkidSw("ANTI_SKID_SW", ASKID_SW);
@@ -158,30 +144,18 @@ void onHookBypassSwChange(unsigned int newValue) {
     switch (newValue) {
       case 0:  // Switch is down in carrier position turn off mag.
         digitalWrite(HOOK_FIELD, LOW);
-        hookBypassMagState = LOW;
         break;
       case 1:  // Switch is up in field position, turn on mag.
         digitalWrite(HOOK_FIELD, HIGH);
-        hookBypassMagState = HIGH;
         break;
       default:
         break;
     } hookBypassState = newValue;
   }
-} DcsBios::IntegerBuffer hookBypassSwBuffer(0x7480, 0x4000, 14, onHookBypassSwChange);
-
-/**
-* @brief Need to save the hook lever state to test turning off the hook bypass mag-switch in the main loop.
-*  
-*/
-void onHookLeverChange(unsigned int newValue) {
-  hookLeverState = newValue;
-  hookLeverTime = millis();
-} DcsBios::IntegerBuffer hookLeverBuffer(0x74a0, 0x0200, 9, onHookLeverChange);
+} DcsBios::IntegerBuffer hookBypassSwBuffer(FA_18C_hornet_HOOK_BYPASS_SW, onHookBypassSwChange);
 
 /**
 * @brief DCSBios read back of Hook Bypass position.  If the Switch is turned off virtually in the sim, then turn off the hook bypass mag.
-  The Launch bar switch is only held down when there is weight-on-wheels.
 */
 void onLaunchBarSwChange(unsigned int newValue) {
   if (newValue == launchBarState) {
@@ -190,44 +164,16 @@ void onLaunchBarSwChange(unsigned int newValue) {
     switch (newValue) {
       case 0:  // Launch bar switch turned off
         digitalWrite(LBAR_RET, LOW);
-        launchBarMagState = LOW;
         break;
       case 1:  // Launch bar switch turned on, only lock launch bar down if weight on wheels
-        if (wowLeft == wowRight == wowNose == true) {
-          digitalWrite(LBAR_RET, HIGH);
-          launchBarMagState = HIGH;
-        } else {
-          digitalWrite(LBAR_RET, LOW);
-          launchBarMagState = LOW;
-        }
+        digitalWrite(LBAR_RET, HIGH);
         break;
       default:
         break;
     }
   }
   launchBarState = newValue;
-} DcsBios::IntegerBuffer launchBarSwBuffer(0x7480, 0x2000, 13, onLaunchBarSwChange);
-
-//Engine RPM needed for launch bar mag-switch
-void onIfeiRpmLChange(char* newValue) {
-  rpmL = atoi(newValue);
-} DcsBios::StringBuffer<3> ifeiRpmLBuffer(0x749e, onIfeiRpmLChange);
-
-void onIfeiRpmRChange(char* newValue) {
-  rpmR = atoi(newValue);
-} DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
-
-void onExtWowLeftChange(unsigned int newValue) {
-  wowLeft = newValue;
-} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
-
-void onExtWowNoseChange(unsigned int newValue) {
-  wowNose = newValue;
-} DcsBios::IntegerBuffer extWowNoseBuffer(0x74d6, 0x4000, 14, onExtWowNoseChange);
-
-void onExtWowRightChange(unsigned int newValue) {
-  wowRight = newValue;
-} DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
+} DcsBios::IntegerBuffer launchBarSwBuffer(FA_18C_hornet_LAUNCH_BAR_SW, onLaunchBarSwChange);
 
 /**
 * Arduino Setup Function
@@ -252,57 +198,9 @@ void setup() {
 *
 * Arduino standard Loop Function. Code who should be executed
 * over and over in a loop, belongs in this function.
-*
-*
-*
-*
 */
 void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
-
-/**
- ### Launch Bar Auto Retract Logic
-*  If the launch bar mag-switch is held in extend position, then: \n
-*  -# if no weight on wheels retract the launch bar. \n
-*  -# if the launch bar auto-retract is defined as true and both engines' RPM is >85 then retract launch bar. \n
-*   @note If launch bar auto-retract is true, when connecting to the catapult it may be easier to keep one engine under 80% while advancing the other with enough power get over the shuttle.
-* 
-*/
-  if (launchBarMagState == HIGH) {
-    switch (launchBarState) {
-      case LOW:  //launch bar switch in retract
-        //do nothing the state change method will retract the launch bar
-        break;
-      case 1:   //launch bar switch in extend
-        if (wowLeft == wowRight == wowNose == false){ // no weight on wheels retract launch bar
-          digitalWrite(LBAR_RET, LOW);
-          launchBarMagState = LOW;  // mag is off
-          break;
-        }        
-        if ((LBAR_SW_AUTORETRACT == true) && (rpmL >= 85 && rpmR >= 85)) {  //If Launch bar auto retract on throttle is true and both engines over 80% rpm turn off mag
-          digitalWrite(LBAR_RET, LOW);
-          launchBarMagState = LOW;  // mag is off
-        }
-        break;
-    }
-  }
-
-/**
- ### Hook bypass override cancel logic
-*  If the hook bypass mag-switch is held in field position with no weight on wheels and hook lever is down, then: \n
-*  -# if hook lever state change time is longer than the hook delay, turn off hook bypass back to carrier. \n
-*  -# else continue until either the time is reached or the hook lever is raised prior to cancelling the hook bypass switch.
-*  @bug Potential bug, the hook bypass auto-cancel delay time varies when running sketch.  The sim's the auto-cancel delay is ~3.8 seconds.  In testing the sketch the auto-cancel will be at least 3.2 seconds, but can be as long as ~8 seconds.  This is likely due to delays in DCSBios sending state updates.
-* 
-*/
-  if ((hookBypassMagState == HIGH) && (wowLeft == wowRight == wowNose == false) && (hookLeverState == LOW)) {  // If the hook bypass mag is on, with weight off wheels, and the hook lever is down.
-    if ((millis() - hookLeverTime ) > HOOK_DELAY) {                                                               // if longer than the hook override auto cancel delay
-      digitalWrite(HOOK_FIELD, LOW);
-      hookBypassMagState = LOW;
-    } else {
-      //wait for time to pass to ensure hook lever isn't raised before the auto-cancel time is met.
-    }
-  }
 }

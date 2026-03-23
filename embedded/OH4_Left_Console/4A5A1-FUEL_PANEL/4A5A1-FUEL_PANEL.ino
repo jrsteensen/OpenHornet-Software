@@ -100,12 +100,6 @@
 
 //Declare variables for custom non-DCSBios logic for fuel dump mag-switch.
 bool fuelDumpState = LOW;  ///< Fuel dump switch state
-int bingo = 0;             ///< Bingo quantity, initialize to cold/dark state of 0.
-int fuelQty = 0;           ///< Fuel quantity variable for fuel dump logic.
-bool dumpHold = LOW;       ///< Fuel dump mag-switch hold
-bool wowLeft = true;       ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowRight = true;      ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowNose = true;       ///< Initializing weight-on-wheel value for cold/ground start.
 
 // Connect switches to DCS-BIOS
 DcsBios::Switch2Pos fuelDumpSw("FUEL_DUMP_SW", DUMP);
@@ -115,7 +109,6 @@ DcsBios::Switch3Pos extCntTankSw("EXT_CNT_TANK_SW", CTR_SW1, CTR_SW2);
 
 /**
 * @brief DCSBios read back of fuel dump switch position.  If the Switch is turned off virtually in the sim, then turn off the fuel dump mag.
-* @note The Fuel Dump mag-switch will not hold with weight on wheels.
 */
 void onFuelDumpSwChange(unsigned int newValue) {
   if (newValue == fuelDumpState) {
@@ -124,45 +117,16 @@ void onFuelDumpSwChange(unsigned int newValue) {
     switch (newValue) {
       case 0:  // switch turned off manually in game...disengage magnet.
         digitalWrite(DUMP_MAG, LOW);
-        dumpHold = LOW;
         break;
       case 1:
-        if(wowLeft == wowRight == wowNose == false){
         digitalWrite(DUMP_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by bingo logic in loop.
-        dumpHold = HIGH;               // set dumpHold flag to HIGH for bingo logic.
-        }
         break;
       default:
         break;
     }
     fuelDumpState = newValue;
   }
-} DcsBios::IntegerBuffer fuelDumpSwBuffer(0x74b4, 0x0100, 8, onFuelDumpSwChange);
-
-/// @brief Read the IFEI panel's BINGO setting and convert value to int for fuel dump mag-switch logic.
-void onIfeiBingoChange(char* newValue) {
-  bingo = atoi(newValue);
-} DcsBios::StringBuffer<5> ifeiBingoBuffer(0x7468, onIfeiBingoChange);
-
-void onExtWowLeftChange(unsigned int newValue) {
-  wowLeft = newValue;
-} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
-
-void onExtWowNoseChange(unsigned int newValue) {
-  wowNose = newValue;
-} DcsBios::IntegerBuffer extWowNoseBuffer(0x74d6, 0x4000, 14, onExtWowNoseChange);
-
-void onExtWowRightChange(unsigned int newValue) {
-  wowRight = newValue;
-} DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
-
-/**
-* @brief Read the IFEI panel's Fuel state value when it's going down, and convert to int for fuel dump logic.
-* @note Fuel dump logic doesn't care if the fuel quantity is going up.
-*/
-void onIfeiFuelDownChange(char* newValue) {
-  fuelQty = atoi(newValue);
-} DcsBios::StringBuffer<6> ifeiFuelDownBuffer(0x748a, onIfeiFuelDownChange);
+} DcsBios::IntegerBuffer fuelDumpSwBuffer(FA_18C_hornet_FUEL_DUMP_SW, onFuelDumpSwChange);
 
 /**
 * Arduino Setup Function
@@ -190,25 +154,4 @@ void onIfeiFuelDownChange(char* newValue) {
 
     //Run DCS Bios loop function
     DcsBios::loop();
-
-/**
-*   ### Fuel Dump mag-switch cancel logic:
-*   If BINGO setting value is greater than current fuel quantity, or if fuel level below critical cutoff floor of 1,950 lbs, then:
-    -# If the fuel dump mag-switch is already off nothing happens. \n
-*   -# Turn off the fuel dump mag-switch. \n
-*   @note If the fuel quantity is lower than BINGO or lower than the 1,950 lbs safety floor the fuel dump mag-switch will not hold.
-* 
-*/  
-    if (bingo >= fuelQty || fuelQty <= 1950) {  //if bingo greater than fuel quantity, or if fuel quantity under 1,950 lbs then deactivate the magnet.
-      switch (dumpHold) {
-        case LOW:
-          break;  // mag-switch already off no action.
-        case HIGH:
-          digitalWrite(DUMP_MAG, LOW);  //magnet is high, turn off as fuel state reached bingo or is below 1,950lb safety margin.
-          dumpHold = LOW;               //set magnet flag to LOW to match that it was just turned off.
-          break;
-        default:
-          break;
-      }
-    }
   }

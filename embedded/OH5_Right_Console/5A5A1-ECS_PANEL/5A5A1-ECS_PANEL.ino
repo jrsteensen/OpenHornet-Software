@@ -125,7 +125,6 @@ bool apuSwitchOn = 0;       ///< Variable for Bleed Air logic.
 bool bleedAirAugState = 0;  ///< Variable for Bleed Air logic.
 bool leftGenState = 0;      ///< Variable for PITOT magswitch logic.
 bool rightGenState = 0;     ///< Variable for PITOT magswitch logic.
-bool pitotHold = false;     ///< Variable for PITOT magswitch logic.
 
 // Connect switches to DCS-BIOS
 const byte bleedAirKnobPins[4] = { BA_LOFF, BA_OFF, BA_ROFF, DcsBios::PIN_NC };
@@ -148,12 +147,12 @@ DcsBios::Potentiometer cabinTemp("CABIN_TEMP", TC_A);
 void onIfeiRpmLChange(char* newValue) {
   rpmL = atoi(newValue);
 }
-DcsBios::StringBuffer<3> ifeiRpmLBuffer(0x749e, onIfeiRpmLChange);
+DcsBios::StringBuffer<3> ifeiRpmLBuffer(FA_18C_hornet_IFEI_RPM_L_A, onIfeiRpmLChange);
 
 void onIfeiRpmRChange(char* newValue) {
   rpmR = atoi(newValue);
 }
-DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
+DcsBios::StringBuffer<3> ifeiRpmRBuffer(FA_18C_hornet_IFEI_RPM_R_A, onIfeiRpmRChange);
 
 void onApuControlSwChange(unsigned int newValue) {
   apuSwitchOn = newValue;
@@ -164,7 +163,7 @@ void onApuControlSwChange(unsigned int newValue) {
     digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
   }
 }
-DcsBios::IntegerBuffer apuControlSwBuffer(0x74c2, 0x0100, 8, onApuControlSwChange);
+DcsBios::IntegerBuffer apuControlSwBuffer(FA_18C_hornet_APU_CONTROL_SW, onApuControlSwChange);
 
 void onBleedAirPullChange(unsigned int newValue) {
   if (bleedAirAugState != newValue) {
@@ -186,29 +185,26 @@ void onBleedAirPullChange(unsigned int newValue) {
     }
   }
 }
-DcsBios::IntegerBuffer bleedAirPullBuffer(0x74c4, 0x8000, 15, onBleedAirPullChange);
+DcsBios::IntegerBuffer bleedAirPullBuffer(FA_18C_hornet_BLEED_AIR_PULL, onBleedAirPullChange);
 
 void onLGenSwChange(unsigned int newValue) {
   leftGenState = newValue;
 }
-DcsBios::IntegerBuffer lGenSwBuffer(0x74c4, 0x2000, 13, onLGenSwChange);
+DcsBios::IntegerBuffer lGenSwBuffer(FA_18C_hornet_L_GEN_SW, onLGenSwChange);
 
 void onRGenSwChange(unsigned int newValue) {
   rightGenState = newValue;
 }
-DcsBios::IntegerBuffer rGenSwBuffer(0x74c4, 0x4000, 14, onRGenSwChange);
+DcsBios::IntegerBuffer rGenSwBuffer(FA_18C_hornet_R_GEN_SW, onRGenSwChange);
 
 void onPitotHeatSwChange(unsigned int newValue) {
   if (newValue == 0) {  // switch turned off physically or virtually in sim, turn off mag.
     digitalWrite(PITOT_MAG, LOW);
-    pitotHold = false;
   } else {
-    if (leftGenState == 1 || rightGenState == 1)  // at least one generator needs to be running to hold PITOT mag-switch in on position.
-      digitalWrite(PITOT_MAG, HIGH);
-    pitotHold = true;
+    digitalWrite(PITOT_MAG, HIGH);
   }
 }
-DcsBios::IntegerBuffer pitotHeatSwBuffer(0x74c8, 0x0100, 8, onPitotHeatSwChange);
+DcsBios::IntegerBuffer pitotHeatSwBuffer(FA_18C_hornet_PITOT_HEAT_SW, onPitotHeatSwChange);
 
 
 
@@ -255,12 +251,6 @@ void loop() {
       delay(200);  //wait a moment
       digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
       bleedAirAugState = 0;
-    }
-  }
-  if (pitotHold == true) { // If PITOT switch is on...
-    if (leftGenState == 0 && rightGenState == 0) { // IF both generators are off release the mag-switch.
-      digitalWrite(PITOT_MAG, LOW);
-      pitotHold = false;
     }
   }
 }

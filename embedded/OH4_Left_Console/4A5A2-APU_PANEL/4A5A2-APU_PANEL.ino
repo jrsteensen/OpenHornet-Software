@@ -105,13 +105,8 @@
 
 
 //Declare variables for custom non-DCS logic <update comment as needed>
-bool apuHold = LOW;       ///< Initializing for cold/ground start switch releases on power off.
 bool apuState = LOW;      ///< Initializing for cold/ground start switch releases on power off.
-bool apuLightSate = LOW;  ///< Initializing for cold/ground start switch releases on power off.
-bool engCrankHold = LOW;  ///< Initializing for cold/ground start switch releases on power off.
 byte engCrankState = 1;   ///< Three position switch, 1 is middle
-unsigned int rpmL = 0;    ///< Initializing engine RPM for cold start
-unsigned int rpmR = 0;    ///< Initializing engine RPM for cold start
 
 // Connect switches to DCS-BIOS
 DcsBios::Switch2Pos apuControlSw("APU_CONTROL_SW", APU_SW1);
@@ -124,33 +119,10 @@ DcsBios::Switch2Pos cbSpdBrk("CB_SPD_BRK", LCSPDBRK);
 // DCSBios reads to save airplane state information.
 
 /**
-*  This function monitors the state of the APU light from DCSBios and updates the APU switch's magnet.
-*  The APU shuts down, and light is turned off 1 minute after the second engine is running.
-*  
-*  APU magnet logic:  When APU light state changes to 1 turn on the light, but no change to APU magnet.
-*  When APU light state changes to 0 turn off light and turn off APU switch magnet if it's on.
+* @brief APU Ready Light LED
 *
 */
-void onApuReadyLtChange(unsigned int newValue) {
-  if (apuLightSate == newValue) {
-    return;  // No change continue
-  }
-  switch (newValue) {
-    case 0:  // Light turned off
-      digitalWrite(APU_LAMP, LOW);
-      if (apuHold == HIGH) {  // If APU mag on, turn it off.
-        digitalWrite(APU_SW_MAG, LOW);
-        apuHold = LOW;
-      }
-      break;
-    case 1:  // APU light is on.
-      digitalWrite(APU_LAMP, HIGH);
-      break;
-    default:
-      break;
-  }
-  apuLightSate = newValue;
-} DcsBios::IntegerBuffer apuReadyLtBuffer(0x74c2, 0x0800, 11, onApuReadyLtChange);
+DcsBios::LED apuReadyLt(FA_18C_hornet_APU_READY_LT_AM, APU_LAMP);
 
 /**
 * @brief DCSBios read back of APU switch position.  If the Switch is turned off virtually in the sim, then turn off the APU mag.
@@ -163,24 +135,21 @@ void onApuControlSwChange(unsigned int newValue) {
     switch (newValue) {
       case 0:  // Switch turned off in SIM.
         digitalWrite(APU_SW_MAG, LOW);
-        apuHold = LOW;
         break;
       case 1:  // Switch is on in SIM.
         digitalWrite(APU_SW_MAG, HIGH);
-        apuHold = HIGH;
         break;
       default:
         break;
     }
   }
   apuState = newValue;
-} DcsBios::IntegerBuffer apuControlSwBuffer(0x74c2, 0x0100, 8, onApuControlSwChange);
+} DcsBios::IntegerBuffer apuControlSwBuffer(FA_18C_hornet_APU_CONTROL_SW, onApuControlSwChange);
 
 /**
 * @brief DCSBios read back of Engine Crank switch position.  If the Switch is turned off virtually in the sim, 
 * then turn off the Engine Crank mag.
 * 
-* @note the Engine Crank mag-switch won't hold when the engine's RPM is over 65%.
 */
 void onEngineCrankSwChange(unsigned int newValue) {
   if (newValue == engCrankState) {
@@ -188,32 +157,20 @@ void onEngineCrankSwChange(unsigned int newValue) {
   } else {
     switch (newValue) {
       case 0:
-        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by engine RPM logic in loop.
-        engCrankHold = HIGH;                // set engCrankHold flag to HIGH for rpm logic.
+        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.
         break;
       case 1:  // switch turned off disengage magnet.
         digitalWrite(ENG_CRANK_MAG, LOW);
-        engCrankHold = LOW;
         break;
       case 2:
-        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.  May get overridden by engine RPM logic in loop.
-        engCrankHold = HIGH;                // set engCrankHold flag to HIGH for rpm logic.
+        digitalWrite(ENG_CRANK_MAG, HIGH);  // switch turned on, either physically or virtually, engage magnet.
         break;
       default:
         break;
     }
     engCrankState = newValue;
   }
-} DcsBios::IntegerBuffer engineCrankSwBuffer(0x74c2, 0x0600, 9, onEngineCrankSwChange);
-
-//Engine RPM needed for Engine Crank mag-switch
-void onIfeiRpmLChange(char* newValue) {
-  rpmL = atoi(newValue);
-} DcsBios::StringBuffer<3> ifeiRpmLBuffer(0x749e, onIfeiRpmLChange);
-
-void onIfeiRpmRChange(char* newValue) {
-  rpmR = atoi(newValue);
-} DcsBios::StringBuffer<3> ifeiRpmRBuffer(0x74a2, onIfeiRpmRChange);
+} DcsBios::IntegerBuffer engineCrankSwBuffer(FA_18C_hornet_ENGINE_CRANK_SW, onEngineCrankSwChange);
 
 /**
 * Arduino Setup Function
@@ -246,33 +203,4 @@ void loop() {
 
   //Run DCS Bios loop function
   DcsBios::loop();
-
-  /**
-* ### Engine Crank Mag-Switch Logic
-*  If the engine crank mag-switch is held in an engine start position, then: \n
-*  -# If switch towards left engine and left engine's RPM >= 65%, turn off the mag-switch. \n
-*  -# If switch towards right engine and right engine's RPM >= 65%, turn off the mag-switch. \n
-*   @note If the switch is in the middle the code will ensure the engine crank mag-switch is off.
-* 
-*/
-  if (engCrankHold == HIGH) {  // If engCrankHold mag is on check RPM to turn off based on which way the SWITCH is facing
-    switch (engCrankState) {
-      case 0:              //switch Left
-        if (rpmL >= 65) {  //if over 65% rpm turn off mag
-          digitalWrite(ENG_CRANK_MAG, LOW);
-          engCrankHold = LOW;  //note mag is off
-        }
-        break;
-      case 1:  //switch in the middle, mag shouldn't be on
-        digitalWrite(ENG_CRANK_MAG, LOW);
-        engCrankHold = LOW;  //note mag is off
-        break;
-      case 2:              //switch Right
-        if (rpmR >= 65) {  //if over 65% rpm turn off mag
-          digitalWrite(ENG_CRANK_MAG, LOW);
-          engCrankHold = LOW;  //note mag is off
-        }
-        break;
-    }
-  }
 }
