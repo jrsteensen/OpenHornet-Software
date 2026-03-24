@@ -32,9 +32,9 @@
 
 /**
  * @file 4A5A2-APU_PANEL.ino
- * @author Arribe
- * @date 03.03.2024
- * @version 0.0.1
+ * @author Arribe, Ash
+ * @date 03.24.2026
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the APU panel & L CIRCUIT BREAKERS.
  *

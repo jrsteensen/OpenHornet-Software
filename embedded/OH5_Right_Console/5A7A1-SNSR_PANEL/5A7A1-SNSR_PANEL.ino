@@ -32,9 +32,9 @@
 
 /**
  * @file 5A7A1-SNSR_PANEL.ino
- * @author Arribe
- * @date 03.10.2024
- * @version 0.0.1
+ * @author Arribe, Ash
+ * @date 03.24.2026
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the SNSR panel.
  *
