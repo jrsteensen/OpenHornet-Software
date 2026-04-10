@@ -1,0 +1,145 @@
+OH F/A-18C Joystick – Firmware Notes V 1.0.0 By Thibaud Colodié @Thib-O for OPENHORNET.
+
+This firmware is designed for a OH F/A-18C joystick based on:
+
+- Arduino Pro Micro (ATmega32U4, 5V / 16 MHz)
+- MT6835 absolute magnetic angle sensors (Roll & Pitch)
+- Thrustmaster F/A-18 grip via SPI
+- USB HID joystick using the Joystick library by Matthew Heironimus
+
+This document explains the most important user-visible features of the firmware.
+
+--------------------------------------------------------------------------------------
+1. DEBUG Function
+
+The DEBUG system outputs internal values to the Serial Monitor for:
+- sensor validation
+- calibration checks
+- troubleshooting SPI, CRC, or geometry issues
+
+How to Enable / Disable:
+
+At the top of the sketch: #define DEBUG_SERIAL 1   // Enable debug output
+Set to 0 to disable all serial output: #define DEBUG_SERIAL 0
+
+Open: Tools → Serial Monitor (Baud rate: 115200)
+
+Information Displayed:
+
+When enabled, every DEBUG_PERIOD_MS milliseconds the firmware prints:
+- Roll & Pitch absolute angle (degrees)
+- Delta vs center (degrees)
+- MT6835 status bits
+- CRC status (OK / BAD)
+- Raw 24-bit Grip SPI value (hex)
+
+Example:
+
+[R] deg=123.456 d(sensor)=10.234 crc=OK | [P] deg=78.912 d=2.341 crc=OK | GRIP=0x00A41F
+
+Notes:
+
+Disable DEBUG for final use
+
+--------------------------------------------------------------------------------------
+2. Deadzone Function
+
+The deadzone removes small jitter around the mechanical neutral position caused by:
+- Sensor noise
+- Mechanical play
+- Hand tremor
+
+The deadzone is applied before HID mapping, and the remaining range is renormalized so you do not lose travel.
+
+Configuration:
+
+At the top of the sketch, you see :
+
+static float DEADZONE_ROLL_DEG  = 0.3f;
+static float DEADZONE_PITCH_DEG = 0.3f;
+
+Value is expressed in degrees
+The deadzone is centered around the current neutral position
+
+Typical Values:
+|  Value  |	Effect        |
+|---------|-------------------|
+|0.0      | Deadzone disabled |
+|0.2 – 0.4| Light, realistic  |
+|0.6 – 1.0| Strong damping    |
+|>1.0	  | Not recommended   |
+
+Deadzone does not affect calibration or EEPROM storage. It only affects real-time axis output
+
+--------------------------------------------------------------------------------------
+3. Recenter Functions (Calibration System)
+
+The firmware supports two different recenter modes using a button combo:
+
+Recenter Button Combo
+
+Hold simultaneously:
+
+RECCE EVENT MARK & FIRE TRIGGER – 1st detent
+
+-------------------------------
+3.1 SAFE Recenter (2 seconds) - Hold the recenter combo for 2 seconds, then release
+
+Behavior
+The firmware attempts to store the current position as the new center. This is allowed only if the stick is already close to the existing center. The recenter is accepted only if:
+
+|Roll error | ≤ 1.2°
+|Pitch error| ≤ 1.2°
+
+This prevents:
+- Accidental recalibration while in full deflection
+- Corrupted center values in EEPROM
+
+New center is saved to EEPROM. Calibration persists across power cycles
+
+-------------------------------
+3.2 FORCED Recenter (6 seconds) - Hold the same recenter combo for 6 seconds.
+
+Behavior
+The firmware ignores all safety checks. The current stick position becomes the new center immediately
+
+When to Use
+- First-time calibration
+- After mechanical changes
+- If EEPROM data is incorrect
+- Recovery from bad calibration
+
+This mode always works, even if SAFE recenter was refused earlier.
+
+-------------------------------
+3.3 EEPROM Behavior
+
+Center positions are stored in EEPROM. Loaded automatically at power-up
+If EEPROM is invalid or empty:
+- The firmware initializes once from the boot position
+- SAFE recenter behaves as FORCED until calibration is valid
+
+EEPROM writes occur only during recenter, ensuring long EEPROM life.
+
+--------------------------------------------------------------------------------------
+4. Roll Geometry Compensation (Important Note)
+
+Because the Roll sensor is not mounted on the rotation axis, the sensor reports a larger angular range than the real mechanical travel.
+
+A fixed scale factor is applied:
+
+static const float ROLL_SENSOR_TO_MECH_SCALE = 15.5f / 110.0f;
+
+This converts:
+sensor angle → real mechanical roll angle
+If you modify the mechanical geometry, this value must be updated.
+
+--------------------------------------------------------------------------------------
+5. Recommended Calibration Procedure
+
+- Power the joystick
+- Leave it untouched for a few seconds
+- Move the stick to true mechanical neutral
+- Hold RECCE EVENT + TRIGGER (1st detent) for 6 seconds
+- Release
+- Calibration is now stored permanently

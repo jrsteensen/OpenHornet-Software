@@ -107,24 +107,24 @@ DcsBios::Switch2Pos emergencyGearRotate("EMERGENCY_GEAR_ROTATE", LG_EMERG);
 DcsBios::Switch2Pos gearDownlockOverrideBtn("GEAR_DOWNLOCK_OVERRIDE_BTN", LG_ORIDE);
 DcsBios::Switch2Pos gearLever("GEAR_LEVER", LG_LIMIT);
 DcsBios::Switch2Pos gearSilenceBtn("GEAR_SILENCE_BTN", LG_WARN);
-DcsBios::LED landingGearHandleLt(0x747e, 0x0800, LG_LED);
+DcsBios::LED landingGearHandleLt(FA_18C_hornet_LANDING_GEAR_HANDLE_LT_AM, LG_LED);
 
 // DCSBios reads to save airplane state information.
 void onExtWowLeftChange(unsigned int newValue) {
   wowLeft = newValue;
-} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
+} DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
 
 void onExtWowNoseChange(unsigned int newValue) {
   wowNose = newValue;
-} DcsBios::IntegerBuffer extWowNoseBuffer(0x74d6, 0x4000, 14, onExtWowNoseChange);
+} DcsBios::IntegerBuffer extWowNoseBuffer(FA_18C_hornet_EXT_WOW_NOSE, onExtWowNoseChange);
 
 void onExtWowRightChange(unsigned int newValue) {
   wowRight = newValue;
-} DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
+} DcsBios::IntegerBuffer extWowRightBuffer(FA_18C_hornet_EXT_WOW_RIGHT, onExtWowRightChange);
 
 void onGearDownlockOverrideBtnChange(unsigned int newValue) {
   downLockOverride = newValue;
-} DcsBios::IntegerBuffer gearDownlockOverrideBtnBuffer(0x747e, 0x4000, 14, onGearDownlockOverrideBtnChange);
+} DcsBios::IntegerBuffer gearDownlockOverrideBtnBuffer(FA_18C_hornet_GEAR_DOWNLOCK_OVERRIDE_BTN, onGearDownlockOverrideBtnChange);
 
 /**
 * Arduino Setup Function

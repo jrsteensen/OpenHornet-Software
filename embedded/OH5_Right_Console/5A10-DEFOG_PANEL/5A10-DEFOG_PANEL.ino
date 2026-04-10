@@ -32,9 +32,9 @@
 
 /**
  * @file 5A10-DEFOG_PANEL.ino
- * @author Arribe
- * @date 03.06.2024
- * @version 0.0.1
+ * @author Arribe, Ash
+ * @date 03.24.2026
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  **
  * @brief Controls the DEFOG panel, R CRKT BRKRs & CANOPY module.
@@ -49,7 +49,7 @@
  * PIN | Function
  * --- | ---
  * 15  | Defog - Anti-ice
- * 6   | Defog Lever Potentiometer
+ * A7   | Defog Lever Potentiometer
  * 14  | Defog - Rain 
  * 7   | Canopy Open
  * 16  | Canopy Close
@@ -101,7 +101,7 @@
 
 // Define pins for DCS-BIOS per interconnect diagram.
 #define DF_ANTIICE 15  ///< Defog - Anti-ice
-#define DF_A A0         ///< 6 Defog Lever Potentiometer
+#define DF_A A7         ///< 6 Defog Lever Potentiometer
 #define DF_RAIN 14     ///< Defog - Rain
 #define CN_OPEN 7      ///< Canopy Open
 #define CN_CLOSE 16    ///< Canopy Close
@@ -113,13 +113,6 @@
 #define RC_FCS3 A1     ///< Right Circuit BreaKer FCS3
 #define RC_FCSBIT 4    ///< Right Circuit Breaker Panel FCSbit On
 #define CN_OPEN_MAG 2  ///< Canaopy Open Hold mag-switch
-
-//Declare variables for custom non-DCS logic <update comment as needed>
-bool wowLeft = true;          ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowRight = true;         ///< Initializing weight-on-wheel value for cold/ground start.
-bool wowNose = true;          ///< Initializing weight-on-wheel value for cold/ground start.
-bool canopyOpenState = true;  ///< Initializing canopy state as open for cold/ground start.
-bool canopyMagHold = false;   ///< Initializing canopy mag hold to off.
 
 /**
 * Joystick Setup for defog lever on x-axis, and the 2 canopy aux buttons.
@@ -159,38 +152,11 @@ DcsBios::Switch2Pos fcsBitSw("FCS_BIT_SW", RC_FCSBIT);
 */
 void onCanopySwChange(unsigned int newValue) {
   if (newValue == 2) {
-    if (wowRight == wowLeft == wowNose == true) {
-      digitalWrite(CN_OPEN_MAG, HIGH);
-      canopyMagHold = true;
-    }
+    digitalWrite(CN_OPEN_MAG, HIGH);
   } else {
     digitalWrite(CN_OPEN_MAG, LOW);
-    canopyMagHold = false;
   }
-} DcsBios::IntegerBuffer canopySwBuffer(0x74ce, 0x0300, 8, onCanopySwChange);
-
-/**
-* Determine the canopy open state by reading if the value is over 58,900 (determined by testing in DCS).
-*/
-void onCanopyPosChange(unsigned int newValue) {
-  if (newValue >= 58900) {
-    canopyOpenState = true;
-  } else {
-    canopyOpenState = false;
-  }
-} DcsBios::IntegerBuffer canopyPosBuffer(0x7552, 0xffff, 0, onCanopyPosChange);
-
-void onExtWowLeftChange(unsigned int newValue) {
-  wowLeft = newValue;
-} DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
-
-void onExtWowNoseChange(unsigned int newValue) {
-  wowNose = newValue;
-} DcsBios::IntegerBuffer extWowNoseBuffer(0x74d6, 0x4000, 14, onExtWowNoseChange);
-
-void onExtWowRightChange(unsigned int newValue) {
-  wowRight = newValue;
-} DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
+} DcsBios::IntegerBuffer canopySwBuffer(FA_18C_hornet_CANOPY_SW, onCanopySwChange);
 
 
 /**
@@ -226,7 +192,6 @@ void setup() {
 * Then one could calibrate it in the Window's Game Controllers utility, and map it as an axis in DCS.\n\n
 * This is the command to use if one wants to try the pontentiometer approach - DcsBios::Potentiometer defogHandle("DEFOG_HANDLE", DF_A);
 * 
-* @details If the canopy mag-switch is held in the open positon, then when the canopy reaches the fully open position the mag-switch is released.
 *
 */
 void loop() {
@@ -237,10 +202,5 @@ void loop() {
   Joystick.setButton(0, !digitalRead(CN_AUX1)); // Set the aux 1 joystick button state.
   Joystick.setButton(1, !digitalRead(CN_AUX2)); // Set the aux 2 joystick button state.
   Joystick.setXAxis(analogRead(DF_A));  // Set the defog lever position.
-
-  if(canopyMagHold && canopyOpenState){ // Release mag-switch when the canopy is open and the mag is on.
-    digitalWrite(CN_OPEN_MAG, LOW);  // Release the mag-switch.
-    canopyMagHold = false; // Set canopy mode to false.
-  }
 }
 

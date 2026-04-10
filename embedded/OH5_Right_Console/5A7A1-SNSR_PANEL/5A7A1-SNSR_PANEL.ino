@@ -32,9 +32,9 @@
 
 /**
  * @file 5A7A1-SNSR_PANEL.ino
- * @author Arribe
- * @date 03.10.2024
- * @version 0.0.1
+ * @author Arribe, Ash
+ * @date 03.24.2026
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the SNSR panel.
  *
@@ -120,13 +120,6 @@
 #define INS_TEST 9      ///< INS Test
 #define LTDR_ARM_MAG 2  ///< LTDR Arm Mag-switch
 
-//Declare variables for custom non-DCS logic <update comment as needed>
-bool leftGearDown = true;        ///< Initialize left landing gear state for the LTD/R switch hold logic.
-bool rightGearDown = true;       ///< Initialize right landing gear state for the LTD/R switch hold logic.
-bool noseGearDown = true;        ///< Initialize nose landing gear state for the LTD/R switch hold logic.
-bool airToGroundLight = false;   ///< Initialize Air-to-Ground light for the LTD/R switch hold logic.
-bool ltdrArmMagEngaged = false;  ///< Initialize LTD/R mag-swtich for hold logic.
-
 const byte insSwPins[8] = { DcsBios::PIN_NC, INS_CV, INS_GND, INS_NAV, INS_IFA, INS_GYRO, INS_GB, INS_TEST };  ///< Off position doesn't have a pin.
 const byte radarSwPins[4] = { DcsBios::PIN_NC, RDR_STBY, RDR_OPR, RDR_EMERG };                                 ///< Off position doesn't have a pin.
 
@@ -139,78 +132,18 @@ DcsBios::Switch2Pos ltdRSw("LTD_R_SW", LTDR_ARM);
 SwitchMultiPosDebounce insSw("INS_SW", insSwPins, 8, false, 100);
 SwitchRadar radarSw("RADAR_SW", "RADAR_SW_PULL", 3, radarSwPins, 4, false, 100);
 
-// DCSBios reads to save airplane state information.
-void onFlpLgLeftGearLtChange(unsigned int newValue) {
-  leftGearDown = newValue;
-}
-DcsBios::IntegerBuffer flpLgLeftGearLtBuffer(0x7430, 0x1000, 12, onFlpLgLeftGearLtChange);
-
-void onFlpLgRightGearLtChange(unsigned int newValue) {
-  rightGearDown = newValue;
-}
-DcsBios::IntegerBuffer flpLgRightGearLtBuffer(0x7430, 0x2000, 13, onFlpLgRightGearLtChange);
-
-void onFlpLgNoseGearLtChange(unsigned int newValue) {
-  noseGearDown = newValue;
-}
-DcsBios::IntegerBuffer flpLgNoseGearLtBuffer(0x7430, 0x0800, 11, onFlpLgNoseGearLtChange);
-
-/// A/G Master Mode light used to determine if the LTD/R mag-switch should be cancelled.  If the ight goes off the mag-swtich releases.
-void onMasterModeAgLtChange(unsigned int newValue) {
-  airToGroundLight = newValue;
-  if (airToGroundLight == 0 && ltdrArmMagEngaged == true) {  // light off and the LTD/R mag-switch is on.
-    digitalWrite(LTDR_ARM_MAG, LOW);                         // turn off the mag-switch.
-    ltdrArmMagEngaged = false;                               // remember that the switch is released.
-  }
-}
-DcsBios::IntegerBuffer masterModeAgLtBuffer(0x740c, 0x0400, 10, onMasterModeAgLtChange);
-
-/// If the landing gear lever is lowered while the LTD/R mag-switch is held in the 'ARM' position the swtich is released.
-void onGearLeverChange(unsigned int newValue) {
-  if (newValue == 0 && ltdrArmMagEngaged == true) {  // landing gear lever lowered and mag-switch is on.
-    digitalWrite(LTDR_ARM_MAG, LOW);                 // Landing gear handle lowered, turn off LTD/R Mag.
-    ltdrArmMagEngaged = false;                       // remember that the switch is released.
-  }
-}
-DcsBios::IntegerBuffer gearLeverBuffer(0x747e, 0x1000, 12, onGearLeverChange);
-
-/// If the LTD/R switch is turned off virtually or physically update the mag-switch state.  The mag-switch will only hold if the landing gear is up, and the A/G master mode is on.
+/// If the LTD/R switch is turned off virtually or physically update the mag-switch state.
 void onLtdRSwChange(unsigned int newValue) {
   switch (newValue) {
     case 0:
       digitalWrite(LTDR_ARM_MAG, LOW);  // switch turned off physically or virtually in the sim, turn off mag.
-      ltdrArmMagEngaged = false;        // remember that the switch is released.
       break;
     case 1:
-      if ((leftGearDown == rightGearDown == noseGearDown == false) && (airToGroundLight == true)) {  // if the gear is up and A/G light On the mag-switch will hold.
-        digitalWrite(LTDR_ARM_MAG, HIGH);                                                            // hold the mag-swtich in the 'ARM' position.
-        ltdrArmMagEngaged = true;                                                                    // remember that the mag-switch is holding.
-        break;
-      }
+      digitalWrite(LTDR_ARM_MAG, HIGH);                                                            // hold the mag-swtich in the 'ARM' position.
   }
 }
-DcsBios::IntegerBuffer ltdRSwBuffer(0x74c8, 0x4000, 14, onLtdRSwChange);
+DcsBios::IntegerBuffer ltdRSwBuffer(FA_18C_hornet_LTD_R_SW, onLtdRSwChange);
 
-/**
-* If the FLIR is turned off the LTD/R switch should be released.  Technically it shouldn't hold until after the FLIR is no longer timed-out.  But no way to get that state from DCS.
-*
-* @bug The code to check the FLIR switch state should work, but for some unkown reason it's not releasing the mag-switch like the landing gear or the A/G master mode does.  Potential DCSBios bug.
-*/
-void onFlirSwChange(unsigned int newValue) {
-  switch (newValue) {
-    case 0:
-      if (ltdrArmMagEngaged == true) {
-        digitalWrite(LTDR_ARM_MAG, LOW);  // flir switch turned off, turn off LTD/R Mag.
-        ltdrArmMagEngaged = false;        // remember that the switch is released.
-      }
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-  }
-}
-DcsBios::IntegerBuffer flirSwBuffer(0x74c8, 0x3000, 12, onFlirSwChange);
 
 /**
 * Arduino Setup Function
