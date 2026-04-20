@@ -16,6 +16,9 @@ on:
 
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-documentation:
     runs-on: ubuntu-latest
