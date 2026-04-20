@@ -43,3 +43,6 @@
 [submodule "libraries/Joystick_ESP32S2"]
 	path = libraries/Joystick_ESP32S2
 	url = https://github.com/schnoog/Joystick_ESP32S2.git
+[submodule "libraries/AccelStepper"]
+	path = libraries/AccelStepper
+	url = https://github.com/waspinator/AccelStepper.git

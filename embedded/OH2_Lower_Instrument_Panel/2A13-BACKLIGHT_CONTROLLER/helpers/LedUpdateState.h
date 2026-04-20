@@ -15,7 +15,8 @@
  * @version   t 0.3.2
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     This class serves just one purpose: track whether the LEDs need to be updated.
- *            The flag is read by board.h, and if TRUE, used to trigger the update of the LEDs.
+ *            The flag can be set by any panel as it processes DCS-BIOS updates.
+ *            Then, the flag is read by board.h in each loop and if TRUE, used to trigger the update of the LEDs.
  * @details   Technical implementation: singleton state machine and using interrupt pausing to ensure atomicity
  *            when writing the flag.
  *********************************************************************************************************************/

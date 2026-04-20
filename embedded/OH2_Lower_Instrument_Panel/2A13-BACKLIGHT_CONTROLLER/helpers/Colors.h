@@ -34,5 +34,6 @@
 #define NVIS_GREEN_B CRGB(25, 155, 0)                                 // Green indicators (Mil-Spec: 85, 138, 0)
 #define NVIS_WHITE   CRGB(40, 40, 30)                                 // Dimmed white, e.g. for Jett Station Select toggle light
 #define NVIS_BLACK   CRGB(0, 0, 0)                                    // No colour / OFF
+#define NVIS_CGRB_GREEN_A CRGB(155, 25, 0)                           // For GRB LEDs (e.g. Radar Altimeter and Standby Instruments)
 
 #endif // COLORS_H 

@@ -31,6 +31,7 @@
 enum LedRole {
     LED_INSTR_BL,
     LED_CONSOLE_BL,
+    LED_INSTR_BL_CGRB,
     LED_READY,
     LED_DISCH,
     LED_AG,

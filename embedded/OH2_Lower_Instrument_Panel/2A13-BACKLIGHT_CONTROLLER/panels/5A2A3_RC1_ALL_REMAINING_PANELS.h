@@ -30,7 +30,7 @@
  * @details "Role" in this context refers to the LED role enum in the Panel.h file (enum used for memory efficiency).
  * @remark  This table is stored in PROGMEM for memory efficiency.
  ********************************************************************************************************************/
-const int RC1_ALL_REMAINING_LED_COUNT = 79;  // Total number of LEDs in the panel
+const int RC1_ALL_REMAINING_LED_COUNT = 66;  // Total number of LEDs in the panel
 const Led rc1AllRemainingLedTable[RC1_ALL_REMAINING_LED_COUNT] PROGMEM = {
     {0, LED_CONSOLE_BL}, {1, LED_CONSOLE_BL}, {2, LED_CONSOLE_BL}, {3, LED_CONSOLE_BL}, {4, LED_CONSOLE_BL}, 
     {5, LED_CONSOLE_BL}, {6, LED_CONSOLE_BL}, {7, LED_CONSOLE_BL}, {8, LED_CONSOLE_BL}, {9, LED_CONSOLE_BL},
@@ -45,9 +45,7 @@ const Led rc1AllRemainingLedTable[RC1_ALL_REMAINING_LED_COUNT] PROGMEM = {
     {50, LED_CONSOLE_BL}, {51, LED_CONSOLE_BL}, {52, LED_CONSOLE_BL}, {53, LED_CONSOLE_BL}, {54, LED_CONSOLE_BL}, 
     {55, LED_CONSOLE_BL}, {56, LED_CONSOLE_BL}, {57, LED_CONSOLE_BL}, {58, LED_CONSOLE_BL}, {59, LED_CONSOLE_BL},
     {60, LED_CONSOLE_BL}, {61, LED_CONSOLE_BL}, {62, LED_CONSOLE_BL}, {63, LED_CONSOLE_BL}, {64, LED_CONSOLE_BL}, 
-    {65, LED_CONSOLE_BL}, {66, LED_CONSOLE_BL}, {67, LED_CONSOLE_BL}, {68, LED_CONSOLE_BL}, {69, LED_CONSOLE_BL},
-    {70, LED_CONSOLE_BL}, {71, LED_CONSOLE_BL}, {72, LED_CONSOLE_BL}, {73, LED_CONSOLE_BL}, {74, LED_CONSOLE_BL}, 
-    {75, LED_CONSOLE_BL}, {76, LED_CONSOLE_BL}, {77, LED_CONSOLE_BL}, {78, LED_CONSOLE_BL}
+    {65, LED_CONSOLE_BL}
 };
 
 /********************************************************************************************************************
@@ -63,8 +61,8 @@ const LedText rc1AllRemainingTextTable[RC1_ALL_REMAINING_TEXT_COUNT] PROGMEM = {
 /********************************************************************************************************************
  * @brief   RC1 All Remaining Panels class
  * @details Backlighting controller for all remaining panels in RC1.
- *          Total LEDs: 78
- *          Backlight LEDs: 78 (all LEDs are backlights)
+ *          Total LEDs: 66
+ *          Backlight LEDs: 66 (all LEDs are backlights)
  *          Indicator LEDs: 0 (no indicators in this panel)
  * @remark  This class inherits from the "basic" Panel class in panels/Panel.h
  *          It also enforces a singleton pattern; this is required to use DCS-BIOS callbacks in class methods.

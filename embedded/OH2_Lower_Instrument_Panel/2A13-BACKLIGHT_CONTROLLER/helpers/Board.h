@@ -40,6 +40,7 @@
 #include "Colors.h"
 #include "LedUpdateState.h"
 #include "RotaryEncoder.h"
+#include "DCS_State_Checker.h"
 
 class Board {
 
@@ -57,14 +58,15 @@ private:
     int currentMode;                                                  // Current operating mode
     int mode2_brightness;                                             // Current brightness level (0-255), for manual mode 2
     int mode3_brightness;                                             // Brightness level (0-255) for rainbow mode 3
-    int dcs_brightness_console;                                        // Current brightness level (0-255), for DCS-BIOS controlled mode
-    int dcs_brightness_instrument;                                     // Current brightness level (0-255), for DCS-BIOS controlled mode
-    int dcs_brightness_flood;                                          // Current brightness level (0-255), for DCS-BIOS controlled mode
+    int dcs_brightness_console;                                        // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    int dcs_brightness_instrument;                                     // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    int dcs_brightness_flood;                                          // Current brightness level (0-65535), for DCS-BIOS controlled mode
     int encSwPin;                                                     // Encoder switch pin
     RotaryEncoder* encoder;                                           // Pointer to encoder instance
     int rotary_pos;                                                   // Current rotary encoder position
     static Board* instance;                                           // Static instance pointer to the Board class
-
+    DcsState prevDcsState = DcsState::EXITED;                         // Previous DCS state for transition detection
+    
     /**
      * @brief Private constructor to enforce singleton pattern
      * @see This method is called by getInstance() when creating the singleton instance
@@ -77,6 +79,9 @@ private:
         currentMode = MODE_NORMAL;                                    // Initialize to normal mode 1
         mode2_brightness = 64;                                        // Initialize manual mode 2 brightness to 25%
         mode3_brightness = 64;                                        // Initialize rainbow mode 3 brightness to 25%
+        dcs_brightness_console = 0;                                   // Initialize DCS brightness to 0
+        dcs_brightness_instrument = 0;                                // Initialize DCS brightness to 0
+        dcs_brightness_flood = 0;                                     // Initialize DCS brightness to 0
         rotary_pos = 0;                                               // Initialize with 0
         encoder = nullptr;                                            // Initialize with nullptr
     }
@@ -119,11 +124,13 @@ public:
      */
     void updateLeds() {                                               
         if (LedUpdateState::getInstance()->getUpdateFlag()) {
-            updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // Countdown logic allows to collect LED updates
-            updCountdown--;                                           // from 8 DCS Bios cycles into one FastLED.show()
+            updCountdown = (updCountdown == 0) ? 32 : updCountdown;   // Countdown logic allows to collect LED updates
+            updCountdown--;                                           // from 32 loop() calls into one FastLED.show()
             if (updCountdown == 0) {                                  // Trigger FastLED.show() at end of countdown
+                cli();
                 FastLED.show();                                       
                 LedUpdateState::getInstance()->setUpdateFlag(false);  // Reset update flag
+                sei();
             }
         }
     }
@@ -155,7 +162,7 @@ public:
                 setAllLightsOff();
                 sendDcsBiosMessage("CONSOLES_DIMMER", String(dcs_brightness_console).c_str());           // Send DCS-BIOS message to reset console dimmer
                 sendDcsBiosMessage("INST_PNL_DIMMER", String(dcs_brightness_instrument).c_str());        // Send DCS-BIOS message to reset instrument lighting
-                //sendDcsBiosMessage("FLOOD_DIMMER", dcs_brightness_flood);
+                sendDcsBiosMessage("FLOOD_DIMMER", String(dcs_brightness_flood).c_str());                  // Send DCS-BIOS message to reset floodlights dimmer
             }
             if (currentMode == MODE_MANUAL) {
                 mode2_brightness = 64;                                // Reset to 25% brightness
@@ -184,7 +191,24 @@ public:
         int newPos = 0;  
         switch(currentMode) {
             case MODE_NORMAL:                                         // MODE 1: LEDs controlled by DCS BIOS
-                DcsBios::loop();
+                {
+                    DcsState currentDcsState = getDcsState();
+                    if (currentDcsState == DcsState::EXITED && prevDcsState != DcsState::EXITED) {
+                        setAllLightsOff();                            // DCS just exited: turn off all lights
+                    } else if (prevDcsState == DcsState::EXITED &&
+                               currentDcsState != DcsState::EXITED &&
+                               currentDcsState != DcsState::PAUSED) {
+                        for (int i = 0; i < channelCount; i++) {     // DCS became active again: restore last known brightness
+                            channels[i]->updateInstrLights(dcs_brightness_instrument);
+                            channels[i]->updateConsoleLights(dcs_brightness_console);
+                            channels[i]->updateFloodLights(dcs_brightness_flood);
+                        }
+                        LedUpdateState::getInstance()->setUpdateFlag(true);
+                    }
+                    // PAUSED: do nothing - keep current light state
+                    prevDcsState = currentDcsState;
+                    DcsBios::loop();
+                }
                 break;
             case MODE_MANUAL:                                         // MODE 2: LEDs controlled manually through BKLT switch
                 encoder->tick();
@@ -233,7 +257,7 @@ public:
     void fillSolid(const CRGB& color, int brightness = -1) {          // Fill all channels with a solid color
         int targetBrightness = (brightness >= 0) ? brightness : this->mode2_brightness;
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateBacklights(map(targetBrightness, 0, 255, 0, 65535), color);
+            channels[i]->updateInstrLights(map(targetBrightness, 0, 255, 0, 65535), color);
             channels[i]->updateConsoleLights(map(targetBrightness, 0, 255, 0, 65535), color);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
@@ -259,7 +283,7 @@ public:
         dcs_brightness_instrument = newValue;                         // In any mode, store the DCS-BIOS brightness value
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateBacklights(newValue);
+            channels[i]->updateInstrLights(newValue);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
         
@@ -275,6 +299,21 @@ public:
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
         for (int i = 0; i < channelCount; i++) {
             channels[i]->updateConsoleLights(newValue);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+        
+    }
+
+    /**
+     * @brief Updates all channels with new flood lighting value
+     * @param newValue The new brightness value
+     * @see This method is called by onFloodDimmerChange() in Board.h
+     */
+    void updateFloodLights(uint16_t newValue) {
+        dcs_brightness_flood = newValue;                              // In any mode, store the DCS-BIOS brightness value
+        if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->updateFloodLights(newValue);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
         
@@ -300,6 +339,16 @@ public:
         if (instance) instance->updateConsoleLights(newValue);
     }
     DcsBios::IntegerBuffer consolesDimmerBuffer{FA_18C_hornet_CONSOLES_DIMMER, onConsolesDimmerChange};
+
+    /**
+     * @brief Callback for flood lighting changes from DCS-BIOS
+     * @param newValue The new brightness value from DCS-BIOS
+     * @see This method is called by DCS-BIOS when flood lighting changes
+     */
+    static void onFloodDimmerChange(unsigned int newValue) {
+        if (instance) instance->updateFloodLights(newValue);
+    }
+    DcsBios::IntegerBuffer floodDimmerBuffer{FA_18C_hornet_FLOOD_DIMMER, onFloodDimmerChange};
 
 };
 

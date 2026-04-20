@@ -89,6 +89,13 @@
 #define TXENABLE_PIN 5  ///< Sets TXENABLE_PIN to Arduino Pin 5
 #define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
 
+/*
+  The following #define tells DCS-BIOS that this RS-485 slave device uses a
+  larger ring buffer size than the default. Required to allow message IDs
+  that are longer than 32 bytes from aircraft such as F/A-18C and F-4E.
+*/
+#define DCSBIOS_RS485_SLAVE_LARGE_BUFFER // Requires DCS-BIOS Arduino Library 0.3.12+, allows for larger message IDs from DCS.
+
 #include "DcsBios.h"
 #include <Stepper.h>
 #include "Adafruit_NeoPixel.h"

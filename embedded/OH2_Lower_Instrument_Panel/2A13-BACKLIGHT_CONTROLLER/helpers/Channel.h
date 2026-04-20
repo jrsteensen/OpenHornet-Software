@@ -63,7 +63,7 @@ public:
 
     /**
      * @brief Initializes the LED strip with FastLED
-     * @see This method is called by Board::initAndRegisterChannel()
+     * @see This method is called during setup in 2A13-BACKLIGHT_CONTROLLER.ino
      */
     void initialize() {
         // Use a switch statement to overcome strange behaviour of FastLED to have a pin number at compile time
@@ -163,10 +163,10 @@ public:
      * @param color The color to set (defaults to NVIS_GREEN_A)
      * @see This method is called by Board::fillSolid() and Board::updateInstrumentLights()
      */
-    void updateBacklights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
+    void updateInstrLights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setBacklights(brightness, color);
+            current->setInstrLights(brightness, color);
             current = current->nextPanel;
         }
     }
@@ -186,8 +186,21 @@ public:
     }
 
     /**
+     * @brief Updates flood lights for all panels in this channel
+     * @param brightness The brightness value to set
+     * @see This method is called by Board::updateFloodLights() 
+     */
+    void updateFloodLights(uint16_t brightness) {
+        Panel* current = firstPanel;
+        while (current != nullptr) {
+            current->setFloodlights(brightness);
+            current = current->nextPanel;
+        }
+    }
+
+    /**
      * @brief Turns off all lights in all panels of this channel and resets brightness state
-     * @see This method is called by Board::fillBlack() to properly reset panel state
+     * @see This method is called by Board::setAllLightsOff()
      */
     void setAllLightsOff() {
         // Clear all LEDs in the entire channel array (not just panel-tracked ones)

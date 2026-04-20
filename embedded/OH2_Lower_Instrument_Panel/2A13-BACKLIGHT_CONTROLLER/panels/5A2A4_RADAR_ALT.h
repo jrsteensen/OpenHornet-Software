@@ -23,6 +23,7 @@
 
 #include "DcsBios.h"
 #include "../helpers/Panel.h"
+#include "../helpers/Colors.h"
 
 
 /********************************************************************************************************************
@@ -32,7 +33,7 @@
  ********************************************************************************************************************/
 const int RADAR_ALT_LED_COUNT = 2;  // Total number of LEDs in the panel
 const Led radarAltLedTable[RADAR_ALT_LED_COUNT] PROGMEM = {
-    {0, LED_INSTR_BL}, {1, LED_INSTR_BL}
+    {0, LED_INSTR_BL_CGRB}, {1, LED_INSTR_BL_CGRB}
 };
 
 /********************************************************************************************************************
@@ -85,7 +86,15 @@ private:
     }
 
     // Static callback functions for DCS-BIOS
-    // NIL
+    static void onInstrIntLtChange(unsigned int newValue) {
+        int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
+        CRGB target = NVIS_CGRB_GREEN_A;                              // Use NVIS_CGRB_GREEN_A for GRB LEDs
+        target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        if (instance) instance->setIndicatorColor(LED_INSTR_BL_CGRB, target);
+    }
+    DcsBios::IntegerBuffer instrIntLtBuffer{FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange};
+
+
 
     // Instance data
     static RadarAltPanel* instance;

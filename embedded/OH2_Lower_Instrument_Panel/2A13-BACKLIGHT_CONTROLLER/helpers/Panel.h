@@ -16,7 +16,7 @@
  * @copyright Copyright 2016-2025 OpenHornet. See 2A13-BACKLIGHT_CONTROLLER.ino for details.
  * @brief     Abstract base class for all panels. Each panel must be a derived class from this base class.
  * @details   It provides functions that are repeatedly required across all panels: 
- *            setBacklights(), setIndicatorColor(), setFloodlights().
+ *            setInstrLights(), setIndicatorColor(), setFloodlights().
  *            Panels are added to Channels. For memory efficiency, panels are organized in a linked list within each 
  *            channel. This conserves stack memory.
  *            This approach avoids allocating fixed-size arrays for panel pointers in each channel, 
@@ -73,9 +73,9 @@ protected:
      * @see This method is called by derived panel classes
      */
     Panel() {
-        current_backl_brightness = 64;
-        current_console_brightness = 64;
-        current_flood_brightness = 64;
+        current_backl_brightness = 0;
+        current_console_brightness = 0;
+        current_flood_brightness = 0;
         nextPanel = nullptr;  // Initialize next panel pointer
     }
 
@@ -91,17 +91,19 @@ protected:
 
 
     /**
-     * @brief Set the color of all backlight LEDs
+     * @brief Set the color of all instrument backlight LEDs
      * @param newValue The new brightness value (0-65535)
      * @param color The color to set (defaults to NVIS_GREEN_A)
-     * @see This method is called by Board::updateInstrumentLights() and Board::fillSolid()
+     * @see This method is called by Channel::updateInstrLights()
      */
-    void setBacklights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                           
+    void setInstrLights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                           
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
         if (newValue == current_backl_brightness) return;             // Exit if no brightness change
         int scale = map(newValue, 0, 65535, 0, 255);                  // Map the brightness scale factor to a range of 0-255
         CRGB target = color;
         target.nscale8_video(scale);                                  // Use FastLED's nscale8_video to apply the scale factor
+        CRGB target2 = NVIS_CGRB_GREEN_A;                             // For GRB LEDs (e.g. Radar Altimeter and Standby Instruments)
+        target2.nscale8_video(scale);
         current_backl_brightness = newValue;                          // Update and save the current brightness value
                  
         int n = getLedCount();
@@ -112,6 +114,9 @@ protected:
             if (led.role == LED_INSTR_BL) {
                 getLedStrip()[ledIndex] = target;
             }
+            if (led.role == LED_INSTR_BL_CGRB) {
+                getLedStrip()[ledIndex] = target2;
+            }
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
     }
@@ -120,7 +125,7 @@ protected:
      * @brief Sets the color of all console backlight LEDs
      * @param newValue The new brightness value (0-65535)
      * @param color The color to set (defaults to NVIS_GREEN_A)
-     * @see This method is called by Board::updateConsoleLights()
+     * @see This method is called by Channel::updateConsoleLights()
      */
     void setConsoleLights(uint16_t newValue, const CRGB& color = NVIS_GREEN_A) {                        // Set the color of all LEDs with role LED_CONSOLE_BL
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
@@ -165,10 +170,10 @@ protected:
     /**
      * @brief Sets the brightness of floodlight LEDs
      * @param newValue The new brightness value (0-65535)
-     * @see This method is called by derived panel classes to update floodlights
+     * @see This method is called by Channel::updateFloodLights()
      */
     void setFloodlights(uint16_t newValue) {                          // Set the brightness of LEDs with role LED_FLOOD
-        if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setBacklights()
+        if (!getLedStrip() || !getLedTable()) return;                 // Same structure as setInstrLights()
         if (newValue == current_flood_brightness) return;             
         current_flood_brightness = newValue;
         
@@ -191,7 +196,7 @@ protected:
 
     /**
      * @brief Turns off all lights in this panel, irrespective of their role, and resets brightness state
-     * @see This method is called by Board::fillBlack() to properly reset panel state
+     * @see This method is called by Channel::setAllLightsOff()
      */
     void setAllLightsOff() {                                          // Turn off all lights and reset brightness state
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
