@@ -40,7 +40,7 @@
 #include "Colors.h"
 #include "LedUpdateState.h"
 #include "RotaryEncoder.h"
-#include "DcsRunningChecker.h"
+#include "DCS_State_Checker.h"
 
 class Board {
 
@@ -65,7 +65,7 @@ private:
     RotaryEncoder* encoder;                                           // Pointer to encoder instance
     int rotary_pos;                                                   // Current rotary encoder position
     static Board* instance;                                           // Static instance pointer to the Board class
-    bool dcsWasRunning = true;                                        // Flag to track if DCS was running last time checkDcsRunning() was called
+    DcsState prevDcsState = DcsState::EXITED;                         // Previous DCS state for transition detection
     
     /**
      * @brief Private constructor to enforce singleton pattern
@@ -192,22 +192,21 @@ public:
         switch(currentMode) {
             case MODE_NORMAL:                                         // MODE 1: LEDs controlled by DCS BIOS
                 {
-                    bool dcsIsRunning = checkDcsRunning();
-                    if (!dcsIsRunning && dcsWasRunning) {
-                        for (int i = 0; i < channelCount; i++) {
-                            channels[i]->updateInstrLights(0);
-                            channels[i]->updateConsoleLights(0);
-                            channels[i]->updateFloodLights(0);
-                        }
-                    } else if (dcsIsRunning && !dcsWasRunning) {
-                        for (int i = 0; i < channelCount; i++) {
+                    DcsState currentDcsState = getDcsState();
+                    if (currentDcsState == DcsState::EXITED && prevDcsState != DcsState::EXITED) {
+                        setAllLightsOff();                            // DCS just exited: turn off all lights
+                    } else if (prevDcsState == DcsState::EXITED &&
+                               currentDcsState != DcsState::EXITED &&
+                               currentDcsState != DcsState::PAUSED) {
+                        for (int i = 0; i < channelCount; i++) {     // DCS became active again: restore last known brightness
                             channels[i]->updateInstrLights(dcs_brightness_instrument);
                             channels[i]->updateConsoleLights(dcs_brightness_console);
                             channels[i]->updateFloodLights(dcs_brightness_flood);
                         }
                         LedUpdateState::getInstance()->setUpdateFlag(true);
                     }
-                    dcsWasRunning = dcsIsRunning;
+                    // PAUSED: do nothing - keep current light state
+                    prevDcsState = currentDcsState;
                     DcsBios::loop();
                 }
                 break;
