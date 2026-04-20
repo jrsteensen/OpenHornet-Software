@@ -1,44 +1,39 @@
 name: Generate & Deploy Doxygen Docs
 
 # Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# events but only for the main branch
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - closed
     branches: [ main ]
-
   push:
     branches: [ main ]
-
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build-documentation:
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-    # Build the HTML documentation
-    - name: Doxygen Action
-      # uses: mattnotmitt/doxygen-action@1.9.7
-      uses: mattnotmitt/doxygen-action@edge
-      with:
+      # Build the HTML documentation
+      - name: Doxygen Action
+        uses: mattnotmitt/doxygen-action@1.12.0
+        with:
           doxyfile-path: Doxyfile
           working-directory: ./docs
 
-    # Deploy the HTML documentation to GitHub Pages
-    - name: GH Pages Deployment
-      if: github.event_name == 'pull_request' && github.event.pull_request.merged == true
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/html/
-        enable_jekyll: false
-        allow_empty_commit: false
-        force_orphan: true
-        publish_branch: gh-pages
+      # Deploy the HTML documentation to GitHub Pages
+      # Runs on push to main (i.e. after a PR merge) or manual dispatch
+      - name: GH Pages Deployment
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/html/
+          enable_jekyll: false
+          allow_empty_commit: false
+          force_orphan: true
+          publish_branch: gh-pages
