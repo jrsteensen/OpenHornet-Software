@@ -20,7 +20,7 @@ jobs:
 
       # Build the HTML documentation
       - name: Doxygen Action
-        uses: mattnotmitt/doxygen-action@1.13.2
+        uses: mattnotmitt/doxygen-action@1.12.0
         with:
           doxyfile-path: Doxyfile
           working-directory: ./docs
