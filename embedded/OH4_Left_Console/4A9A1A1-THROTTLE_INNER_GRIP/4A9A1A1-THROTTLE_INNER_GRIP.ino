@@ -84,6 +84,8 @@
 #define B 11                   ///< B - coms switch
 #define A 10                   ///< A - coms switch
 
+void requestEvent();
+
 /**
 * Arduino Setup Function
 *
