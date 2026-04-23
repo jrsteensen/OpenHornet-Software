@@ -156,6 +156,7 @@ Joystick_ Joystick = Joystick_(
   false);
 
 const bool testAutoSendMode = false;
+long mapHallSensor(unsigned long long x, unsigned long long in_min, unsigned long long in_max, unsigned long long out_min, unsigned long long out_max);
 
 SPISettings myMT6835SPISettings(1000000, MT6835_BITORDER, SPI_MODE3);
 OpenhornetMT6835 outboardThrottle = OpenhornetMT6835(OUTBD_CSX, myMT6835SPISettings);
