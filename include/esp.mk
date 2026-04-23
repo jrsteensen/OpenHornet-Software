@@ -5,10 +5,9 @@ endif
 
 LIBRARY_DIR        = $(ROOTDIR)/libraries
 ESPMK_DIR          = $(ROOTDIR)/include/makeEspArduino
-# Include libraries from the libraries directory for linking.
-CUSTOM_LIBS        = $(LIBRARY_DIR)
-# Exclude platform libraries to avoid compilation and linking errors.
-EXCLUDE_DIRS	   = $(LIBRARY_DIR)/Servo|$(LIBRARY_DIR)/Arduino_Boards|$(ESP_ROOT)|$(LIBRARY_DIR)/FastLED/examples
+# Include only the repo libraries named by each sketch. ESP core libraries are
+# found separately by makeEspArduino.
+LIBS               = $(wildcard $(addprefix $(LIBRARY_DIR)/,$(LIBRARIES)))
 CHIP			   = esp32
 BUILD_ROOT         = build
 BUILD_DIR          = build
