@@ -15,10 +15,11 @@ Closes #<issue number>
 - [ ] This change requires a documentation update outside of the automatically-generated Doxygen documentation.
 
 ### Checklist:
-- [ ] My code follows the [style guidelines](https://jrsteensen.github.io/OpenHornet-Software/d4/d46/md__2github_2workspace_2_s_t_y_l_e_g_u_i_d_e.html) of this project
-- [ ] [I have complied with the software manual](https://jrsteensen.github.io/OpenHornet-Software/d7/d78/md__software_manual.html) for this project
+- [ ] [I have complied with the software manual]((https://jrsteensen.github.io/OpenHornet-Software/d7/d78/md__software_manual.html)) for this project, to include style requirements
+- [ ] I have incremented the version of the program in the header, using semantic versioning (Do not increment major version (x.0.0) until post-1.0 package release)
+- [ ] I have added myself as a co-author in the program header
 - [ ] I have performed a self-review of my own code
-- [ ] I have commented my code fully with Doxygen compatible comments, particularly in hard-to-understand areas
+- [ ] I have commented my code fully with Doxygen compatible comments, particularly in hard-to-understand areas, and reviewed previous comments in the code.
 - [ ] I have made corresponding changes to non-Doxygen generated documentation
 - [ ] I have ran Doxygen locally, and it builds the docs successfully
 - [ ] My changes generate no errors on compile in Arduino IDE
