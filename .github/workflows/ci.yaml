@@ -48,7 +48,7 @@ jobs:
       run: |
           cd embedded
           make all
-
+         
     # Upload .eep and .hex files as artifacts with expiration
     - name: Prep Artifacts
       run: |
