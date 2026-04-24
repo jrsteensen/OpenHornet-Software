@@ -32,9 +32,9 @@
 
 /**
  * @file 4A7A1-COMM_PANEL.ino
- * @author Arribe
+ * @author Arribe, Ash
  * @date 03.03.2024
- * @version 0.0.1
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief @brief Controls the COMM panel & ANT SEL panel.
  *
@@ -89,26 +89,23 @@
  * 25  | ILS Channel 18
  * 22  | ILS Channel 19
  * 23  | ILS Channel 20
- * 
+ *
  * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
  * It also sets the address of this slave device. The slave address should be
  * between 1 and 126 and must be unique among all devices on the same bus.
  *
- * @bug RS485 currently does not work with the Pro Micro (32U4), Fails to compile.
-   @todo When the RS485 is resolved for the Pro Micro finish coding for RS485 on the Comm Panel's Mega.
-
    #define DCSBIOS_RS485_SLAVE 8 ///DCSBios RS485 Bus Address, once bug resolved move line below comment.
 */
 
 /**
  * Check if we're on a Mega328 or Mega2560 and define the correct
  * serial interface
- * 
+ *
  */
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
-#define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
+#define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
 #endif
 
 #ifdef __AVR__
@@ -116,11 +113,13 @@
 #endif
 
 /**
- * The Arduino pin that is connected to the
- * RE and DE pins on the RS-485 transceiver.
-*/
-#define UART1_TXENABLE_PIN 1 ///< Sets TXENABLE_PIN to Arduino Mega pin Tx0
-#define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
+ * @brief Arduino pin connected to the RS-485 transceiver /RE and DE enable pins.
+ *
+ * DCS-BIOS uses this pin when the sketch is configured as an RS485 slave.
+ * It is ignored by direct USB serial modes.
+ */
+#define TXENABLE_PIN 2
+
 
 #include "DcsBios.h"
 
