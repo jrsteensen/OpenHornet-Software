@@ -32,9 +32,9 @@
 
 /**
  * @file 4A3A3-FIRE_TEST_PANEL.ino
- * @author Arribe
+ * @author Arribe, Ash
  * @date 03.30.2024
- * @version 0.0.1
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the BRK PRESS gauge, BRAKE handle &amp; FIRE TEST panel.
  *
@@ -140,7 +140,7 @@ void onHydIndBrakeChange(unsigned int newValue) {
     brakePressureValue = temp;
   }
 }
-DcsBios::IntegerBuffer hydIndBrakeBuffer(0x7506, 0xffff, 0, onHydIndBrakeChange);
+DcsBios::IntegerBuffer hydIndBrakeBuffer(FA_18C_hornet_HYD_IND_BRAKE, onHydIndBrakeChange);
 
 void onInstrIntLtChange(unsigned int newValue) {
   switch (newValue) {
@@ -154,7 +154,7 @@ void onInstrIntLtChange(unsigned int newValue) {
       break;
   }
 }
-DcsBios::IntegerBuffer instrIntLtBuffer(0x7560, 0xffff, 0, onInstrIntLtChange);
+DcsBios::IntegerBuffer instrIntLtBuffer(FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange);
 
 /**
 * Arduino Setup Function
