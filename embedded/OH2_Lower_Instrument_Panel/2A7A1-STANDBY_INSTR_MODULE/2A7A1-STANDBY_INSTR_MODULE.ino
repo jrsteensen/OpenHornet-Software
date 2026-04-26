@@ -22,7 +22,7 @@
 *   See the License for the specific language governing permissions and
 *   limitations under the License.
 *   ----------------------------------------------------------------------------------
-*   Note: All other portions of OpenHornet not within the 'OpenHornet-Software' 
+*   Note: All other portions of OpenHornet not within the 'OpenHornet-Software'
 *   GitHub repository is released under the Creative Commons Attribution -
 *   Non-Commercial - Share Alike License. (CC BY-NC-SA 4.0)
 *   ----------------------------------------------------------------------------------
@@ -31,21 +31,22 @@
 **************************************************************************************/
 /**
 * @file 2A7A1-STANDBY_INSTR_MODULE
-* @author Thib-O with the help of @Circuit, @BnepeThomas, @No1Sonuk, @Ulukaii and @Sandra
+* @author Thib-O with the help of @Circuit, @BnepeThomas, @No1Sonuk, @Ulukaii and @Sandra,
+*         Ash with the help of @Murtle and @Ultramarine
 * @date 14.10.2025
-* @version t.0.0.9 (tested on USB, and with bus RS485)
+* @version 0.1.0 (tested on USB, and with bus RS485)
 * @brief Code for standby controller to drive the standby the standby intrument panel.
 */
 
 /**
 * Check if we're on a Mega328 or Mega2560 and define the correct
 * serial interface
-* 
+*
 */
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
   #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
-  #define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
+  #define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
 #endif
 
 #ifdef __AVR__
@@ -57,13 +58,12 @@
 * RE and DE pins on the RS-485 transceiver.
 */
 #define TXENABLE_PIN 2 ///< Sets TXENABLE_PIN to Arduino Pin 2
-#define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
 
 /**
 * 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
 * Be sure to set slave address per INTERCONNECT
 */
-//#define DCSBIOS_RS485_SLAVE 5 
+//#define DCSBIOS_RS485_SLAVE 5
 
 /**
 * If using a SERVO Motor (only used in Radar Altimeter) leave un-commented
@@ -158,7 +158,7 @@ String BaroOnes = "2";
 String BaroTens = "9";
 String BaroHundreds = "9";
 String BaroThousands = "2";
-bool BaroUpdated = true; 
+bool BaroUpdated = true;
 
 String Alt1000s = "0";
 String LastAlt1000s = "";
@@ -413,7 +413,7 @@ DcsBios::IntegerBuffer stbyPressSet1Buffer(0x74fc, 0xffff, 0, onStbyPressSet1Cha
  * @param newValue New barometric pressure thousands/hundreds digit value from DCS-BIOS (0-65535)
  * @see This function is called by DcsBios::IntegerBuffer stbyPressSet2Buffer
  */
-void onStbyPressSet2Change(unsigned int newValue) {  
+void onStbyPressSet2Change(unsigned int newValue) {
   if (newValue < 39321) BaroThousands = "2",BaroHundreds = "8" ;
   else if (newValue < 52428) BaroThousands = "2",BaroHundreds = "9" ;
   else if (newValue < 65535) BaroThousands = "3",BaroHundreds = "0" ;
@@ -464,7 +464,7 @@ void setup() {
   #endif
 
   //OLEDS ALTIMETER SETUP
-  Wire.begin();  
+  Wire.begin();
   for (uint8_t t = 0; t < 8; t++) {
     tcaselect(t);
 
@@ -545,9 +545,9 @@ void setup() {
   VVI = map(0, 0, 65535, 0, 720);
 
   FastLED.addLeds<WS2812B, BACKLIGHT_PIN, RGB>(ws2812, BACKLIGHT_COUNT);  // GRB ordering is typical
-  fill_solid(ws2812, BACKLIGHT_COUNT, CRGB::Black); 
+  fill_solid(ws2812, BACKLIGHT_COUNT, CRGB::Black);
   FastLED.show();
-  fill_solid(ws2812, BACKLIGHT_COUNT, CRGB::LightGreen); 
+  fill_solid(ws2812, BACKLIGHT_COUNT, CRGB::LightGreen);
 
   DcsBios::setup();
 }
@@ -572,7 +572,7 @@ void loop() {
 
   //MOVE AIRSPEED STEPPER
   valAIR = AIR;
-  if (abs(valAIR - posAIR) > 2) {  //IF DIFFERENCE IS GREATER THAN 2 STEPS 
+  if (abs(valAIR - posAIR) > 2) {  //IF DIFFERENCE IS GREATER THAN 2 STEPS
     if ((valAIR - posAIR) > 0) {
       stepperSTANDBY_AIR.step(1); //MOVE CLOCKWISE
       posAIR++;
@@ -619,12 +619,12 @@ void loop() {
     LastALTAutoRecalTime = now;
     GAUGE_RECAL_READY = false;  //WAIT NEXT TWO MINUTES BEFORE ANOTHER RECAL
   }
-  
+
   ALT_ZERO_LAST_STATE = ALT_ZERO_CURRENT_STATE;
 
   //MOVE VVI STEPPER
   valVVI = VVI;
-  if (abs(valVVI - posVVI) > 2) { //IF DIFFERENCE IS GREATER THAN 2 STEPS 
+  if (abs(valVVI - posVVI) > 2) { //IF DIFFERENCE IS GREATER THAN 2 STEPS
     if ((valVVI - posVVI) > 0) {
       stepperSTANDBY_VVI.step(1); //MOVE CLOCKWISE
       posVVI++;
