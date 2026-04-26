@@ -32,9 +32,9 @@
 
 /**
  * @file 2A3A1-AMPCD.ino
- * @author Peter Sawka, OH Community, Arribe
+ * @author Peter Sawka, OH Community, Arribe, Ash
  * @date 02.29.2024
- * @version 0.0.3
+ * @version 0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the AMPCD.
  * Adapted from Peter Sawka's original Nano code
@@ -145,7 +145,7 @@ DcsBios::Switch3Pos leftDdiHdgSw("LEFT_DDI_HDG_SW", HDG_P, HDG_M);
 void onInstrIntLtChange(unsigned int newValue) {
   analogWrite(AMPCD_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));
 }
-DcsBios::IntegerBuffer instrIntLtBuffer(0x7560, 0xffff, 0, onInstrIntLtChange);
+DcsBios::IntegerBuffer instrIntLtBuffer(FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange);
 
 /**
 * Arduino Setup Function

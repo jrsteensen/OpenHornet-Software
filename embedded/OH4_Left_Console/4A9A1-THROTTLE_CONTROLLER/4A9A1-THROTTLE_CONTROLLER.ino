@@ -32,9 +32,9 @@
 
 /**
  * @file 4A9A1-THROTTLE_CONTROLLER.ino
- * @author Arribe
+ * @author Arribe, Ash
  * @date 04.01.2024
- * @version u.0.0.1
+ * @version u.0.1.0
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. The throttle solenoids weren't working. (Remove this line once tested on hardware and in system.)
  * @brief Controls the THROTTLE QUADRANT.
@@ -166,27 +166,27 @@ OpenhornetMT6835 inboardThrottle = OpenhornetMT6835(INBD_CSY, myMT6835SPISetting
 void onExtWowLeftChange(unsigned int newValue) {
   wowLeft = newValue;
 }
-DcsBios::IntegerBuffer extWowLeftBuffer(0x74d8, 0x0100, 8, onExtWowLeftChange);
+DcsBios::IntegerBuffer extWowLeftBuffer(FA_18C_hornet_EXT_WOW_LEFT, onExtWowLeftChange);
 
 void onExtWowRightChange(unsigned int newValue) {
   wowRight = newValue;
 }
-DcsBios::IntegerBuffer extWowRightBuffer(0x74d6, 0x8000, 15, onExtWowRightChange);
+DcsBios::IntegerBuffer extWowRightBuffer(FA_18C_hornet_EXT_WOW_RIGHT, onExtWowRightChange);
 
 void onExtWowNoseChange(unsigned int newValue) {
   wowNose = newValue;
 }
-DcsBios::IntegerBuffer extWowNoseBuffer(0x74d6, 0x4000, 14, onExtWowNoseChange);
+DcsBios::IntegerBuffer extWowNoseBuffer(FA_18C_hornet_EXT_WOW_NOSE, onExtWowNoseChange);
 
 void onHookLeverChange(unsigned int newValue) {
   arrestingHookUp = newValue;  // 1 is hook up
 }
-DcsBios::IntegerBuffer hookLeverBuffer(0x74a0, 0x0200, 9, onHookLeverChange);
+DcsBios::IntegerBuffer hookLeverBuffer(FA_18C_hornet_HOOK_LEVER, onHookLeverChange);
 
 void onLaunchBarSwChange(unsigned int newValue) {
   launchBarExtended = newValue;  // 1 is extended
 }
-DcsBios::IntegerBuffer launchBarSwBuffer(0x7480, 0x2000, 13, onLaunchBarSwChange);
+DcsBios::IntegerBuffer launchBarSwBuffer(FA_18C_hornet_LAUNCH_BAR_SW, onLaunchBarSwChange);
 
 /**
 * Arduino Setup Function
@@ -378,4 +378,3 @@ long mapHallSensor(unsigned long long x, unsigned long long in_min, unsigned lon
     const unsigned long long delta = x - in_min;
     return (delta * rise) / run + out_min;
 }
-

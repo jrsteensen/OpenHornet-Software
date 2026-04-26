@@ -32,9 +32,9 @@
 
 /**
  * @file 4A6A1-FCS_PANEL.ino
- * @author Arribe
+ * @author Arribe, Ash
  * @date 03.04.2024
- * @version u.0.0.1 (partially tested)
+ * @version u.0.1.0 (partially tested)
  * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, but the Rudder trim speed is set to full-on.  
  * The rudder trim speed is untested, the test hardware was wired directly to always run at full power.
@@ -156,11 +156,11 @@ void onToTrimBtnChange(unsigned int newValue) {
       turnClockwise(1);
     return;
   }
-} DcsBios::IntegerBuffer toTrimBtnBuffer(0x74b4, 0x2000, 13, onToTrimBtnChange);
+} DcsBios::IntegerBuffer toTrimBtnBuffer(FA_18C_hornet_TO_TRIM_BTN, onToTrimBtnChange);
 
 void onRudTrimChange(unsigned int newValue) {
   rudTrimPosition = newValue;
-} DcsBios::IntegerBuffer rudTrimBuffer(0x7528, 0xffff, 0, onRudTrimChange);
+} DcsBios::IntegerBuffer rudTrimBuffer(FA_18C_hornet_RUD_TRIM, onRudTrimChange);
 
 /**
 * Arduino Setup Function

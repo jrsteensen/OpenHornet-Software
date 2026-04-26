@@ -34,7 +34,7 @@
 * @author Thib-O with the help of @Circuit, @BnepeThomas, @No1Sonuk, @Ulukaii and @Sandra,
 *         Ash with the help of @Murtle and @Ultramarine
 * @date 14.10.2025
-* @version 0.1.0 (tested on USB, and with bus RS485)
+* @version 0.2.0 (tested on USB, and with bus RS485)
 * @brief Code for standby controller to drive the standby the standby intrument panel.
 */
 
@@ -347,7 +347,7 @@ void onStbyAlt1000FtCntChange(unsigned int newValue) {
   else Alt1000s = "9";
   AltUpdated = true;
 }
-DcsBios::IntegerBuffer stbyAlt1000FtCntBuffer(0x74f8,0xffff,0, onStbyAlt1000FtCntChange);
+DcsBios::IntegerBuffer stbyAlt1000FtCntBuffer(FA_18C_hornet_STBY_ALT_1000_FT_CNT, onStbyAlt1000FtCntChange);
 
 /**
  * @brief Callback function for standby altimeter ten-thousands digit changes from DCS-BIOS
@@ -366,7 +366,7 @@ void onStbyAlt10000FtCntChange(unsigned int newValue) {
   else Alt10000s = "8";
   AltUpdated = true;
 }
-DcsBios::IntegerBuffer stbyAlt10000FtCntBuffer(0x74f6,0xffff,0, onStbyAlt10000FtCntChange);
+DcsBios::IntegerBuffer stbyAlt10000FtCntBuffer(FA_18C_hornet_STBY_ALT_10000_FT_CNT, onStbyAlt10000FtCntChange);
 
 /**
  * @brief Callback function for standby barometric pressure ones digit changes from DCS-BIOS
@@ -386,7 +386,7 @@ void onStbyPressSet0Change(unsigned int newValue) {
   else BaroOnes = "9";
   BaroUpdated = true;
 }
-DcsBios::IntegerBuffer stbyPressSet0Buffer(0x74fa, 0xffff, 0, onStbyPressSet0Change);
+DcsBios::IntegerBuffer stbyPressSet0Buffer(FA_18C_hornet_STBY_PRESS_SET_0, onStbyPressSet0Change);
 
 /**
  * @brief Callback function for standby barometric pressure tens digit changes from DCS-BIOS
@@ -406,7 +406,7 @@ void onStbyPressSet1Change(unsigned int newValue) {
   else BaroTens = "9";
   BaroUpdated = true;
 }
-DcsBios::IntegerBuffer stbyPressSet1Buffer(0x74fc, 0xffff, 0, onStbyPressSet1Change);
+DcsBios::IntegerBuffer stbyPressSet1Buffer(FA_18C_hornet_STBY_PRESS_SET_1, onStbyPressSet1Change);
 
 /**
  * @brief Callback function for standby barometric pressure thousands and hundreds digits changes from DCS-BIOS
@@ -420,7 +420,7 @@ void onStbyPressSet2Change(unsigned int newValue) {
   else BaroThousands = "3",BaroHundreds = "1" ;
   BaroUpdated = true;
 }
-DcsBios::IntegerBuffer stbyPressSet2Buffer(0x74fe, 0xffff, 0, onStbyPressSet2Change);
+DcsBios::IntegerBuffer stbyPressSet2Buffer(FA_18C_hornet_STBY_PRESS_SET_2, onStbyPressSet2Change);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 
