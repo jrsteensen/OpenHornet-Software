@@ -390,10 +390,10 @@ dl {
 }
 
 doxygen-awesome-dark-mode-toggle {
-    width: 54px;
-    height: 36px;
+    width: var(--searchbar-height);
+    height: var(--searchbar-height);
     border: 1px solid var(--line);
-    border-radius: 999px;
+    border-radius: var(--searchbar-height);
     background: var(--surface);
     transition: border-color 180ms ease, transform 180ms ease, background-color 180ms ease;
 }
@@ -551,6 +551,9 @@ code {
 table.memberdecls .groupheader,
 h2.groupheader {
     color: var(--ink);
+    border-bottom: 1px solid var(--line);
+    box-shadow: none;
+    background: transparent;
 }
 
 .contents img,
