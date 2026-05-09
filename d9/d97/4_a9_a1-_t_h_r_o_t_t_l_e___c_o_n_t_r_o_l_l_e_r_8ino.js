@@ -1,0 +1,28 @@
+var 4_a9_a1__t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino =
+[
+    [ "DISABLE_MAX_SOL_SIG", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#aa3bb87040a98a3ce7e32be344e7f7a62", null ],
+    [ "DISABLE_IDLE_SOL_SIG", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a7ee84cd89cd111143ffb890c08b926b4", null ],
+    [ "SET_THROTTLE_ZERO", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a3931df79281d30f9d90eba30d6365c06", null ],
+    [ "DISABLE_MAX_LIMIT_SWITCHES", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a6b118a9cb9d08bc76037806c52f3791f", null ],
+    [ "DCSBIOS_DISABLE_SERVO", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#ac893b2c6013f129e1caeec486d95eccb", null ],
+    [ "OUTBD_CSX", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a238b7f6031fcc293bbc3b1d0b5d96b50", null ],
+    [ "INBD_CSY", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a6d78420d82aea7fe6aa5ca2933558b74", null ],
+    [ "INBD_MAX_LIMIT", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#adf6daa3a468b6772dbb433aa63009e20", null ],
+    [ "INBD_IDLE_LIMIT", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#ad4be00eb5a64ea7aa4d301120a00868d", null ],
+    [ "OUTBD_MAX_LIMIT", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#aef45fa41eb229639c772d7230336c3c1", null ],
+    [ "OUTBD_IDLE_LIMIT", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#af9f59ad85d3f6b6ef2018d528054f025", null ],
+    [ "EXT_LTS", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a96821837cf56f2eae2ae66d038c34673", null ],
+    [ "RAID_FLIR", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a411b85d9f2f6a758a14f64d99819cae3", null ],
+    [ "ATC_ENGAGE", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a3f3bc4aa3f848ffff926c8b14b16d556", null ],
+    [ "MAX_SOL_SIG", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#acf2b9f88fcaa7564863a26de81b1c0c3", null ],
+    [ "IDLE_SOL_SIG", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a0c4c37d99c012f1583614e5e0b4f7508", null ],
+    [ "CAGE_UNCAGE", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#ad2f163df48504c5d320e7370a13119a4", null ],
+    [ "mapHallSensor", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#adf9225a1ef5942dbdc1ac64fe29fccd8", null ],
+    [ "setup", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a4fc01d736fe50cf5b977f755b675f11d", null ],
+    [ "loop", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#afe461d27b9c48d5921c00d521181f12f", null ],
+    [ "wowLeft", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a104c552f7f9aea40b6d2a2747f10bcb4", null ],
+    [ "wowRight", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#abecd758dc0cd93ee43383afc9197f8ba", null ],
+    [ "wowNose", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#ad43ac0305afac78f67ce1cd42b6d01ef", null ],
+    [ "launchBarExtended", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#ace3cb40fa0b4b6ad4d5ea75a0a9579b8", null ],
+    [ "arrestingHookUp", "d9/d97/4_a9_a1-_t_h_r_o_t_t_l_e___c_o_n_t_r_o_l_l_e_r_8ino.html#a33a785e68c68029f369f39748997eca2", null ]
+];
