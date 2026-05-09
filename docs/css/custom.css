@@ -361,9 +361,19 @@ dl {
 }
 
 #nav-tree .arrow {
+    background: transparent !important;
+    background-color: transparent !important;
     color: var(--muted);
     opacity: 0.72;
-    transition: color 180ms ease, opacity 180ms ease;
+    transition: color 180ms ease, opacity 180ms ease, background-color 180ms ease;
+}
+
+#nav-tree .arrow:hover,
+#nav-tree .arrowhead,
+#nav-tree a:hover .arrow,
+#nav-tree a:focus .arrow {
+    background: transparent !important;
+    background-color: transparent !important;
 }
 
 #nav-tree div.item:hover,
@@ -371,9 +381,14 @@ dl {
     color: var(--ink);
 }
 
+#nav-tree div.item:hover {
+    background: var(--surface) !important;
+}
+
 #nav-tree div.item:hover > a,
 #nav-tree a:hover {
-    background: var(--surface);
+    background: transparent !important;
+    background-color: transparent !important;
     color: var(--ink) !important;
 }
 
@@ -387,6 +402,10 @@ dl {
 #nav-tree .selected {
     background: var(--surface-warm);
     box-shadow: inset 3px 0 0 var(--signal);
+}
+
+#nav-tree .selected:hover {
+    background: var(--surface-warm) !important;
 }
 
 #nav-tree .selected a {
