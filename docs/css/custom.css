@@ -22,7 +22,7 @@ html {
     --footer-line: rgba(255, 255, 255, 0.12);
     --logo-filter: none;
     --radius: 8px;
-    --header-height: 156px;
+    --header-height: 176px;
     --side-nav-fixed-width: 360px;
     --top-height: var(--header-height);
     --primary-color: var(--blue);
@@ -373,7 +373,7 @@ dl {
 }
 
 #MSearchBox {
-    margin-top: 0.5rem;
+    margin-top: 0;
     border: 1px solid var(--line);
     border-radius: 999px;
     background: var(--surface);
@@ -575,7 +575,7 @@ h2.groupheader {
 @media screen and (max-width: 1100px) {
     html {
         --side-nav-fixed-width: 320px;
-        --header-height: 146px;
+        --header-height: 166px;
     }
 }
 
