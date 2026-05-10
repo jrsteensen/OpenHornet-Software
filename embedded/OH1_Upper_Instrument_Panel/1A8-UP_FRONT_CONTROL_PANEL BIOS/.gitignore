@@ -1,0 +1,8 @@
+.pio
+.vscode
+.venv
+.venv-pio
+doc
+scripts
+test
+video
