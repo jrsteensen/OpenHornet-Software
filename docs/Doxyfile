@@ -61,7 +61,7 @@ PROJECT_BRIEF          =
 # pixels and the maximum width should not exceed 200 pixels. Doxygen will copy
 # the logo to the output directory.
 
-PROJECT_LOGO           = img/logos/oh_vert.svg
+PROJECT_LOGO           = img/logos/oh_horiz.svg
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) path
 # into which the generated documentation will be written. If a relative path is
@@ -947,7 +947,8 @@ INPUT                  = ../docs \
                          ../README.md \
                          ../docs/SoftwareManual.md \
                          ../embedded \
-                         ../docs/Tutorials.md
+                         ../docs/Tutorials.md \
+                         ../docs/Flashing.md
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -1365,8 +1366,9 @@ HTML_STYLESHEET        =
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
 HTML_EXTRA_STYLESHEET  = css/doxygen-awesome.css \
-                         css/custom.css \
-                         css/doxygen-awesome-sidebar-only.css
+                         css/doxygen-awesome-sidebar-only.css \
+                         css/doxygen-awesome-sidebar-only-darkmode-toggle.css \
+                         css/custom.css
 
 # The HTML_EXTRA_FILES tag can be used to specify one or more extra images or
 # other source files which should be copied to the HTML output directory. Note
@@ -1723,7 +1725,7 @@ ENUM_VALUES_PER_LINE   = 4
 # Minimum value: 0, maximum value: 1500, default value: 250.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-TREEVIEW_WIDTH         = 335
+TREEVIEW_WIDTH         = 360
 
 # If the EXT_LINKS_IN_WINDOW option is set to YES, doxygen will open links to
 # external symbols imported via tag files in a separate window.

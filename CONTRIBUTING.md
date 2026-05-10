@@ -80,6 +80,7 @@ The `main` branch is the **single long-lived branch** for the repository.
 - Contributors **SHALL NOT** commit directly to `main` without explicit admin direction.
 - All Pull Requests target `main`.
 - On push or merge to `main`: CI compiles all sketches and Doxygen documentation is generated and deployed to [GitHub Pages](https://jrsteensen.github.io/OpenHornet-Software/).
+- On push of a `v*` tag: CI builds firmware, generates local Doxygen documentation, packages a release zip, and publishes a GitHub Release. Maintainers should follow the [release guide](docs/Releasing.md).
 
 > **Warning** Individual contributors should NEVER commit, push, or merge to `main` without explicit admin approval.
 
@@ -152,10 +153,12 @@ This section describes the GitHub Actions workflows that run automatically on th
 
 | Property | Value |
 |---|---|
-| **Trigger** | All PRs (opened, reopened, synchronized); push to `main` |
+| **Trigger** | All PRs (opened, reopened, synchronized); push to `main`; push of `v*` release tags |
 | **Manual trigger** | No |
 
-**Function:** Compiles all Arduino sketches in the `embedded/` directory using GNU Make and Arduino IDE. This is a smoke test — it verifies that every sketch actually compiles against its target microcontroller with DCS-BIOS and any other required libraries. On success, compiled `.eep` and `.hex` files are uploaded as a `firmware` artifact (retained for 7 days).
+**Function:** Compiles all Arduino sketches in the `embedded/` directory using GNU Make and Arduino IDE. This is a smoke test — it verifies that every sketch actually compiles against its target microcontroller with DCS-BIOS and any other required libraries. On success, compiled `.hex`, `.eep`, and `.bin` files are uploaded as a `firmware` artifact (retained for 7 days).
+
+When a tag beginning with `v` is pushed, the workflow also builds Doxygen HTML, assembles `OpenHornet-Software-<tag>.zip`, and publishes a GitHub Release with generated release notes. See [Releasing OpenHornet Software](docs/Releasing.md) for maintainer instructions.
 
 All PRs must pass this workflow before being eligible for merge.
 
