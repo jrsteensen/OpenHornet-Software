@@ -9,3 +9,13 @@ docs/html
 release/
 embedded/**/build/
 .cursorrules
+
+embedded/OH1_Upper_Instrument_Panel/1A8-UP_FRONT_CONTROL_PANEL BIOS/.claude/
+
+embedded/OH1_Upper_Instrument_Panel/1A8-UP_FRONT_CONTROL_PANEL BIOS/ino/
+
+embedded/OH1_Upper_Instrument_Panel/1A8-UP_FRONT_CONTROL_PANEL BIOS/include/secrets.h
+
+embedded/OH1_Upper_Instrument_Panel/1A8-UP_FRONT_CONTROL_PANEL BIOS/lib/dcs-bios-arduino-library-0.3.12/examples/PRESET___FREQ_UHF_RADIO_M2000C/
+
+embedded/OH1_Upper_Instrument_Panel/1A8-UP_FRONT_CONTROL_PANEL BIOS/lib/dcs-bios-arduino-library-0.3.12/examples/PRESET___FREQ_UVHF_RADIO_M2000C/

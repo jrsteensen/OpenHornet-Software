@@ -1,0 +1,4 @@
+- [ ] Create `src/WebOtaUpdate.cpp` by moving implementation from `include/WebOtaUpdate.cpp`
+- [ ] Remove `include/WebOtaUpdate.cpp` to prevent duplicate symbol risk
+- [ ] Build test with `pio run -e lolin_s2_mini`
+- [ ] Update this TODO with completion status
