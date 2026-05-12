@@ -32,9 +32,9 @@
 
 /**
  * @file 2A15A1-PIT_MANAGEMENT_SYSTEM.ino
- * @author Adam Apell
- * @date <May 10, 2026>
- * @version V 1.0.0
+ * @author Adam Apell (AdamA)
+ * @date 5.10.2026
+ * @version 1.0.0
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls ABSIS Pit Management System Board for use with SIM PWR Panel
  * @details This sketch is for the LIP ABSIS Pit Management System
@@ -60,6 +60,7 @@
  *
  */
 
+// Includes
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
@@ -70,7 +71,7 @@
 #define EXT_ACC3 6            // D6/A7, PD7, ADC10
 #define EXT_ACC4 7            // D7,    PE6, HW Interrupt (INT6)
 #define PS_ON 8               // D8/A8, PB4, ADC11, Pin Change Interrupt (PCINT4)
-#define PWR_OK 9              // D9/A9, PB5, ADC12, Pin Change Interrupt (PCINT5)
+#define PWR_OK 9              // D9#/A9, PB5, ADC12, Pin Change Interrupt (PCINT5)
 #define SIMPWR_MAINT_MODE 14  // D14,   PB3, MISO,  Pin Change Interrupt (PCINT3)
 #define SIMPWR_PFLT_MODE 15   // D15,   PB1, SCK,   Pin Change Interrupt (PCINT1)
 #define SIMPWR_DISPON 18      // A0,    PF7, ADC7
@@ -79,20 +80,21 @@
 #define SIMPWR_PCPWR 21       // A3,    PF4, ADC4
 
 // Initialize Global Variables at MCU Power-On
-volatile int CurrentSwitchState_SIMPWR_MAINT_MODE;  // Initialize global variable for Maintanance Mode Switch
-volatile int CurrentSwitchState_SIMPWR_PFLT_MODE;   // Initialize global variable for Maintanance Mode Switch
-volatile int CurrentSwitchState_SIMPWR_DISPON;      // Initialize global variable for Maintanance Mode Switch
-volatile int CurrentSwitchState_SIMPWR_MASTERON;    // Initialize global variable for Master Switch Monitoring
-volatile int CurrentSwitchState_SIMPWR_PCRESET;     // Initialize global variable for PC Reset Switch
-volatile int CurrentSwitchState_SIMPWR_PCPWR;       // Initialize global variable for PC Power Switch
-volatile int CurrentPowerSupplyState;               // Initialize global variable for PSU monitoring
-volatile int LastSwitchState_SIMPWR_MAINT_MODE;     // Initialize global variable for Maintanance Mode Switch
-volatile int LastSwitchState_SIMPWR_PFLT_MODE;      // Initialize global variable for Maintanance Mode Switch
-volatile int LastSwitchState_SIMPWR_DISPON;         // Initialize global variable for Maintanance Mode Switch
-volatile int LastSwitchState_SIMPWR_MASTERON;       // Initialize global variable for Master Switch Monitoring
-volatile int LastSwitchState_SIMPWR_PCRESET;        // Initialize global variable for PC Reset Switch
-volatile int LastSwitchState_SIMPWR_PCPWR;          // Initialize global variable for PC Power Switch
-volatile int LastPowerSupplyState;                  // Initialize global variable for PSU monitoring
+volatile int CurrentSwitchState_SIMPWR_MAINT_MODE;  // Initialize global variable for Maintanance Mode Switch Current State
+volatile int CurrentSwitchState_SIMPWR_PFLT_MODE;   // Initialize global variable for Maintanance Mode Switch Current State
+volatile int CurrentSwitchState_SIMPWR_DISPON;      // Initialize global variable for Maintanance Mode Switch Current State
+volatile int CurrentSwitchState_SIMPWR_MASTERON;    // Initialize global variable for Master Switch Monitoring Current State
+volatile int CurrentSwitchState_SIMPWR_PCRESET;     // Initialize global variable for PC Reset Switch Current State
+volatile int CurrentSwitchState_SIMPWR_PCPWR;       // Initialize global variable for PC Power Switch Current State
+volatile int CurrentPowerSupplyState;               // Initialize global variable for PSU monitoring Current State
+
+volatile int LastSwitchState_SIMPWR_MAINT_MODE;  // Initialize global variable for Maintanance Mode Switch Last State
+volatile int LastSwitchState_SIMPWR_PFLT_MODE;   // Initialize global variable for Maintanance Mode Switch Last State
+volatile int LastSwitchState_SIMPWR_DISPON;      // Initialize global variable for Maintanance Mode Switch Last State
+volatile int LastSwitchState_SIMPWR_MASTERON;    // Initialize global variable for Master Switch Monitoring Last State
+volatile int LastSwitchState_SIMPWR_PCRESET;     // Initialize global variable for PC Reset Switch Last State
+volatile int LastSwitchState_SIMPWR_PCPWR;       // Initialize global variable for PC Power Switch Last State
+volatile int LastPowerSupplyState;               // Initialize global variable for PSU monitoring Last State
 
 // Function Prototypes
 void Maint_Mode();
@@ -121,9 +123,9 @@ void setup() {
 
   // Configure Output Pins
   pinMode(PS_ON, OUTPUT);     // Switch controlled digital output to turn on power supply
-  pinMode(EXT_ACC1, OUTPUT);  // Momentary Output for PC Power Switch function (requires external connection to PC motherboard)
-  pinMode(EXT_ACC2, OUTPUT);  // Momentary Output for PC Reset Switch function (requires external connection to PC motherboard)
-  pinMode(EXT_ACC3, OUTPUT);  // Not Yet Implemented
+  pinMode(EXT_ACC1, OUTPUT);  // Momentary Output for PC Power Switch function (requires external connection to PC motherboard supplied by end-user)
+  pinMode(EXT_ACC2, OUTPUT);  // Momentary Output for PC Reset Switch function (requires external connection to PC motherboard supplied by end-user)
+  pinMode(EXT_ACC3, OUTPUT);  // Latching Output for Display On Switch Function (requires external connection supplied by end-user)
   pinMode(EXT_ACC4, OUTPUT);  // Not Yet Implemented
 
   // Setup Pinchange Interupt for Switch Pins
@@ -138,7 +140,7 @@ void setup() {
   CurrentPowerSupplyState = LOW;
 
   // Setup Internal Controls to Default Off State
-  digitalWrite(PS_ON, HIGH);  // Defualt to off - Power Supply Control
+  digitalWrite(PS_ON, HIGH);  // Default to off - Power Supply Control
 
   // Setup External Accessories to Default Off State
   digitalWrite(EXT_ACC1, LOW);  // Default to off - External Accessory #1
@@ -146,7 +148,7 @@ void setup() {
   digitalWrite(EXT_ACC3, LOW);  // Default to off - External Accessory #3
   digitalWrite(EXT_ACC4, LOW);  // Default to off - External Accessory #4
 
-  Serial.begin(9600);  //This pipes to the serial monitor
+  //Serial.begin(9600);  //This pipes to the serial monitor
 }
 
 /**
@@ -176,100 +178,136 @@ void loop() {
   PSU_State();
 }
 
-// Maintanance Mode Switch
+/**
+* @brief Maintenance Mode Function
+*
+* This function controls the operation of Maintenance Mode.
+* The mechanical switch is functional, however not yet implemented in software function.
+*/
 void Maint_Mode() {
   if (CurrentSwitchState_SIMPWR_MAINT_MODE != LastSwitchState_SIMPWR_MAINT_MODE) {
     if (CurrentSwitchState_SIMPWR_MAINT_MODE == LOW) {
-      Serial.println("Maintenance Mode Activated!");
+      // Not Yet Implemented
     } else {
-      Serial.println("Maintenance Mode Deactivated!");
+      // Not Yet Implemented
     }
     LastSwitchState_SIMPWR_MAINT_MODE = CurrentSwitchState_SIMPWR_MAINT_MODE;
   }
 }
 
-// Preflight Mode Switch
+/**
+* @brief Preflight Mode Function
+*
+* This function controls the operation of Preflight Mode.
+* The mechanical switch is functional, however not yet implemented in software function.
+*/
 void Preflight_Mode() {
   if (CurrentSwitchState_SIMPWR_PFLT_MODE != LastSwitchState_SIMPWR_PFLT_MODE) {
     if (CurrentSwitchState_SIMPWR_PFLT_MODE == LOW) {
-      Serial.println("Pre-Flight Mode Activated!");
+      // Not Yet Implemented
     } else {
-      Serial.println("Pre-Flight Mode Dectivated!");
+      // Not Yet Implemented
     }
     LastSwitchState_SIMPWR_PFLT_MODE = CurrentSwitchState_SIMPWR_PFLT_MODE;
   }
 }
-// Display On Switch
+
+/**
+* @brief Delay On Function
+*
+* This function controls the operation and use of the "Display On" Switch on the Sim Power Panel.
+* The mechanical switch is functional and activates/deactivates the External Accessory Port #3 on the rear of the Lowe rInstrument Panel.
+*/
 void Display() {
   if (CurrentSwitchState_SIMPWR_DISPON != LastSwitchState_SIMPWR_DISPON) {
     if (CurrentSwitchState_SIMPWR_DISPON == LOW) {
-      Serial.println("Display On Activated!");
       digitalWrite(EXT_ACC3, HIGH);  // Turn on External Acccessory Port (Latching Switch for External display Subsystem)
     } else {
-      Serial.println("Display On Deactivated!");
       digitalWrite(EXT_ACC3, LOW);  // Turn off External Acccessory Port (Latching Switch for External display Subsystem)
     }
     LastSwitchState_SIMPWR_DISPON = CurrentSwitchState_SIMPWR_DISPON;
   }
 }
 
-// Master Power Switch
+/**
+* @brief Master Function
+*
+* This function controls the operation and use of the "Master" Switch on the Sim Power Panel.
+* The mechanical switch is functional and activates/deactivates the ATX Power Supply which powers the entire SimPit.
+* This is a latching switch maintaining the control state to the ATX powersupply.
+*/
 void Master() {
   if (CurrentSwitchState_SIMPWR_MASTERON != LastSwitchState_SIMPWR_MASTERON) {
     if (CurrentSwitchState_SIMPWR_MASTERON == LOW) {
       digitalWrite(PS_ON, LOW);  // Turn on Main Power Supply
-      Serial.println("Master Switch Turned ON!");
     } else {
       digitalWrite(PS_ON, HIGH);  // Turn off Main Power Supply
-      Serial.println("Master Switch Turned OFF!");
     }
     LastSwitchState_SIMPWR_MASTERON = CurrentSwitchState_SIMPWR_MASTERON;
   }
 }
 
-// PC Reset Switch
+/**
+* @brief PC Reset Switch Function
+*
+* This function controls the operation and use of the "PC Reset" Switch on the Sim Power Panel.
+* The mechanical switch is functional and activates/deactivates the External Accessory Port #2 on the rear of the Lower Instrument Panel.
+* This switch is a momentary function serving as a remote Reset Button for the conputer controlling the simulator.
+*/
 void PC_Reset() {
   if (CurrentSwitchState_SIMPWR_PCRESET != LastSwitchState_SIMPWR_PCRESET) {
     if (CurrentSwitchState_SIMPWR_PCRESET == LOW) {
-      Serial.println("PC Reset Triggered!");
       digitalWrite(EXT_ACC2, HIGH);  // Turn on External Acccessory Port (Momentary pushbutton emulation for PC Reset Switch)
     } else {
       digitalWrite(EXT_ACC2, LOW);  // Turn off External Acccessory Port (Momentary pushbutton emulation for PC Reset Switch)
-      Serial.println("PC Reset Released!");
     }
     LastSwitchState_SIMPWR_PCRESET = CurrentSwitchState_SIMPWR_PCRESET;
   }
 }
 
-// PC Power Switch
+/**
+* @brief PC Power Switch Function
+*
+* This function controls the operation and use of the "PC Power" Switch on the Sim Power Panel.
+* The mechanical switch is functional and activates/deactivates the External Accessory Port #2 on the rear of the Lower Instrument Panel.
+* This switch is a momentary function serving as a remote Power button for the computer controlling the simulator.
+*/
 void PC_Power() {
   if (CurrentSwitchState_SIMPWR_PCPWR != LastSwitchState_SIMPWR_PCPWR) {
     if (CurrentSwitchState_SIMPWR_PCPWR == LOW) {
-      Serial.println("PC Power Triggered!");
       digitalWrite(EXT_ACC1, HIGH);  // Turn on External Acccessory Port (Momentary pushbutton emulation for PC Power Switch)
     } else {
       digitalWrite(EXT_ACC1, LOW);  // Turn off External Acccessory Port (Momentary pushbutton emulation for PC Power Switch)
-      Serial.println("PC Power Released!");
     }
     LastSwitchState_SIMPWR_PCPWR = CurrentSwitchState_SIMPWR_PCPWR;
   }
 }
 
-//Process Current state of Power Supply via PWR_OK Signal
+/**
+* @brief Power Supply Status Function
+*
+* This function allows for status feedback from the ATX Power supply.
+* Use of this function is not yet implemented.
+*/
 void PSU_State() {
   if (CurrentPowerSupplyState != LastPowerSupplyState) {
     if (CurrentPowerSupplyState == HIGH) {
-      Serial.println("Loop Power Supply Good!");
+      // Not Yet Implemented
     } else {
-      Serial.println("Loop Power Supply Not Ready!");
+      // Not Yet Implemented
     }
     LastPowerSupplyState = CurrentPowerSupplyState;
   }
 }
 
-// Interupt Service Routine
+/**
+* @brief PC Power Switch Function
+*
+* This function provides realtime feedback from teh ATX Power Supply.  In the event of a failed PSU, this function will trigger on the loss of the PWR_OK signal from the PSU.
+* The triggered interupt disables the PSU to assist in protecting the simulator from an unhealthy PSU state.
+*/
 ISR(PCINT0_vect) {
   if (CurrentPowerSupplyState != LOW) {
-    digitalWrite(PS_ON, HIGH);
+    digitalWrite(PS_ON, HIGH);  // Turn off PSU, will not reset until Master Switch is cycled.
   }
 }
