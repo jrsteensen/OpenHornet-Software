@@ -95,8 +95,6 @@ volatile int LastSwitchState_SIMPWR_PCPWR;          // Initialize global variabl
 volatile int LastPowerSupplyState;                  // Initialize global variable for PSU monitoring
 
 // Function Prototypes
-void setup();
-void loop();
 void Maint_Mode();
 void Preflight_Mode();
 void Display();
