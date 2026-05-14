@@ -38,6 +38,7 @@
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls ABSIS Pit Management System Board for use with SIM PWR Panel
  * @details This sketch is for the LIP ABSIS Pit Management System
+ * @todo The following functions are not yet implemented: Preflight Mode, Maintanance Mode, PSU Status beyond "Not Ready State"
  * 
  *  * **Reference Designator:** 2A15A1
  *  * **Intended Board:** ABSIS Pit Management System
@@ -182,7 +183,7 @@ void loop() {
 * @brief Maintenance Mode Function
 *
 * This function controls the operation of Maintenance Mode.
-* The mechanical switch is functional, however not yet implemented in software function.
+* @todo The mechanical switch is functional, however not yet implemented in software function.
 */
 void Maint_Mode() {
   if (CurrentSwitchState_SIMPWR_MAINT_MODE != LastSwitchState_SIMPWR_MAINT_MODE) {
@@ -199,7 +200,7 @@ void Maint_Mode() {
 * @brief Preflight Mode Function
 *
 * This function controls the operation of Preflight Mode.
-* The mechanical switch is functional, however not yet implemented in software function.
+* @todo The mechanical switch is functional, however not yet implemented in software function.
 */
 void Preflight_Mode() {
   if (CurrentSwitchState_SIMPWR_PFLT_MODE != LastSwitchState_SIMPWR_PFLT_MODE) {
@@ -287,7 +288,7 @@ void PC_Power() {
 * @brief Power Supply Status Function
 *
 * This function allows for status feedback from the ATX Power supply.
-* Use of this function is not yet implemented.
+* @todo Use of this function is not yet implemented.
 */
 void PSU_State() {
   if (CurrentPowerSupplyState != LastPowerSupplyState) {
@@ -301,9 +302,9 @@ void PSU_State() {
 }
 
 /**
-* @brief PC Power Switch Function
+* @brief Power Supply "Failed State" Function
 *
-* This function provides realtime feedback from teh ATX Power Supply.  In the event of a failed PSU, this function will trigger on the loss of the PWR_OK signal from the PSU.
+* This function provides realtime feedback from the ATX Power Supply.  In the event of a failed PSU, this function will trigger on the loss of the PWR_OK signal from the PSU.
 * The triggered interupt disables the PSU to assist in protecting the simulator from an unhealthy PSU state.
 */
 ISR(PCINT0_vect) {
