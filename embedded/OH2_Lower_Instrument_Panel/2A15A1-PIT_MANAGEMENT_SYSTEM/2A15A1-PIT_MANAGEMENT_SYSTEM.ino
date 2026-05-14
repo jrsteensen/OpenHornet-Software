@@ -34,7 +34,7 @@
  * @file 2A15A1-PIT_MANAGEMENT_SYSTEM.ino
  * @author Adam Apell (AdamA)
  * @date 5.10.2026
- * @version 1.0.0
+ * @version 1.0.1
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls ABSIS Pit Management System Board for use with SIM PWR Panel
  * @details This sketch is for the LIP ABSIS Pit Management System
