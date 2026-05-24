@@ -1,0 +1,28 @@
+var 3_a3_a1__s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino =
+[
+    [ "MT6835_Result", "d2/d0d/struct_m_t6835___result.html", "d2/d0d/struct_m_t6835___result" ],
+    [ "DEBUG_SERIAL", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a61e127df60d55ea4c8bd6b8ec1f88367", null ],
+    [ "DEBUG_PERIOD_MS", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a325067e2990cada351192951e015e1ae", null ],
+    [ "MT6835_USE_CRC", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a078256d7055791bf88dbc23905af8df1", null ],
+    [ "setup", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a4fc01d736fe50cf5b977f755b675f11d", null ],
+    [ "loop", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#afe461d27b9c48d5921c00d521181f12f", null ],
+    [ "HID_FIRE_TRIGGER_1E_CRAN", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ac90b462abf30e63a6347b2679767c3a1", null ],
+    [ "HID_WEAPON_RELEASE", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a219b6edc6f425127fdab713c3f4abee9", null ],
+    [ "HID_UNDESIGNATE_NWS", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a918eba735964a6ad79f14464ea426977", null ],
+    [ "HID_DISENSAGE_PADDLE", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ab8556637de74650042dffc10d1e4946f", null ],
+    [ "HID_RECCE_EVENT_MARK", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#aa0dd08f0ccbd2b9eb79a33dd6bbd3d70", null ],
+    [ "HID_FIRE_TRIGGER_2E_CRAN", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a384b6263e5c2469672eb27629b0001a1", null ],
+    [ "HID_SENSOR_CONTROL_FORWARD", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ab9cdd038b81acc3c8c75f31b358359ea", null ],
+    [ "HID_SENSOR_CONTROL_RIGHT", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a38fbd941cdd4544d4c36ca221f644b42", null ],
+    [ "HID_SENSOR_CONTROL_BACKWARD", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a41f73db91e22f5d84a292068aaadb6b4", null ],
+    [ "HID_SENSOR_CONTROL_LEFT", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ad373c19206966a4f0b2d1ad81add1518", null ],
+    [ "HID_CASTER_UP", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a93d46a1e81b00bf4883358a641f6e38f", null ],
+    [ "HID_CASTER_SWITCH", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ae3e5b708fbd84572ee2c31ca864cb643", null ],
+    [ "HID_CASTER_DOWN", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a2ffd093ce4091ee5c9ec023114140328", null ],
+    [ "HID_SENSOR_CONTROL_CENTER", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a05909851cd034806d01c06f8839a2f06", null ],
+    [ "HID_WEAPON_SELECT_FORWARD", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#aae9342a8f32b8885cb1df282e49ebb4d", null ],
+    [ "HID_WEAPON_SELECT_RIGHT", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a4ca287b3ab86311e3162ee8f2a944672", null ],
+    [ "HID_WEAPON_SELECT_BACKWARD", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ac6712b30b87346c0685d94362d22253b", null ],
+    [ "HID_WEAPON_SELECT_LEFT", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#ae685642a723794adcd874bb8ebba3acc", null ],
+    [ "HID_WEAPON_SELECT_CENTER", "d7/dd8/3_a3_a1-_s_t_i_c_k___c_o_n_t_r_o_l_l_e_r_8ino.html#a2d2035291ac596a8be86d5fc305ec4e6", null ]
+];
