@@ -230,8 +230,8 @@ const int VOLTAGE = 5;
 const int MAX_MILLIAMPS = 20000;
 
 // Hardware pin definitions
-const int encSw =    24;              
-const int encA  =    22;              
+const int encSw =    22;              
+const int encA  =    24;              
 const int encB  =    23;  
 
 // LED counts for each channel
@@ -341,7 +341,7 @@ void setup() {
     RC_2.addPanel<Rc2AllPanels>();
 
     LC_FLOOD.addPanel<LcFloodLights>();
-    //@bug RC_FLOOD.addPanel<RcFloodLights>();                             // Compiles, but crashes Mega2560 on reset
+    RC_FLOOD.addPanel<RcFloodLights>();                             
 
     FastLED.setMaxPowerInVoltsAndMilliamps(VOLTAGE, MAX_MILLIAMPS);   // Set the maximum power in volts and milliamps
     FastLED.setMaxRefreshRate(100);                                   // Set the maximum refresh rate to 100 Hz instead of std. 400 Hz. Slightly reduces CPU load.

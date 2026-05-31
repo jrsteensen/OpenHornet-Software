@@ -158,55 +158,54 @@ public:
     uint8_t getPanelCount() const { return panelCount; }
 
     /**
-     * @brief Updates backlights for all panels in this channel
-     * @param brightness The brightness value to set
-     * @param color The color to set (defaults to NVIS_GREEN_A)
-     * @see This method is called by Board::fillSolid() and Board::updateInstrumentLights()
+     * @brief Applies pre-scaled instrument backlight targets to all panels in this channel
+     * @param instrTarget Pre-scaled CRGB for LEDs with role LED_INSTR_BL
+     * @param cgrbTarget  Pre-scaled CRGB for LEDs with role LED_INSTR_BL_CGRB
+     * @see This method is called by Board::fillSolid() and Board::applyInstrumentTargets()
      */
-    void updateInstrLights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
+    void applyInstrLights(const CRGB& instrTarget, const CRGB& cgrbTarget) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setInstrLights(brightness, color);
+            current->applyInstrLights(instrTarget, cgrbTarget);
             current = current->nextPanel;
         }
     }
 
     /**
-     * @brief Updates console lights for all panels in this channel
-     * @param brightness The brightness value to set
-     * @param color The color to set (defaults to NVIS_GREEN_A)
-     * @see This method is called by Board::updateConsoleLights() 
+     * @brief Applies pre-scaled console backlight target to all panels in this channel
+     * @param consoleTarget Pre-scaled CRGB for LEDs with role LED_CONSOLE_BL
+     * @see This method is called by Board::fillSolid() and Board::applyConsoleTargets()
      */
-    void updateConsoleLights(uint16_t brightness, const CRGB& color = NVIS_GREEN_A) {
+    void applyConsoleLights(const CRGB& consoleTarget) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setConsoleLights(brightness, color);
+            current->applyConsoleLights(consoleTarget);
             current = current->nextPanel;
         }
     }
 
     /**
-     * @brief Updates flood lights for all panels in this channel
-     * @param brightness The brightness value to set
-     * @see This method is called by Board::updateFloodLights() 
+     * @brief Applies pre-scaled floodlight target to all panels in this channel
+     * @param floodTarget Pre-scaled CRGB for LEDs with role LED_FLOOD
+     * @see This method is called by Board::applyFloodTargets()
      */
-    void updateFloodLights(uint16_t brightness) {
+    void applyFloodlights(const CRGB& floodTarget) {
         Panel* current = firstPanel;
         while (current != nullptr) {
-            current->setFloodlights(brightness);
+            current->applyFloodlights(floodTarget);
             current = current->nextPanel;
         }
     }
 
     /**
-     * @brief Turns off all lights in all panels of this channel and resets brightness state
+     * @brief Turns off all lights in all panels of this channel
      * @see This method is called by Board::setAllLightsOff()
      */
     void setAllLightsOff() {
         // Clear all LEDs in the entire channel array (not just panel-tracked ones)
         fill_solid(leds, ledCount, NVIS_BLACK);
         
-        // Also clear panel-tracked LEDs and reset brightness state
+        // Also clear panel-tracked LEDs
         Panel* current = firstPanel;
         while (current != nullptr) {
             current->setAllLightsOff();

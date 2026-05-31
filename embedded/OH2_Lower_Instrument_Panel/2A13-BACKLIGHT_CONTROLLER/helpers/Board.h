@@ -58,9 +58,9 @@ private:
     int currentMode;                                                  // Current operating mode
     int mode2_brightness;                                             // Current brightness level (0-255), for manual mode 2
     int mode3_brightness;                                             // Brightness level (0-255) for rainbow mode 3
-    int dcs_brightness_console;                                        // Current brightness level (0-65535), for DCS-BIOS controlled mode
-    int dcs_brightness_instrument;                                     // Current brightness level (0-65535), for DCS-BIOS controlled mode
-    int dcs_brightness_flood;                                          // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    uint16_t dcs_brightness_console;                                   // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    uint16_t dcs_brightness_instrument;                                // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    uint16_t dcs_brightness_flood;                                     // Current brightness level (0-65535), for DCS-BIOS controlled mode
     int encSwPin;                                                     // Encoder switch pin
     RotaryEncoder* encoder;                                           // Pointer to encoder instance
     int rotary_pos;                                                   // Current rotary encoder position
@@ -84,6 +84,48 @@ private:
         dcs_brightness_flood = 0;                                     // Initialize DCS brightness to 0
         rotary_pos = 0;                                               // Initialize with 0
         encoder = nullptr;                                            // Initialize with nullptr
+    }
+
+    /**
+     * @brief Computes scaled CRGB targets for instrument backlights and pushes them to all channels.
+     *        Uses the cached dcs_brightness_instrument value. No gating - always applies.
+     * @see Called by updateInstrumentLights() (after gate) and from mode-entry / DCS-resume paths
+     *      that need to force-push the cached value regardless of whether it changed.
+     */
+    void applyInstrumentTargets() {
+        uint8_t scale = map(dcs_brightness_instrument, 0, 65535, 0, 255);
+        CRGB instrTarget = NVIS_GREEN_A;       instrTarget.nscale8_video(scale);
+        CRGB cgrbTarget  = NVIS_CGRB_GREEN_A;  cgrbTarget.nscale8_video(scale);
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->applyInstrLights(instrTarget, cgrbTarget);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+    }
+
+    /**
+     * @brief Computes scaled CRGB target for console backlights and pushes it to all channels.
+     *        Uses the cached dcs_brightness_console value. No gating - always applies.
+     */
+    void applyConsoleTargets() {
+        uint8_t scale = map(dcs_brightness_console, 0, 65535, 0, 255);
+        CRGB consoleTarget = NVIS_GREEN_A;     consoleTarget.nscale8_video(scale);
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->applyConsoleLights(consoleTarget);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
+    }
+
+    /**
+     * @brief Computes scaled CRGB target for floodlights and pushes it to all channels.
+     *        Uses the cached dcs_brightness_flood value. No gating - always applies.
+     */
+    void applyFloodTargets() {
+        uint8_t scale = map(dcs_brightness_flood, 0, 65535, 0, 255);
+        CRGB floodTarget = NVIS_WHITE;         floodTarget.nscale8_video(scale);
+        for (int i = 0; i < channelCount; i++) {
+            channels[i]->applyFloodlights(floodTarget);
+        }
+        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
 
@@ -124,8 +166,9 @@ public:
      */
     void updateLeds() {                                               
         if (LedUpdateState::getInstance()->getUpdateFlag()) {
-            updCountdown = (updCountdown == 0) ? 32 : updCountdown;   // Countdown logic allows to collect LED updates
-            updCountdown--;                                           // from 32 loop() calls into one FastLED.show()
+            int countdownLength = (currentMode == MODE_NORMAL) ? 32 : 8; // Slower refresh in normal mode to collect DCS-Bios updates
+            updCountdown = (updCountdown == 0) ? countdownLength : updCountdown;
+            updCountdown--;                                           // Collect loop() calls into one FastLED.show()
             if (updCountdown == 0) {                                  // Trigger FastLED.show() at end of countdown
                 cli();
                 FastLED.show();                                       
@@ -160,6 +203,12 @@ public:
             
             if (currentMode == MODE_NORMAL) {
                 setAllLightsOff();
+                // Force-restore the cached brightness directly (bypasses central gate).
+                // The DCS-BIOS messages below also keep the sim in sync, but we no longer
+                // rely on their echo to repaint our LEDs.
+                applyInstrumentTargets();
+                applyConsoleTargets();
+                applyFloodTargets();
                 sendDcsBiosMessage("CONSOLES_DIMMER", String(dcs_brightness_console).c_str());           // Send DCS-BIOS message to reset console dimmer
                 sendDcsBiosMessage("INST_PNL_DIMMER", String(dcs_brightness_instrument).c_str());        // Send DCS-BIOS message to reset instrument lighting
                 sendDcsBiosMessage("FLOOD_DIMMER", String(dcs_brightness_flood).c_str());                  // Send DCS-BIOS message to reset floodlights dimmer
@@ -198,12 +247,11 @@ public:
                     } else if (prevDcsState == DcsState::EXITED &&
                                currentDcsState != DcsState::EXITED &&
                                currentDcsState != DcsState::PAUSED) {
-                        for (int i = 0; i < channelCount; i++) {     // DCS became active again: restore last known brightness
-                            channels[i]->updateInstrLights(dcs_brightness_instrument);
-                            channels[i]->updateConsoleLights(dcs_brightness_console);
-                            channels[i]->updateFloodLights(dcs_brightness_flood);
-                        }
-                        LedUpdateState::getInstance()->setUpdateFlag(true);
+                        // DCS became active again: force-push the cached brightness
+                        // (helpers bypass the central gate, which would otherwise short-circuit)
+                        applyInstrumentTargets();
+                        applyConsoleTargets();
+                        applyFloodTargets();
                     }
                     // PAUSED: do nothing - keep current light state
                     prevDcsState = currentDcsState;
@@ -249,16 +297,21 @@ public:
 
 
     /**
-     * @brief Fills all channels with a solid color
-     * @param color The color to fill with
-     * @param brightness Optional brightness value (0-255). If not provided, uses current brightness
+     * @brief Fills all channels with a solid color (used by MODE_MANUAL)
+     * @param color The color to fill instrument and console backlights with
+     * @param brightness Optional brightness value (0-255). If not provided, uses mode2_brightness.
+     * @details The CGRB instrument LEDs (e.g. radar altimeter) always render as NVIS_CGRB_GREEN_A
+     *          scaled by the same brightness, matching the original behavior.
      * @see This method is called by handleModeChange() and processMode() in Board.h, conditionally in MODE_MANUAL case
      */
-    void fillSolid(const CRGB& color, int brightness = -1) {          // Fill all channels with a solid color
-        int targetBrightness = (brightness >= 0) ? brightness : this->mode2_brightness;
+    void fillSolid(const CRGB& color, int brightness = -1) {
+        uint8_t scale = (uint8_t)((brightness >= 0) ? brightness : this->mode2_brightness);
+        CRGB instrTarget   = color;              instrTarget.nscale8_video(scale);
+        CRGB cgrbTarget    = NVIS_CGRB_GREEN_A;  cgrbTarget.nscale8_video(scale);
+        CRGB consoleTarget = color;              consoleTarget.nscale8_video(scale);
         for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateInstrLights(map(targetBrightness, 0, 255, 0, 65535), color);
-            channels[i]->updateConsoleLights(map(targetBrightness, 0, 255, 0, 65535), color);
+            channels[i]->applyInstrLights(instrTarget, cgrbTarget);
+            channels[i]->applyConsoleLights(consoleTarget);
         }
         LedUpdateState::getInstance()->setUpdateFlag(true);
     }
@@ -280,13 +333,10 @@ public:
      * @see This method is conditionally called by onInstrIntLtChange() in Board.h
      */
     void updateInstrumentLights(uint16_t newValue) {
+        if (newValue == dcs_brightness_instrument) return;            // Central gate: skip if unchanged
         dcs_brightness_instrument = newValue;                         // In any mode, store the DCS-BIOS brightness value
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
-        for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateInstrLights(newValue);
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
-        
+        applyInstrumentTargets();
     }
 
     /**
@@ -295,13 +345,10 @@ public:
      * @see This method is called by onConsolesDimmerChange() in Board.h
      */
     void updateConsoleLights(uint16_t newValue) {
+        if (newValue == dcs_brightness_console) return;               // Central gate: skip if unchanged
         dcs_brightness_console = newValue;                            // In any mode, store the DCS-BIOS brightness value
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
-        for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateConsoleLights(newValue);
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
-        
+        applyConsoleTargets();
     }
 
     /**
@@ -310,13 +357,10 @@ public:
      * @see This method is called by onFloodDimmerChange() in Board.h
      */
     void updateFloodLights(uint16_t newValue) {
+        if (newValue == dcs_brightness_flood) return;                 // Central gate: skip if unchanged
         dcs_brightness_flood = newValue;                              // In any mode, store the DCS-BIOS brightness value
         if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
-        for (int i = 0; i < channelCount; i++) {
-            channels[i]->updateFloodLights(newValue);
-        }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
-        
+        applyFloodTargets();
     }
 
 
