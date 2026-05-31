@@ -230,8 +230,8 @@ const int VOLTAGE = 5;
 const int MAX_MILLIAMPS = 20000;
 
 // Hardware pin definitions
-const int encSw =    22;              
-const int encA  =    24;              
+const int encSw =    24;              
+const int encA  =    22;              
 const int encB  =    23;  
 
 // LED counts for each channel
