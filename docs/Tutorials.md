@@ -68,3 +68,112 @@ For renaming the Arduino MEGAs (Backlight controller, COMM panel, Standby Instru
 | RC          | KY58                                | 5A9A1   | 0x5A91            |
 | RC          | DEFOG/CANOPY                        | 5A10    | 0x5A10            |	
   
+## Using OpenHornet's Included Arduino Libraries
+
+The OpenHornet-Software repository includes specific, version-pinned Arduino libraries as git submodules inside the `libraries/` folder. Using these instead of whatever the Arduino IDE installs automatically ensures every contributor is compiling against the same tested library versions, avoiding subtle bugs caused by version mismatches.
+
+### Included Libraries
+
+| Library | Purpose |
+|---|---|
+| `dcs-bios-arduino-library` | DCS-BIOS serial communication |
+| `FastLED` | LED control |
+| `Adafruit_NeoPixel` | NeoPixel LED control |
+| `Servo` | Servo motor control |
+| `ArduinoJoystickLibrary` | USB HID joystick emulation (AVR) |
+| `Joystick_ESP32S2` | USB HID joystick emulation (ESP32-S2) |
+| `AccelStepper` | Stepper motor control with acceleration |
+| `Stepper` | Basic stepper motor control |
+| `RotaryEncoder` | Rotary encoder reading |
+| `MultiMap` | Non-linear value mapping |
+| `TCA9534` | I2C I/O expander driver |
+| `U8g2` | Display driver (OLED/LCD) |
+| `arduino-esp32` | Espressif ESP32 Arduino core |
+| `Arduino_Boards` | SparkFun board definitions |
+
+### Step 1 — Clone the Repository with Submodules
+
+When you first clone the repository, you must initialise the submodules so the `libraries/` folders are actually populated. If you cloned without `--recurse-submodules`, the library folders will be empty.
+
+**If you haven't cloned yet:**
+```bash
+git clone --recurse-submodules https://github.com/jrsteensen/OpenHornet-Software.git
+```
+
+**If you already cloned and the library folders are empty:**
+```bash
+git submodule update --init --recursive
+```
+
+After this step, each subfolder under `libraries/` will contain the correct library source files.
+
+### Step 2 — Locate Your Arduino IDE Libraries Folder
+
+The Arduino IDE looks for libraries in a specific sketchbook location on your machine:
+
+| OS | Default path |
+|---|---|
+| Windows | `C:\Users\<username>\Documents\Arduino\libraries\` |
+| macOS | `~/Documents/Arduino/libraries/` |
+| Linux | `~/Arduino/libraries/` |
+
+You can confirm (or change) this path from inside the Arduino IDE:
+1. Open Arduino IDE.
+2. Go to **File → Preferences** (Windows/Linux) or **Arduino → Preferences** (macOS).
+3. Note the value in the **Sketchbook location** field — the `libraries` folder lives inside it.
+
+### Step 3 — Link or Copy the Libraries
+
+You have two options: **symbolic links** (recommended — lets you `git pull` updates automatically) or **copying** (simpler, but requires you to re-copy when the submodule is updated).
+
+#### Option A: Symbolic Links (Recommended)
+
+Symbolic links let the Arduino IDE find the libraries inside the repository without duplicating files. After a `git submodule update`, the IDE automatically picks up any changes.
+
+**Windows (run as Administrator in Command Prompt):**
+```cmd
+mklink /D "C:\Users\<username>\Documents\Arduino\libraries\dcs-bios-arduino-library" "C:\path\to\OpenHornet-Software\libraries\dcs-bios-arduino-library"
+```
+Repeat for each library you need. Replace the paths with your actual clone location and username.
+
+**macOS / Linux (Terminal):**
+```bash
+ln -s /path/to/OpenHornet-Software/libraries/dcs-bios-arduino-library ~/Documents/Arduino/libraries/dcs-bios-arduino-library
+```
+Repeat for each library you need.
+
+#### Option B: Copy the Folders
+
+Copy each subfolder from `libraries/` directly into your Arduino sketchbook `libraries/` folder. For example:
+
+```
+OpenHornet-Software/libraries/dcs-bios-arduino-library/  →  ~/Documents/Arduino/libraries/dcs-bios-arduino-library/
+OpenHornet-Software/libraries/FastLED/                   →  ~/Documents/Arduino/libraries/FastLED/
+```
+(and so on for each library you need)
+
+> **Warning:** If you copy instead of linking, you must re-copy after every `git submodule update` to pick up upstream changes.
+
+### Step 4 — Verify in the Arduino IDE
+
+1. Open (or restart) the Arduino IDE.
+2. Open the **Library Manager** (**Sketch → Include Library → Manage Libraries…**) and confirm the libraries appear — or simply open one of the sketches from the `embedded/` folder and try **Sketch → Verify/Compile**.
+   - If the IDE cannot find a library, it will show a red error like `fatal error: <LibraryName.h>: No such file or directory`.
+3. If a library is missing, double-check that its subfolder is non-empty (run `git submodule update --init --recursive` again if needed) and that the link or copy target path is correct.
+
+### Step 5 — Keeping Libraries Up to Date
+
+When the OpenHornet-Software repository updates a submodule (e.g. to a newer version of `dcs-bios-arduino-library`), you need to update your local copy:
+
+```bash
+git pull
+git submodule update --recursive
+```
+
+If you used symbolic links (Option A), the Arduino IDE will automatically use the updated version the next time you open it. If you copied the folders (Option B), repeat the copy step for any updated library.
+
+### Notes
+
+- **Do not install these libraries through the Arduino IDE Library Manager.** Doing so may install a different version than the one pinned in the repository, which can cause compile errors or unexpected behaviour.
+- If the Arduino IDE has already auto-installed a conflicting version of a library, remove it from the sketchbook `libraries/` folder before linking/copying the repo version.
+- The `arduino-esp32` submodule is the full Espressif Arduino core. It is used for build system purposes; for the Arduino IDE you normally install the ESP32 board support package separately via **File → Preferences → Additional Boards Manager URLs** using `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`.
