@@ -177,3 +177,95 @@ If you used symbolic links (Option A), the Arduino IDE will automatically use th
 - **Do not install these libraries through the Arduino IDE Library Manager.** Doing so may install a different version than the one pinned in the repository, which can cause compile errors or unexpected behaviour.
 - If the Arduino IDE has already auto-installed a conflicting version of a library, remove it from the sketchbook `libraries/` folder before linking/copying the repo version.
 - The `arduino-esp32` submodule is the full Espressif Arduino core. It is used for build system purposes; for the Arduino IDE you normally install the ESP32 board support package separately via **File → Preferences → Additional Boards Manager URLs** using `https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json`.
+
+## Installing Arduino Libraries from a Release Package
+
+Each OpenHornet-Software GitHub Release includes the full `libraries/` folder with every pinned library already checked out at the correct version. This is the easiest way to get the correct libraries if you are a **user** (not a developer) who just wants to compile sketches without setting up git or submodules.
+
+### Step 1 — Download the Release Package
+
+1. Go to the [OpenHornet-Software Releases page](https://github.com/jrsteensen/OpenHornet-Software/releases).
+2. Find the latest release (or the specific version you need).
+3. Under **Assets**, download `OpenHornet-Software-<version>.zip` (for example `OpenHornet-Software-v1.4.2.zip`).
+
+### Step 2 — Extract the Archive
+
+Extract the zip to a convenient location. You will see a folder structure like:
+
+```
+OpenHornet-Software-v1.4.2/
+├── firmware/
+├── embedded/
+├── libraries/
+│   ├── dcs-bios-arduino-library/
+│   ├── FastLED/
+│   ├── Adafruit_NeoPixel/
+│   ├── Servo/
+│   ├── ArduinoJoystickLibrary/
+│   ├── Joystick_ESP32S2/
+│   ├── AccelStepper/
+│   ├── Stepper/
+│   ├── RotaryEncoder/
+│   ├── MultiMap/
+│   ├── TCA9534/
+│   ├── U8g2/
+│   ├── arduino-esp32/
+│   └── Arduino_Boards/
+├── include/
+├── docs/
+├── README.md
+└── LICENSE.md
+```
+
+### Step 3 — Locate Your Arduino IDE Libraries Folder
+
+The Arduino IDE loads libraries from a `libraries/` folder inside your sketchbook location:
+
+| OS | Default path |
+|---|---|
+| Windows | `C:\Users\<username>\Documents\Arduino\libraries\` |
+| macOS | `~/Documents/Arduino/libraries/` |
+| Linux | `~/Arduino/libraries/` |
+
+You can confirm or change this path in the Arduino IDE at **File → Preferences** (Windows/Linux) or **Arduino → Preferences** (macOS), under **Sketchbook location**.
+
+### Step 4 — Copy the Libraries
+
+Copy each subfolder from the extracted `libraries/` folder into your Arduino sketchbook `libraries/` folder.
+
+**Windows (File Explorer):**
+1. Open the extracted `OpenHornet-Software-<version>\libraries\` folder.
+2. Select all subfolders (`Ctrl+A`).
+3. Copy them (`Ctrl+C`).
+4. Navigate to `C:\Users\<username>\Documents\Arduino\libraries\`.
+5. Paste (`Ctrl+V`). If prompted to replace existing folders, choose **Replace** to overwrite any older versions.
+
+**macOS / Linux (Terminal):**
+```bash
+cp -r /path/to/OpenHornet-Software-<version>/libraries/* ~/Documents/Arduino/libraries/
+```
+Replace `~/Documents/Arduino/libraries/` with your actual sketchbook path if it differs.
+
+> **Note:** If the Arduino IDE has auto-installed a different version of any of these libraries, the copy above will replace it with the correct version. This is intentional — always use the versions supplied with the release.
+
+> **Note:** Do **not** copy the `arduino-esp32` library folder into your Arduino `libraries/` folder. The ESP32 Arduino core is installed separately via the Boards Manager (see the [Notes](#notes) section of the previous tutorial).
+
+### Step 5 — Verify in the Arduino IDE
+
+1. Restart the Arduino IDE so it picks up the newly installed libraries.
+2. Open a sketch from the `embedded/` folder inside the release package.
+3. Click **Sketch → Verify/Compile** (or press `Ctrl+R`).
+   - If a library is still missing, the IDE will show a red error like `fatal error: <LibraryName.h>: No such file or directory`. Double-check that you copied the correct subfolder into the right location.
+
+### Updating Libraries When a New Release Is Published
+
+When a new OpenHornet-Software release is available, the `libraries/` folder in the package may contain newer versions of one or more libraries. The update process is the same as the initial install:
+
+1. Download the new `OpenHornet-Software-<version>.zip` from the [Releases page](https://github.com/jrsteensen/OpenHornet-Software/releases).
+2. Extract the archive.
+3. Copy all subfolders from the extracted `libraries/` folder into your Arduino sketchbook `libraries/` folder, choosing **Replace** when prompted.
+4. Restart the Arduino IDE.
+
+You do **not** need to uninstall the old libraries first — replacing the folder contents is sufficient.
+
+> **Tip:** Check the release notes on the Releases page before updating. They will tell you which libraries (if any) were updated in that release, so you can decide whether the update is relevant to the sketches you are compiling.
