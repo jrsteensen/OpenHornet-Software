@@ -166,9 +166,9 @@ int sampleFunction(int myParam1 = 1, int myParam2 = 2) {
 * only once at the programm start, belongs in this function.
 */
 void setup() {
-  #if (not defined( DCSBIOS_RS485_SLAVE) || not defined(DCSBIOS_RS485_MASTER ))   // Disable RS485 TRANSCEIVER IF NOT BEING USED
-    pinMode(TXENABLE_PIN, OUTPUT);    // WILL DISABLE TX ONLY
-    digitalWrite(TXENABLE_PIN, HIGH); // SET TX HIGH TO DISABLE TX ON TRANSCEIVER
+  #if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)   // Disable RS485 TRANSCEIVER IF NOT BEING USED
+    pinMode(TXENABLE_PIN, OUTPUT);   // WILL DISABLE TX ONLY
+    digitalWrite(TXENABLE_PIN, LOW); // SET TX LOW TO DISABLE TX ON TRANSCEIVER (HIGH enables the driver, see DCS-BIOS set_txen())
   #endif
 
   // Run DCS Bios setup function
