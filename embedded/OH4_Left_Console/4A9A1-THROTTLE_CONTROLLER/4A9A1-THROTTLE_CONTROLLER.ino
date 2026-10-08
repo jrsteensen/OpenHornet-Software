@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 4A9A1-THROTTLE_CONTROLLER.ino
- * @author Arribe, Ash
- * @date 04.01.2024
- * @version u.0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.08.2026
+ * @version u.0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. The throttle solenoids weren't working. (Remove this line once tested on hardware and in system.)
  * @brief Controls the THROTTLE QUADRANT.
  *
@@ -242,8 +242,8 @@ void setup() {
   digitalWrite(IDLE_SOL_SIG, LOW);
   digitalWrite(MAX_SOL_SIG, LOW);
 
-  Joystick.setXAxisRange(0, 1024);   // TDC X-axis
-  Joystick.setYAxisRange(0, 1024);   // TDC Y-axis
+  Joystick.setXAxisRange(0, 1023);   // TDC X-axis, raw 10-bit analogRead from the inner grip
+  Joystick.setYAxisRange(0, 1023);   // TDC Y-axis, raw 10-bit analogRead from the inner grip
   Joystick.setZAxisRange(0, 1024);   // Radar Elevation
   Joystick.setRxAxisRange(0, 65535);  // Outboard Throttle Arm
   Joystick.setRyAxisRange(0, 65535);  // Inboard Throttle Arm
@@ -324,13 +324,13 @@ void loop() {
       byte tempLow = Wire.read();      // read low byte
       byte tempHi = Wire.read();       // read high byte
       temp = (tempHi << 8) + tempLow;  //rebuild the TDC X-axis value
-      Joystick.setXAxis(map(temp, 0, 65000, 0, 1024));
+      Joystick.setXAxis(constrain(temp, 0, 1023));  // inner grip sends a raw 10-bit analogRead (0-1023), pass it straight through
 
     } else if (index == JOY_Y) {          // TDC Y-axis
       byte tempLow = Wire.read();      // read low byte
       byte tempHi = Wire.read();       // read high byte
       temp = (tempHi << 8) + tempLow;  //rebuild the TDC Y-axis value
-      Joystick.setYAxis(map(temp, 0, 65000, 0, 1024));
+      Joystick.setYAxis(constrain(temp, 0, 1023));  // inner grip sends a raw 10-bit analogRead (0-1023), pass it straight through
 
     } else if (index == ANTENNA_ELEVATION) {
       byte tempLow = Wire.read();                       // read low byte
