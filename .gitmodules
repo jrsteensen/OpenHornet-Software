@@ -39,7 +39,7 @@
 	url = https://github.com/RobTillaart/MultiMap.git
 [submodule "libraries/U8g2"]
 	path = libraries/U8g2
-	url = https://github.com/olikraus/U8g2.git
+	url = https://github.com/olikraus/U8g2_Arduino.git
 [submodule "libraries/Joystick_ESP32S2"]
 	path = libraries/Joystick_ESP32S2
 	url = https://github.com/schnoog/Joystick_ESP32S2.git
