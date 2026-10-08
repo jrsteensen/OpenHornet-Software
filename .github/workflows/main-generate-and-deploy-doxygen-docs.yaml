@@ -16,7 +16,7 @@ jobs:
   build-documentation:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
 
       - name: Build Doxygen documentation
         uses: mattnotmitt/doxygen-action@1.12.0

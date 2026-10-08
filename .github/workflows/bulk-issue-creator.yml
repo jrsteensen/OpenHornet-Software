@@ -8,15 +8,20 @@ on:
 
 name: Bulk issue creator
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   bulk_issue_creator:
     runs-on: ubuntu-latest
     name: Bulk Issue Creator
     steps:
       - name: Checkout template and data
-        uses: actions/checkout@v2
+        uses: actions/checkout@v7.0.1
       - name: Create bulk issues
-        uses: benbalter/bulk-issue-creator@v2
+        # v2 is a floating tag with no finer release, so it is pinned to the commit it pointed at.
+        uses: benbalter/bulk-issue-creator@331e909c873d19191cb36fc671234e4de292e67a # v2
         with:
-          write: ${{ github.event.inputs.write }}
+          write: ${{ inputs.write }}
           github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
