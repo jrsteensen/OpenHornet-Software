@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 1A3-L_DDI_AND_EWI.ino
- * @author Peter Sawka, OH Community, Arribe, Ash
- * @date 02.29.2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Peter Sawka, OH Community, Arribe, Ash, lahirunirmalx
+ * @date 10.08.2026
+ * @version 0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the left DDI & EWI module.
  * adapted from Peter Sawka's original Nano code
  *
@@ -236,8 +236,8 @@ void loop() {
       if ((millis() - lastDebounceTime[index]) > debounceDelay) {
         if (btnState != buttonState[index]) {
           buttonState[index] = btnState;
-          char btnName[14];
-          sprintf(btnName, "LEFT_DDI_PB_%02d", index + 1);
+          char btnName[16];  // Fits "LEFT_DDI_PB_NN" (14 characters) plus the terminating null.
+          snprintf(btnName, sizeof(btnName), "LEFT_DDI_PB_%02d", index + 1);
           DcsBios::tryToSendDcsBiosMessage(btnName, btnState == 1 ? "0" : "1");
         }
       }
