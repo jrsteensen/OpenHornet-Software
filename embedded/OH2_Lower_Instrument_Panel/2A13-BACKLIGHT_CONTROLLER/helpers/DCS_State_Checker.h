@@ -85,6 +85,12 @@ static const unsigned long PAUSED_TIMEOUT_MS = 10000;    // 10 seconds  -> PAUSE
 static const unsigned long EXITED_TIMEOUT_MS = 1800000;  // 30 minutes  -> EXITED
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Frame end tracking (used to trigger LED updates)
+// ─────────────────────────────────────────────────────────────────────────────
+static volatile bool frameJustEnded = false;                          // Flag to indicate that the frame just ended
+static volatile unsigned long lastFrameEndMs = 0;                     // Timestamp of the last frame end
+
+// ─────────────────────────────────────────────────────────────────────────────
 // State determination function
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -125,5 +131,19 @@ void onDcsUpdateCounterChange(unsigned int newValue) {
   currDcsHeartbeat = newValue;
 }
 DcsBios::IntegerBuffer dcsUpdateCounterBuffer(0xfffe, 0x00ff, 0, onDcsUpdateCounterChange);
+
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DCS-BIOS stream-idle check
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * @brief  True when no DCS-BIOS byte is buffered and nothing is pending in the UART.
+ * @remark Mega-2560-specific (UCSR0A), like the rest of this sketch's pinout.
+ */
+inline bool dcsStreamIdle() {
+  return DcsBios::parser.incomingDataBuffer.isEmpty()                 // library ring buffer drained
+      && !(UCSR0A & (1 << RXC0));                                     // no unread byte in the UART
+}
+
 
 #endif // DCS_STATE_CHECKER_H

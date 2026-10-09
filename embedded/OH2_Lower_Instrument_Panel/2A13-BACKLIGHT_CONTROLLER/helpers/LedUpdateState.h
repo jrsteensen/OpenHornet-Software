@@ -26,18 +26,25 @@
 
 #include <Arduino.h>
 #include <avr/interrupt.h>                                            // For interrupt control functions
+#include <FastLED.h>
 
 class LedUpdateState {
 private:
     static LedUpdateState* instance;
     volatile bool ledsNeedUpdate;                                     // volatile to prevent compiler optimization
-    
+    static const uint8_t MAX_ARRAYS = 10;                             // Max number of LED arrays (= channels) to update  
+    CRGB* arrays[MAX_ARRAYS];                                         // Array of pointers to LED arrays
+    uint8_t arrayCount;                                               // No of LED arrays registered so far
+    volatile uint16_t dirtyMask;                                      // Bitmask with meaining: bit i is set --> Channel i needs upd 
+
     /**
      * @brief Private constructor to enforce singleton pattern
      * @see This method is called by getInstance() when creating the singleton instance
      */
     LedUpdateState() {                                                // Private constructor to enforce singleton pattern
         ledsNeedUpdate = false;
+        dirtyMask = 0;
+        arrayCount = 0;
     }
 
 public:
@@ -52,25 +59,51 @@ public:
         }
         return instance;
     }
+
+    void registerArray(CRGB* arr) {
+        if (arrayCount < MAX_ARRAYS) {
+            arrays[arrayCount++] = arr;
+        }
+    }
     
     /**
      * @brief Sets the LED update flag in an atomic operation
      * @param requireUpdate The new state of the update flag
      * @see This method is called by Board methods that modify LED states
      */
-    void setUpdateFlag(bool requireUpdate) {
-        cli();                                                        // Disable interrupts (same as noInterrupts())
-        ledsNeedUpdate = requireUpdate;
-        sei();                                                        // Re-enable interrupts (same as interrupts())
+    void setUpdateFlag(CRGB* arr) {
+        for (uint8_t i = 0; i < arrayCount; i++) {
+            if (arrays[i] == arr) {
+                cli();
+                dirtyMask = dirtyMask | (1 << i);                     // Bitwise OR to set the bit for the channel
+                sei();
+                return;
+            }
+        setUpdateFlag(true);                                          // If the array is not found, set the update flag for all arrays
+        }
     }
 
-    /**
-     * @brief Gets the current state of the LED update flag
-     * @return True if LEDs need to be updated, false otherwise
-     * @see This method is called by Board::updateLeds() to check if a physical update is needed
-     */
+    void setUpdateFlag(bool requireUpdate) {
+        cli();
+        dirtyMask = requireUpdate ? (uint16_t)((1UL << arrayCount) - 1) : 0;
+        sei();
+    }
+
     bool getUpdateFlag() const {
-        return ledsNeedUpdate;
+        return dirtyMask != 0;
+    }
+
+    bool needsUpdate() const {
+        return dirtyMask != 0;
+    }
+
+    uint16_t getDirtyMask() const {
+        return dirtyMask;
+    }
+    void clearBit(uint8_t bit) {
+        cli();
+        dirtyMask &= ~(1 << bit);
+        sei();
     }
 };
 

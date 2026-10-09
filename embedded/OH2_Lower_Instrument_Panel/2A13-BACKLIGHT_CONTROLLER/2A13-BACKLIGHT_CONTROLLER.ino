@@ -32,8 +32,8 @@
 /**
  * @file    2A13-BACKLIGHT_CONTROLLER.ino
  * @author  Ulukaii, Arribe, Higgins
- * @date    May 31, 2026
- * @version V 0.5.5 (tested)
+ * @date    Sep 15, 2026
+ * @version V 0.5.6 (tested)
  * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and 
  *          panel versions.
  * @brief   Controls backlights & most annunciators. 

@@ -107,7 +107,7 @@ protected:
                 getLedStrip()[ledIndex] = cgrbTarget;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 
     /**
@@ -126,7 +126,7 @@ protected:
                 getLedStrip()[ledIndex] = consoleTarget;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 
     /**
@@ -146,7 +146,7 @@ protected:
                 getLedStrip()[ledIndex] = color;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 
     /**
@@ -165,7 +165,7 @@ protected:
                 getLedStrip()[ledIndex] = floodTarget;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 
     /**
@@ -183,7 +183,7 @@ protected:
             ledArray[startIndex + i] = NVIS_BLACK;
         }
         
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 };
 

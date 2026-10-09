@@ -42,6 +42,7 @@ private:
     uint16_t currentIndex; // Index of the next available LED
     Panel* firstPanel;     // Pointer to first panel in the channel
     uint8_t panelCount;    // Number of panels in the channel
+    CLEDController* controller; // Pointer to the FastLED controller
     
 public:
     /**
@@ -59,25 +60,27 @@ public:
         currentIndex = 0;  // Initialize currentIndex to 0
         firstPanel = nullptr;  // Initialize first panel pointer
         panelCount = 0;    // Initialize panel count
+        controller = nullptr; // Initialize controller pointer
     }
 
     /**
      * @brief Initializes the LED strip with FastLED
      * @see This method is called during setup in 2A13-BACKLIGHT_CONTROLLER.ino
+     * @details This method inits the LED in the array and we save a pointer to it in the 'controller' variable
      */
     void initialize() {
         // Use a switch statement to overcome strange behaviour of FastLED to have a pin number at compile time
         switch(pin) {
-            case 4:  FastLED.addLeds<WS2812B, 4, GRB>(leds, ledCount); break;
-            case 5:  FastLED.addLeds<WS2812B, 5, GRB>(leds, ledCount); break;
-            case 6:  FastLED.addLeds<WS2812B, 6, GRB>(leds, ledCount); break;
-            case 7:  FastLED.addLeds<WS2812B, 7, GRB>(leds, ledCount); break;
-            case 8:  FastLED.addLeds<WS2812B, 8, GRB>(leds, ledCount); break;
-            case 9:  FastLED.addLeds<WS2812B, 9, GRB>(leds, ledCount); break;
-            case 10: FastLED.addLeds<WS2812B, 10, GRB>(leds, ledCount); break;
-            case 11: FastLED.addLeds<WS2812B, 11, GRB>(leds, ledCount); break;
-            case 12: FastLED.addLeds<WS2812B, 12, GRB>(leds, ledCount); break;
-            case 13: FastLED.addLeds<WS2812B, 13, GRB>(leds, ledCount); break;
+            case 4:  controller = &FastLED.addLeds<WS2812B, 4, GRB>(leds, ledCount); break;
+            case 5:  controller = &FastLED.addLeds<WS2812B, 5, GRB>(leds, ledCount); break;
+            case 6:  controller = &FastLED.addLeds<WS2812B, 6, GRB>(leds, ledCount); break;
+            case 7:  controller = &FastLED.addLeds<WS2812B, 7, GRB>(leds, ledCount); break;
+            case 8:  controller = &FastLED.addLeds<WS2812B, 8, GRB>(leds, ledCount); break;
+            case 9:  controller = &FastLED.addLeds<WS2812B, 9, GRB>(leds, ledCount); break;
+            case 10: controller = &FastLED.addLeds<WS2812B, 10, GRB>(leds, ledCount); break;
+            case 11: controller = &FastLED.addLeds<WS2812B, 11, GRB>(leds, ledCount); break;
+            case 12: controller = &FastLED.addLeds<WS2812B, 12, GRB>(leds, ledCount); break;
+            case 13: controller = &FastLED.addLeds<WS2812B, 13, GRB>(leds, ledCount); break;
             default: break; // Handle invalid pin
         }
         
@@ -156,6 +159,14 @@ public:
      * @return The panel count
      */
     uint8_t getPanelCount() const { return panelCount; }
+
+    /**
+     * @brief Physically updates only this channel's strip.
+     * @param scale Brightness scale (0-255), pre-computed by the board incl. power limit.
+     */
+    void showNow(uint8_t scale) {
+        if (controller) controller->showLeds(scale);
+    }
 
     /**
      * @brief Applies pre-scaled instrument backlight targets to all panels in this channel
