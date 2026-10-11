@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2025 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 3A3A1-STICK_CONTROLLER.ino
- * @author Thibaud Colodié (@Thib-O)
- * @date 12.31.2025
- * @version u.0.1.0
- * @copyright Copyright 2016-2025 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Thibaud Colodié (@Thib-O), lahirunirmalx
+ * @date 10.11.2026
+ * @version u.0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the FLIGHT CONTROL STICK.
  *
  * @details
@@ -490,6 +490,10 @@ static MT6835_Result readMT6835_burstAngle(uint8_t csPin)
   uint32_t data24 = ((res.angle21 & 0x1FFFFF) << 3) | (uint32_t)(res.status3 & 0x07);
   uint8_t crc = mt_crc8_24bits_msb(data24);
   res.crc_ok = (crc == r006);
+
+  // An all-zero frame (sensor unplugged or MISO held low) also has a valid CRC,
+  // because the CRC of 0x000000 is 0x00. Reject it so it is never used as an angle.
+  if (r003 == 0 && r004 == 0 && r005 == 0 && r006 == 0) res.crc_ok = false;
 #else
   (void)r006;
   res.crc_ok = true;
@@ -673,22 +677,36 @@ void setup()
   if (!centersValid)
   {
     delay(50);
+    bool rollRead  = false;  // true once at least one valid roll reading was taken
+    bool pitchRead = false;  // true once at least one valid pitch reading was taken
     for (int i = 0; i < 8; i++)
     {
       MT6835_Result r = readMT6835_burstAngle(PIN_CS_ROLL);
-      if (r.crc_ok) rollCenter = r.angle21;
+      if (r.crc_ok) { rollCenter = r.angle21; rollRead = true; }
 
       MT6835_Result p = readMT6835_burstAngle(PIN_CS_PITCH);
-      if (p.crc_ok) pitchCenter = p.angle21;
+      if (p.crc_ok) { pitchCenter = p.angle21; pitchRead = true; }
 
       delay(2);
     }
 
-    saveCentersToEEPROM(rollCenter, pitchCenter);
-    centersValid = true;
+    // Only store the boot position if both sensors answered. Otherwise leave the stick
+    // uncalibrated so a later recenter (which accepts any position while uncalibrated)
+    // stores real centers instead of zeros.
+    if (rollRead && pitchRead)
+    {
+      saveCentersToEEPROM(rollCenter, pitchCenter);
+      centersValid = true;
 
 #if DEBUG_SERIAL
-    Serial.println(F("EEPROM centers initialized from boot position (now valid)."));
+      Serial.println(F("EEPROM centers initialized from boot position (now valid)."));
+#endif
+    }
+#if DEBUG_SERIAL
+    else
+    {
+      Serial.println(F("Sensor read failed at boot; centers NOT saved. Use recenter."));
+    }
 #endif
   }
 
@@ -734,7 +752,11 @@ void loop()
 
   // Your grip is active-low: 0 = pressed, 1 = released
   // Invert so that 1 = pressed for our mapping.
-  grip24 = ~grip24 & 0xFFFFFF;
+  // A raw all-zero frame means the grip is unplugged or MISO is held low: it would read as
+  // all 24 buttons pressed (trigger, weapon release, every hat direction), which is physically
+  // impossible. Treat it as nothing pressed instead.
+  if (grip24 == 0x000000) grip24 = 0;
+  else                    grip24 = ~grip24 & 0xFFFFFF;
 
   // ----- Recenter (SAFE 2s / FORCED 6s with correct behavior) -----
   bool combo = recenterComboPressed(grip24);
