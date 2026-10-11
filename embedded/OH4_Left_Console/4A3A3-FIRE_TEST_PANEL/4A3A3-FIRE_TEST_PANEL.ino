@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 4A3A3-FIRE_TEST_PANEL.ino
- * @author Arribe, Ash
- * @date 03.30.2024
- * @version 0.2.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.11.2026
+ * @version 0.2.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the BRK PRESS gauge, BRAKE handle &amp; FIRE TEST panel.
  *
  * @details
@@ -147,7 +147,7 @@ void onInstrIntLtChange(unsigned int newValue) {
       brakePressureLight.show();
       break;
     default:
-      brakePressureLight.fill(brakePressureLight.Color(map(newValue, 0, 65535, 0, 255), 0, 0), 0, LED_COUNT);  ///< Set light to Green - GRB LED
+      brakePressureLight.fill(brakePressureLight.Color(0, map(newValue, 0, 65535, 0, 255), 0), 0, LED_COUNT);  ///< Set light to Green. Color() always takes (red, green, blue); NEO_GRB only sets the wire order.
       brakePressureLight.show();
       break;
   }
