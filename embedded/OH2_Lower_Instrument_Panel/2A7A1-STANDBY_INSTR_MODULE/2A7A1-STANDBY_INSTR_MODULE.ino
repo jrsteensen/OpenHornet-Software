@@ -32,9 +32,9 @@
 /**
 * @file 2A7A1-STANDBY_INSTR_MODULE
 * @author Thib-O with the help of @Circuit, @BnepeThomas, @No1Sonuk, @Ulukaii and @Sandra,
-*         Ash with the help of @Murtle and @Ultramarine
-* @date 14.10.2025
-* @version 0.2.0 (tested on USB, and with bus RS485)
+*         Ash with the help of @Murtle and @Ultramarine, lahirunirmalx
+* @date 08.10.2026
+* @version 0.2.1 (tested on USB, and with bus RS485)
 * @brief Code for standby controller to drive the standby the standby intrument panel.
 */
 
@@ -507,7 +507,7 @@ void setup() {
     }
   }
 
-  posAIR - 0;
+  posAIR = 0;
   AIR = map(0, 0, 65535, 0, 720);
 
   //ALTIMETER STEPPER HOMING
@@ -541,7 +541,7 @@ void setup() {
     }
   }
 
-  posVVI - 0;
+  posVVI = 0;
   VVI = map(0, 0, 65535, 0, 720);
 
   FastLED.addLeds<WS2812B, BACKLIGHT_PIN, RGB>(ws2812, BACKLIGHT_COUNT);  // GRB ordering is typical
