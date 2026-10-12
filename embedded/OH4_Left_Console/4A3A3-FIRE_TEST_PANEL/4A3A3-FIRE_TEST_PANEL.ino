@@ -50,7 +50,7 @@
  * A3  | Brake Pressure Stepper M1
  * 2   | Brake Pressure Stepper M2
  * A2  | Brake Pressure Stepper M3
- * 3   | Brake Pressure Adafruit LED Data In
+ * 3   | Brake Pressure WS2812B LED Data In
  * A1  | Brake Pressure Stepper M4
  * 4   | Fire Switch 1
  * A0  | Fire Switch 2
@@ -96,7 +96,7 @@
 
 #include "DcsBios.h"
 #include <Stepper.h>
-#include "Adafruit_NeoPixel.h"
+#include <FastLED.h>
 
 // May need to play with steps, zero value, and max to get the needle to be close to the needle position in sim.
 #define STEPS 310                ///< Set steps per revolution
@@ -107,7 +107,7 @@
 #define BPKP_M1 A3      ///< Brake Pressure Stepper M1
 #define BPKP_M2 2       ///< Brake Pressure Stepper M2
 #define BPKP_M3 A2      ///< Brake Pressure Stepper M3
-#define BRKP_DIN 3      ///< Brake Pressure Adafruit LED Data In
+#define BRKP_DIN 3      ///< Brake Pressure WS2812B LED Data In
 #define BPKP_M4 A1      ///< Brake Pressure Stepper M4
 #define FIRE_SW1 4      ///< Fire Switch 1
 #define FIRE_SW2 A0     ///< Fire Switch 2
@@ -118,7 +118,7 @@
 #define LED_COUNT 1    ///< Number of backlighting pixels for the brake pressure gauge.
 #define BRIGHTNESS 50  ///< Brightness of the LED
 
-Adafruit_NeoPixel brakePressureLight = Adafruit_NeoPixel(LED_COUNT, BRKP_DIN, NEO_GRB + NEO_KHZ800);  ///< lighting initialization
+CRGB brakePressureLight[LED_COUNT];  ///< Brake pressure gauge backlight pixels (WS2812B, set up in setup())
 
 Stepper stepperBrakePressure(STEPS, BPKP_M1, BPKP_M2, BPKP_M3, BPKP_M4);  ///< Brake pressure stepper initializaiton
 
@@ -143,12 +143,12 @@ DcsBios::IntegerBuffer hydIndBrakeBuffer(FA_18C_hornet_HYD_IND_BRAKE, onHydIndBr
 void onInstrIntLtChange(unsigned int newValue) {
   switch (newValue) {
     case 0:
-      brakePressureLight.fill(0, 0, LED_COUNT);  ///< Off
-      brakePressureLight.show();
+      fill_solid(brakePressureLight, LED_COUNT, CRGB::Black);  ///< Off
+      FastLED.show();
       break;
     default:
-      brakePressureLight.fill(brakePressureLight.Color(0, map(newValue, 0, 65535, 0, 255), 0), 0, LED_COUNT);  ///< Set light to Green. Color() always takes (red, green, blue); NEO_GRB only sets the wire order.
-      brakePressureLight.show();
+      fill_solid(brakePressureLight, LED_COUNT, CRGB(0, map(newValue, 0, 65535, 0, 255), 0));  ///< Green, dimmed by the instrument light knob. CRGB is (red, green, blue); the GRB wire order is set in addLeds().
+      FastLED.show();
       break;
   }
 }
@@ -172,9 +172,9 @@ void setup() {
   pinMode(BRKH_PARK, INPUT_PULLUP);    ///< set park pulled pin mode for direct reads
   pinMode(BRKH_SECURE, INPUT_PULLUP);  ///< set handle pushed in pin mode for direct reads
 
-  brakePressureLight.begin();                    ///< begin brake light
-  brakePressureLight.show();                     ///< Clear the LED
-  brakePressureLight.setBrightness(BRIGHTNESS);  ///< set the initial brightness
+  FastLED.addLeds<WS2812B, BRKP_DIN, GRB>(brakePressureLight, LED_COUNT);  ///< WS2812B on BRKP_DIN, GRB wire order
+  FastLED.setBrightness(BRIGHTNESS);  ///< set the initial brightness
+  FastLED.clear(true);                ///< Clear the LED
 
   stepperBrakePressure.setSpeed(10);               ///< set the stepper speed
   stepperBrakePressure.step(240);                  // reset needle to far counter-clockwise position
