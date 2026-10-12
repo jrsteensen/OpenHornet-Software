@@ -25,7 +25,7 @@ This manual covers writing software for the OpenHornet project, including how to
 ### Arduino Libraries
 
 - Flightpanels dcs-bios-arduino-library-0.3.11+
-- FastLED (Not Adafruit_NeoPixel. It will be removed in the future.)
+- FastLED (use FastLED for addressable LEDs; Adafruit_NeoPixel has been removed)
 - Servo
 - ESP32-Servo
 - TCA9534
