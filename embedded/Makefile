@@ -1,7 +1,5 @@
 MAKEFILES = $(wildcard */*/Makefile)
 SKETCHES := $(dir $(MAKEFILES))
-# The sketch template is compiled as a smoke test but is never shipped as firmware.
-RELEASE_SKETCHES := $(filter-out templates/%,$(SKETCHES))
 ROOTDIR := $(abspath $(CURDIR)/..)
 RELEASE_DIR := $(abspath $(CURDIR)/../release)
 
@@ -17,7 +15,7 @@ $(SKETCHES):
 prep_release:
 	mkdir -p $(RELEASE_DIR)
 
-release: prep_release $(RELEASE_SKETCHES)
+release: prep_release $(SKETCHES)
 
 clean: $(SKETCHES)
 
