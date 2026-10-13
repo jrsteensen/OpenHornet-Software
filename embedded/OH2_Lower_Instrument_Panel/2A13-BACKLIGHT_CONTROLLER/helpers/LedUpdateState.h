@@ -79,8 +79,8 @@ public:
                 sei();
                 return;
             }
-        setUpdateFlag(true);                                          // If the array is not found, set the update flag for all arrays
         }
+        setUpdateFlag(true);                                          // Array not registered: set the update flag for all arrays
     }
 
     void setUpdateFlag(bool requireUpdate) {

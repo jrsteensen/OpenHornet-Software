@@ -129,6 +129,8 @@ bool checkDcsRunning() {
 // ─────────────────────────────────────────────────────────────────────────────
 void onDcsUpdateCounterChange(unsigned int newValue) {
   currDcsHeartbeat = newValue;
+  frameJustEnded = true;                                              // Frame counter is the last address in a frame:
+  lastFrameEndMs = millis();                                          // the idle gap starts now
 }
 DcsBios::IntegerBuffer dcsUpdateCounterBuffer(0xfffe, 0x00ff, 0, onDcsUpdateCounterChange);
 

@@ -116,7 +116,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyInstrLights(instrTarget, cgrbTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     /**
@@ -129,7 +128,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyConsoleLights(consoleTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     /**
@@ -142,7 +140,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyFloodlights(floodTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
 
@@ -154,6 +151,13 @@ public:
      */
     static Board* getInstance() {
         return instance ? instance : (instance = new Board()); }
+
+    /**
+     * @brief Sets the power budget used to compute the brightness scale for per-channel shows
+     * @param mw Maximum power in milliwatts (voltage * max current); 0 disables the limit
+     * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
+     */
+    void setMaxPowerMW(uint32_t mw) { maxPowerMW = mw; }
 
     /**
      * @brief Sets up the rotary encoder with switch and encoder pins
