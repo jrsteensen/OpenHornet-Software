@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,17 +32,21 @@
 
 /**
  * @file 5A8A1-SIM_CNTL_PANEL.ino
- * @author Arribe, Ash
- * @date 03.08.2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.08.2026
+ * @version 0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the SIM CNTL panel.
+ *
+ * @warning This panel is USB HID only. It does NOT use DCS-BIOS and can NOT run as an RS485 slave.
+ * Connect it to the PC with a USB cable. Do not add an RS485 bus address to this sketch:
+ * configuring it as an RS485 slave hangs the whole RS485 bus.
  *
  * @details
  * 
  *  * **Reference Designator:** 5A8A1
  *  * **Intended Board:** ABSIS ALE
- *  * **RS485 Bus Address:** 7
+ *  * **RS485 Bus Address:** None (USB HID only)
  * 
  * ### Wiring diagram:
  * PIN | Function
@@ -65,41 +69,22 @@
  * No Pin | View Cockpit
 
  * @note This is a HID only panel.  The switches need to be mapped in the DCS controller setup for the views, and functions.
- * 
- *
- * @brief The following #define tells DCS-BIOS that this is a RS-485 slave device.
- * It also sets the address of this slave device. The slave address should be
- * between 1 and 126 and must be unique among all devices on the same bus.
- *
-   #define DCSBIOS_RS485_SLAVE 7 ///DCSBios RS485 Bus Address
-*/
-
-/**
- * Check if we're on a Mega328 or Mega2560 and define the correct
- * serial interface
- * 
  */
-#if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
-#define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
-#else
-#define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
-#endif
 
 #ifdef __AVR__
 #include <avr/power.h>
 #endif
 
 /**
- * The Arduino pin that is connected to the
- * RE and DE pins on the RS-485 transceiver.
-*/
-#define TXENABLE_PIN 5  ///< Sets TXENABLE_PIN to Arduino Pin 5
-#define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
+ * The Arduino pin that is connected to the RE and DE pins on the ABSIS ALE's RS485 transceiver.
+ * This panel does not use the RS485 bus. The pin is held LOW in setup() so the transceiver
+ * never drives the bus, even if the ABSIS ALE is plugged into an RS485 bus.
+ */
+#define TXENABLE_PIN 5  ///< RS485 transceiver RE/DE pin (held LOW = transmitter off)
 
-#include "DcsBios.h"
 #include "Joystick.h"
 
-// Define pins for DCS-BIOS per interconnect diagram.
+// Define pins per interconnect diagram.
 #define VIEW_CHASE A3  ///< View Chase
 #define VIEW_EXT 2     ///< View External
 #define VIEW_FLYBY A2  ///< View Flyby
@@ -117,7 +102,7 @@
 #define GME_FREEZE 9   ///< Game Freeze
 
 /// Array of pins to simplify the code working with the switches as joystick buttons.
-const int* pins[15]{ VIEW_CHASE, VIEW_EXT, VIEW_FLYBY, VIEW_WPN, VIEW_ENMY, VIEW_HUD, VIEW_MAP, HT_FRZE, HT_CTR, TIME_FAST, TIME_REAL, TOG_NVG, TOG_LABL, GME_PAUSE, GME_FREEZE };
+const int pins[15]{ VIEW_CHASE, VIEW_EXT, VIEW_FLYBY, VIEW_WPN, VIEW_ENMY, VIEW_HUD, VIEW_MAP, HT_FRZE, HT_CTR, TIME_FAST, TIME_REAL, TOG_NVG, TOG_LABL, GME_PAUSE, GME_FREEZE };
 
 bool currentViewState[7]{ LOW, LOW, LOW, LOW, LOW, LOW, LOW };  ///< Initilize the array of view rotary state, for logic to determine if View Cockpit is selected.
 const bool allOff[7]{ LOW, LOW, LOW, LOW, LOW, LOW, LOW };      ///< Initializes an array for allOff comparison.
@@ -150,14 +135,16 @@ Joystick_ Joystick = Joystick_(
 * only once at the programm start, belongs in this function.
 */
 void setup() {
+  // Keep the RS485 transceiver in receive mode so this panel can never drive the bus.
+  pinMode(TXENABLE_PIN, OUTPUT);
+  digitalWrite(TXENABLE_PIN, LOW);
 
+  // Set every switch pin as an input with the internal pull-up resistor.
   for (int j = 0; j < 15; j++) {
     pinMode(pins[j], INPUT_PULLUP);
-
-    Serial.begin(9600);
-
-    Joystick.begin();
   }
+
+  Joystick.begin();
 }
 
 /**
