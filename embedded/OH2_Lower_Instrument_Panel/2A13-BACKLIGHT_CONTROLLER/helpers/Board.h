@@ -51,7 +51,9 @@ private:
     static const unsigned long SHOW_INTERVAL_NORMAL_MS = 150;         // Min. gap between FastLED.show() calls in MODE_NORMAL. Interrupts are
                                                                       // off during show(), so DCS-BIOS data can ONLY be received in this gap.
                                                                       // Larger = fewer missed updates, but more LED latency. See below.
-    static const unsigned long MAX_SHOW_STARVATION_MS = 250;                                                                  static const int MAX_CHANNELS = 10;                               // Maximum number of channels
+    static const unsigned long MAX_SHOW_STARVATION_MS = 250;      // No show for this long = force one (starvation escape)
+    static const unsigned long DIMMER_BURST_MS = 300;             // Window after a dimmer change: budget is lifted
+    static const int MAX_CHANNELS = 10;                               // Maximum number of channels
     static const int MODE_NORMAL = 1;                                 // Normal DCS-BIOS controlled mode
     static const int MODE_MANUAL = 2;                                 // Manual mode - control backlts with rotary encoder
     static const int MODE_RAINBOW = 3;                                // Rainbow test mode
@@ -78,6 +80,7 @@ private:
 
     uint8_t  nextChannel;                                             // Round-robin pointer for per-channel updates
     uint32_t maxPowerMW;                                              // Power budget for scale calc; 0 = no limit
+    unsigned long lastDimmerChangeMs;                                 // millis() of the last applied dimmer change (opens burst window)
     static const uint16_t LED_BUDGET_PER_GAP = 350;                   // Max LEDs shown per frame gap (~18 ms)
     static const unsigned long DCS_SILENT_MS = 500;                   // No frame end for this long = DCS not streaming
         
@@ -88,6 +91,7 @@ private:
     Board() {
         updCountdown = 0;                                             // Initialize with 0
         lastShowMs = 0;                                               // Initialize with 0
+        lastDimmerChangeMs = 0;                                       // Initialize with 0
         channelCount = 0;                                             // Initialize with 0 channels
         thisHue = 0;                                                  // Initialize with 0
         deltaHue = 3;                                                 // Initialize with 3
@@ -215,6 +219,7 @@ public:
         // MODE_NORMAL: show only in the idle gap after a DCS-BIOS frame
         bool dcsSilent = (millis() - lastFrameEndMs) > DCS_SILENT_MS;
         bool starved   = (millis() - lastShowMs) > MAX_SHOW_STARVATION_MS;
+        bool dimmerBurst = (millis() - lastDimmerChangeMs) < DIMMER_BURST_MS;   // Active dimming: fluidity beats frame integrity
         if (!dcsSilent && !starved) {
             if (!frameJustEnded) return;                              // Wait for end-of-frame marker
             if (!dcsStreamIdle()) return;                             // Bytes pending: retry next loop
@@ -234,8 +239,8 @@ public:
             uint8_t i = nextChannel;                                  // starting where the last gap ended
             nextChannel = (nextChannel + 1) % channelCount;
             if (!(upd->getDirtyMask() & (1 << i))) continue;          // Clean channel
-            if (channels[i]->getLedCount() > budget) continue;        // Doesn't fit this gap; bit stays set
-            if (!dcsSilent && !starved && !dcsStreamIdle()) break;    // Next frame started early: stop
+            if (!dimmerBurst && channels[i]->getLedCount() > budget) continue;   // Doesn't fit this gap; bit stays set (burst: ignore budget)
+            if (!dimmerBurst && !dcsSilent && !starved && !dcsStreamIdle()) break;   // Next frame started early: stop (burst: keep painting)
     
             channels[i]->showNow(scale);
             lastShowMs = millis();                                    // Feed the starvation timer
@@ -249,7 +254,7 @@ public:
             }
             sei();
             upd->clearBit(i);
-            budget -= channels[i]->getLedCount();
+            budget = (channels[i]->getLedCount() > budget) ? 0 : budget - channels[i]->getLedCount();
         }
         frameJustEnded = false;                                       // Gap consumed
     }
@@ -425,6 +430,7 @@ public:
         }
         pend_instr_v = false;
         dcs_brightness_instrument = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
         if (currentMode != MODE_NORMAL) return;
         applyInstrumentTargets();
     }
@@ -451,6 +457,7 @@ public:
         }
         pend_console_v = false;
         dcs_brightness_console = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
         if (currentMode != MODE_NORMAL) return;
         applyConsoleTargets();
     }
@@ -477,6 +484,7 @@ public:
         }
         pend_flood_v = false;
         dcs_brightness_flood = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
         if (currentMode != MODE_NORMAL) return;
         applyFloodTargets();
     }
