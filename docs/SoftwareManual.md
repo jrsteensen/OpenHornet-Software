@@ -24,7 +24,7 @@ This manual covers writing software for the OpenHornet project, including how to
 
 ### Arduino Libraries
 
-- Flightpanels dcs-bios-arduino-library-0.3.11+
+- Flightpanels dcs-bios-arduino-library-0.3.13+
 - FastLED (Not Adafruit_NeoPixel. It will be removed in the future.)
 - Servo
 - ESP32-Servo
@@ -639,6 +639,6 @@ Libraries are downloaded during each GitHub Actions run and made available durin
 
 - http://www.doxygen.org
 - https://github.com/DCS-Skunkworks/dcs-bios
-- https://github.com/DCS-Skunkworks/dcs-bios-arduino-library/tree/327bf2233603c28989de63dc96e17abecf91ed31
+- https://github.com/DCS-Skunkworks/dcs-bios-arduino-library
 - https://github.blog/2016-02-01-working-with-submodules/
 - https://www.arduino.cc/en/Reference/StyleGuide
