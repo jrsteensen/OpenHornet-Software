@@ -81,7 +81,7 @@
  * serial interface
  * 
  */
-#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
+#if not defined(DCSBIOS_RS485_SLAVE) and not defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else

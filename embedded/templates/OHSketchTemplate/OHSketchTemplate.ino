@@ -71,7 +71,7 @@
  * serial interface
  * 
  */
-#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
+#if not defined(DCSBIOS_RS485_SLAVE) and not defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
@@ -168,7 +168,7 @@ int sampleFunction(int myParam1 = 1, int myParam2 = 2) {
 * only once at the programm start, belongs in this function.
 */
 void setup() {
-  #if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)   // Disable RS485 TRANSCEIVER IF NOT BEING USED
+  #if (not defined( DCSBIOS_RS485_SLAVE) || not defined(DCSBIOS_RS485_MASTER ))   // Disable RS485 TRANSCEIVER IF NOT BEING USED
     pinMode(TXENABLE_PIN, OUTPUT);   // WILL DISABLE TX ONLY
     digitalWrite(TXENABLE_PIN, LOW); // SET TX LOW TO DISABLE TX ON TRANSCEIVER (HIGH enables the driver, see DCS-BIOS set_txen())
   #endif
