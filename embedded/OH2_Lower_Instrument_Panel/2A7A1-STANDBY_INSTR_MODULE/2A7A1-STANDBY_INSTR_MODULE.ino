@@ -33,20 +33,28 @@
 * @file 2A7A1-STANDBY_INSTR_MODULE
 * @author Thib-O with the help of @Circuit, @BnepeThomas, @No1Sonuk, @Ulukaii and @Sandra,
 *         Ash with the help of @Murtle and @Ultramarine, lahirunirmalx
-* @date 08.10.2026
-* @version 0.2.1 (tested on USB, and with bus RS485)
+* @date 14.10.2026
+* @version 0.2.2 (tested on USB, and with bus RS485)
 * @brief Code for standby controller to drive the standby the standby intrument panel.
 */
+
+/**
+* 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
+* Be sure to set slave address per INTERCONNECT
+*/
+//#define DCSBIOS_RS485_SLAVE 5
 
 /**
 * Check if we're on a Mega328 or Mega2560 and define the correct
 * serial interface
 *
 */
+#if not defined(DCSBIOS_RS485_SLAVE) and not defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
   #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
   #define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+#endif
 #endif
 
 #ifdef __AVR__
@@ -58,12 +66,6 @@
 * RE and DE pins on the RS-485 transceiver.
 */
 #define TXENABLE_PIN 2 ///< Sets TXENABLE_PIN to Arduino Pin 2
-
-/**
-* 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
-* Be sure to set slave address per INTERCONNECT
-*/
-//#define DCSBIOS_RS485_SLAVE 5
 
 /**
 * If using a SERVO Motor (only used in Radar Altimeter) leave un-commented
