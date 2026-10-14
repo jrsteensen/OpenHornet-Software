@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 4A6A1-FCS_PANEL.ino
- * @author Arribe, Ash
- * @date 03.04.2024
- * @version u.0.2.0 (partially tested)
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.14.2026
+ * @version u.0.2.1 (partially tested)
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, but the Rudder trim speed is set to full-on.  
  * The rudder trim speed is untested, the test hardware was wired directly to always run at full power.
  * All other features are tested.
@@ -72,10 +72,12 @@
  * serial interface
  * 
  */
+#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
 #define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+#endif
 #endif
 
 #ifdef __AVR__

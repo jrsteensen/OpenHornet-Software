@@ -33,8 +33,8 @@
 /**
  * @file 4A3A3-FIRE_TEST_PANEL.ino
  * @author Arribe, Ash, lahirunirmalx
- * @date 10.11.2026
- * @version 0.2.1
+ * @date 10.14.2026
+ * @version 0.2.2
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the BRK PRESS gauge, BRAKE handle &amp; FIRE TEST panel.
  *
@@ -70,10 +70,12 @@
  * serial interface
  * 
  */
+#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
 #define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+#endif
 #endif
 
 #ifdef __AVR__

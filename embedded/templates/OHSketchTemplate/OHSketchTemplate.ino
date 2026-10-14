@@ -34,7 +34,7 @@
  * @file OHSketchTemplate.ino
  * @author <Replace with author's name>
  * @date <MM.DD.YYYY>
- * @version u.0.0.3
+ * @version u.0.0.4
  * @copyright Copyright 2016-2025 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. (Remove this line once tested on hardware and in system.)
  * @brief <A short description of the PCB, will appear in the list of files.>
@@ -61,14 +61,22 @@
 */
 
 /**
+* 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
+* Be sure to set slave address per INTERCONNECT
+*/
+//#define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, 
+
+/**
  * Check if we're on a Mega328 or Mega2560 and define the correct
  * serial interface
  * 
  */
+#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
 #define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
+#endif
 #endif
 
 #ifdef __AVR__
@@ -81,12 +89,6 @@
 */
 #define TXENABLE_PIN 5 ///< Sets TXENABLE_PIN to Arduino Pin 5
 #define UART1_SELECT ///< Selects UART1 on Arduino for serial communication
-
-/**
-* 32U4 now works as a slave only.   uncomment below to make this device a RS485 SLAVE
-* Be sure to set slave address per INTERCONNECT
-*/
-//#define DCSBIOS_RS485_SLAVE 1 ///DCSBios RS485 Bus Address, 
 
 /**
  * If using a SERVO Motor (only used in Radar Altimeter) leave un-comment

@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 1A2-MASTER_ARM_PANEL.ino
- * @author Sandra Carroll (<a href="mailto:smgvbest@gmail.com">smgvbest@gmail.com</a>), Arribe, Ash
- * @date 3.02.2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Sandra Carroll (<a href="mailto:smgvbest@gmail.com">smgvbest@gmail.com</a>), Arribe, Ash, lahirunirmalx
+ * @date 10.14.2026
+ * @version 0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the MASTER ARM panel. 
  *
  * @details This sketch is for the UIP Master Arm Panel.
@@ -67,10 +67,12 @@
  * serial interface
  * 
  */
+#if !defined(DCSBIOS_RS485_SLAVE) && !defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
 #define DCSBIOS_DEFAULT_SERIAL ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)  
+#endif
 #endif
 
 #ifdef __AVR__
