@@ -4,7 +4,6 @@
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/include/Arduino-Makefile" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/include/makeEspArduino" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/libraries/Adafruit_NeoPixel" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/Arduino_Boards" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/Servo" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/libraries/TCA9534" vcs="Git" />
