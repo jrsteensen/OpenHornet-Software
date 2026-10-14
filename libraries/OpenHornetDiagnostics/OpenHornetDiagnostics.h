@@ -34,12 +34,18 @@
  * @file OpenHornetDiagnostics.h
  * @author lahirunirmalx
  * @date 10.14.2026
- * @version 0.1.0
+ * @version 0.2.0
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
- * @brief Backlight power-on test, DCS sync indication and diagnostic mode for
- *        panels with a PWM backlight and pushbuttons (DDIs, AMPCD).
+ * @brief Backlight power-on test, DCS sync indication and diagnostic mode for the
+ *        DDI (1A3, 1A9) and AMPCD (2A3A1) boards with a plain LED backlight on a PWM pin.
  *
  * @details
+ * **Scope:** this helper drives one PWM pin with analogWrite() and nothing else. It is
+ * only for the DDI and AMPCD boards whose backlight is a string of plain LEDs on the
+ * backlight PWM pin. DDI/AMPCD boards fitted with WS2812 addressable backlighting, and
+ * every other panel (their backlights are WS2812 strings driven by the 2A13 backlight
+ * controller), are not supported and will not work with this helper.
+ *
  * Implements the behaviour requested in OpenHornet-Software issue #117:
  *
  *  * **Power on:** the backlight fades from off to full and back to off.
@@ -50,13 +56,23 @@
  *    rocker movement blinks the backlight off and on. Hold any three pushbuttons
  *    for three seconds again to exit. Diagnostic mode works with or without DCS
  *    running, and DCS-BIOS messages keep flowing while it is active.
+ *  * **Not while in a mission:** diagnostic mode can only be entered while no DCS
+ *    mission is running. The sketch reports the mission state every loop with
+ *    setMissionActive() (see OpenHornetDcsMission.h, which derives it from the
+ *    DCS-BIOS aircraft name and heartbeat). While a mission is active the three
+ *    button hold is ignored, and if a mission starts while diagnostic mode is on
+ *    the helper leaves it and follows DCS again.
  *
  * All timing is non-blocking and driven by millis(), so DcsBios::loop() keeps
- * running. The helper never touches I2C; the sketch keeps reading its own
- * buttons and passes in the number currently pressed.
+ * running. The helper never touches I2C or DCS-BIOS; the sketch keeps reading its
+ * own buttons and passes in the number currently pressed.
  *
  * **Usage:**
  * @code
+ * #include "DcsBios.h"
+ * #include "OpenHornetDiagnostics.h"
+ * #include "OpenHornetDcsMission.h"
+ *
  * OhBacklightDiagnostics backlight(BACKLIGHT_PIN);
  *
  * void onInstrIntLtChange(unsigned int newValue) {
@@ -70,7 +86,9 @@
  * }
  *
  * void loop() {
+ *   DcsBios::loop();
  *   // ... read buttons, count how many are pressed, note if any input changed
+ *   backlight.setMissionActive(ohDcsMissionActive());
  *   backlight.update(pressedCount, inputChanged);
  * }
  * @endcode
@@ -129,7 +147,7 @@ public:
    */
   explicit OhBacklightDiagnostics(uint8_t backlightPin)
     : pin_(backlightPin), state_(WAIT_SYNC), dcsLevel_(0), synced_(false), syncAnnounced_(false),
-      holdArmed_(true), holding_(false), holdStart_(0), phaseStart_(0), flashUntil_(0),
+      missionActive_(false), holdArmed_(true), holding_(false), holdStart_(0), phaseStart_(0), flashUntil_(0),
       watchedCount_(0), watchedMask_(0), analogPin_(0xFF), lastAnalog_(0) {}
 
   /**
@@ -174,6 +192,17 @@ public:
   }
 
   /**
+   * @brief Report whether a DCS mission is currently running. Call once per loop(), before update().
+   * @param active True while a mission is running (see ohDcsMissionActive() in OpenHornetDcsMission.h).
+   *
+   * Diagnostic mode is only allowed while no mission is running: the three button hold is
+   * ignored while @p active is true, and if a mission starts while diagnostic mode is on the
+   * helper leaves it and the backlight follows DCS again. Sketches that never call this keep
+   * diagnostic mode available at all times (bench use without DCS).
+   */
+  void setMissionActive(bool active) { missionActive_ = active; }
+
+  /**
    * @brief Run the state machine. Call once per loop().
    * @param pressedButtonCount Number of pushbuttons currently pressed (raw, undebounced is fine).
    * @param inputChanged True if the sketch saw any input change this loop (buttons, rockers).
@@ -181,7 +210,17 @@ public:
    */
   void update(uint8_t pressedButtonCount, bool inputChanged = false) {
     unsigned long now = millis();
-    updateHold(pressedButtonCount, now);
+    if (missionActive_) {
+      // In a mission: no diagnostic mode. Drop any hold in progress and require a release
+      // after the mission ends before a new hold counts.
+      holding_ = false;
+      holdArmed_ = false;
+      if (state_ == DIAGNOSTIC) {
+        enterIdle(now);
+      }
+    } else {
+      updateHold(pressedButtonCount, now);
+    }
 
     switch (state_) {
       case FADE_UP: {
@@ -238,6 +277,9 @@ public:
 
   /// @return true while diagnostic mode is active.
   bool isDiagnosticActive() const { return state_ == DIAGNOSTIC; }
+
+  /// @return the mission state last passed to setMissionActive().
+  bool isMissionActive() const { return missionActive_; }
 
   /// @return current controller state.
   State state() const { return state_; }
@@ -332,6 +374,7 @@ private:
   uint8_t dcsLevel_;
   bool synced_;
   bool syncAnnounced_;
+  bool missionActive_;
   bool holdArmed_;
   bool holding_;
   unsigned long holdStart_;

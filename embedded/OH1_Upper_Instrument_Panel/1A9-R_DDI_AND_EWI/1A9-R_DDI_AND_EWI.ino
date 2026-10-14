@@ -46,11 +46,16 @@
  *  * **RS485 Bus Address:** 4
  * 
  * **Backlight behaviour (issue #117):**
+ *  * Only for the DDI boards with a plain LED backlight on the backlight PWM pin. Boards with
+ *    WS2812 backlighting are driven by 2A13-BACKLIGHT_CONTROLLER and do not use this.
  *  * On power up the backlight fades from off to full and back to off.
  *  * When the first DCS-BIOS value arrives the backlight flashes three times, then follows DCS.
  *  * **Diagnostic mode:** hold any three pushbuttons for three seconds. The backlight goes to full
  *    and blinks off/on on every pushbutton, rotary switch, encoder or EWI button action.
  *    Hold any three pushbuttons for three seconds again to exit. Works without DCS running.
+ *  * Diagnostic mode is only available while no DCS mission is running (DCS-BIOS aircraft name
+ *    and heartbeat, see OpenHornetDcsMission.h). If a mission starts while in diagnostic mode,
+ *    the sketch leaves it and the backlight follows DCS again.
  * 
  * **Wiring diagram:**
  * PIN | Function
@@ -105,6 +110,7 @@
 #include "Wire.h"
 #include "TCA9534.h"
 #include "OpenHornetDiagnostics.h"
+#include "OpenHornetDcsMission.h"
 
 // Define pins per the OH Interconnect. 
 #define RDDI_ROT_DAY A0 ///< RDDI Rotary - Day
@@ -276,5 +282,6 @@ void loop() {
     }
   }
 
+  ddiBacklight.setMissionActive(ohDcsMissionActive()); // no diagnostic mode while a mission is running
   ddiBacklight.update(pressedCount, inputChanged);
 }

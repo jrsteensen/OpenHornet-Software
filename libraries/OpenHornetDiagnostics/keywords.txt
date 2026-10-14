@@ -2,6 +2,9 @@ OhBacklightDiagnostics	KEYWORD1
 begin	KEYWORD2
 update	KEYWORD2
 onDcsBrightness	KEYWORD2
+setMissionActive	KEYWORD2
+isMissionActive	KEYWORD2
 watchDigitalPin	KEYWORD2
 watchAnalogPin	KEYWORD2
 isDiagnosticActive	KEYWORD2
+ohDcsMissionActive	KEYWORD2
