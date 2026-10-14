@@ -32,10 +32,10 @@
 
 /**
  * @file 2A3A1-AMPCD.ino
- * @author Peter Sawka, OH Community, Arribe, Ash
- * @date 02.29.2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Peter Sawka, OH Community, Arribe, Ash, lahirunirmalx
+ * @date 10.14.2026
+ * @version u.0.2.0 (untested)
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the AMPCD.
  * Adapted from Peter Sawka's original Nano code
  *
@@ -44,6 +44,13 @@
  *  * **Reference Designator:** 2A3A1
  *  * **Intended Board:** CONTROLLER_AMPCD DDI
  *  * **RS485 Bus Address:** 2
+ * 
+ * **Backlight behaviour (issue #117):**
+ *  * On power up the backlight fades from off to full and back to off.
+ *  * When the first DCS-BIOS value arrives the backlight flashes three times, then follows DCS.
+ *  * **Diagnostic mode:** hold any three pushbuttons for three seconds. The backlight goes to full
+ *    and blinks off/on on every pushbutton, rocker, HDG/CRS switch or brightness knob action.
+ *    Hold any three pushbuttons for three seconds again to exit. Works without DCS running.
  * 
  * **Wiring diagram:**
  * PIN | Function
@@ -94,6 +101,7 @@
 #include "DcsBios.h"
 #include "Wire.h"
 #include "TCA9534.h"
+#include "OpenHornetDiagnostics.h"
 
 // Define pins per the OH Interconnect.
 #define AMPCD_ROT_A A0       ///< AMPCD Rotary Brightness
@@ -126,6 +134,8 @@ unsigned long debounceDelay = 10;    ///< The debounce delay duration in ms, **i
 
 int index;
 
+OhBacklightDiagnostics ampcdBacklight(AMPCD_BACK_LIGHT); ///< Power-on fade, DCS sync flash and diagnostic mode for the backlight.
+
 /// DCS Bios Messages for the 4 AMPCD rocker switches.
 char *AMPCD_Btns[] = { "AMPCD_GAIN_SW",
                        "AMPCD_NIGHT_DAY",
@@ -139,11 +149,15 @@ DcsBios::Switch3Pos leftDdiCrsSw("LEFT_DDI_CRS_SW", CRS_P, CRS_M);
 DcsBios::Switch3Pos leftDdiHdgSw("LEFT_DDI_HDG_SW", HDG_P, HDG_M);
 
 /**
- * @brief Setup DCS-BIOS control for DDI backlighting
+ * @brief Setup DCS-BIOS control for AMPCD backlighting
  *
+ * The value is handed to the diagnostics helper, which applies it in normal
+ * operation and holds it back during the power-on fade, sync flash and diagnostic mode.
+ *
+ * @param newValue INSTR_INT_LT value from DCS-BIOS (0-65535).
  */
 void onInstrIntLtChange(unsigned int newValue) {
-  analogWrite(AMPCD_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));
+  ampcdBacklight.onDcsBrightness(map(newValue, 0, 65535, 0, 255));
 }
 DcsBios::IntegerBuffer instrIntLtBuffer(FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange);
 
@@ -160,8 +174,13 @@ void setup() {
 
   pinMode(AMPCD_IRQ, OUTPUT);
 
-  pinMode(AMPCD_BACK_LIGHT, OUTPUT); // set backlight pinmode to output
-  analogWrite(AMPCD_BACK_LIGHT, 0); // turn-off backlighting
+  // Inputs watched for activity in diagnostic mode (pin modes are set by the DCS-BIOS controls above).
+  ampcdBacklight.watchDigitalPin(HDG_P);
+  ampcdBacklight.watchDigitalPin(HDG_M);
+  ampcdBacklight.watchDigitalPin(CRS_P);
+  ampcdBacklight.watchDigitalPin(CRS_M);
+  ampcdBacklight.watchAnalogPin(AMPCD_ROT_A);
+  ampcdBacklight.begin(); // set backlight pin mode to output and start the power-on fade
   /**
 * @brief Initialize last button state array to all 0's.
 *
@@ -195,6 +214,9 @@ void loop() {
   //Run DCS Bios loop function
   DcsBios::loop();
 
+  int pressedCount = 0;       // AMPCD pushbuttons currently pressed, for the diagnostic mode hold check.
+  bool inputChanged = false;  // Any raw pushbutton or rocker edge this loop, blinks the backlight in diagnostic mode.
+
   /**
 * Read all the AMPCD button states and send DCSBios Commands in the following TCA9534 order: Left, Top (buttons reversed), Right (buttons reversed), Bottom.
 *
@@ -213,8 +235,13 @@ void loop() {
 
       bool btnState = (inputRegister[i] >> (6 - j)) & 1;
 
+      if (j <= 4 && btnState == 0) {  // Only the 20 pushbuttons count towards the diagnostic mode hold.
+        pressedCount++;
+      }
+
       if (btnState != lastBtnState[index]) {
         lastDebounceTime[index] = millis();
+        inputChanged = true;
       }
 
       if ((millis() - lastDebounceTime[index]) > debounceDelay) {
@@ -242,4 +269,6 @@ void loop() {
       lastBtnState[index] = btnState;
     }
   }
+
+  ampcdBacklight.update(pressedCount, inputChanged);
 }

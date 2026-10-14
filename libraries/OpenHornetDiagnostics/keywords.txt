@@ -1,0 +1,7 @@
+OhBacklightDiagnostics	KEYWORD1
+begin	KEYWORD2
+update	KEYWORD2
+onDcsBrightness	KEYWORD2
+watchDigitalPin	KEYWORD2
+watchAnalogPin	KEYWORD2
+isDiagnosticActive	KEYWORD2

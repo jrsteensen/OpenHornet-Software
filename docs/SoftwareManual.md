@@ -32,6 +32,7 @@ This manual covers writing software for the OpenHornet project, including how to
 - Wire
 - ArduinoJoystickLibrary
 - AccelStepper
+- OpenHornetDiagnostics (in-tree, `libraries/OpenHornetDiagnostics`)
 
 ### Suggested Debug Tools
 
