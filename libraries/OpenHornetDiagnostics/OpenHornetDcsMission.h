@@ -95,7 +95,10 @@ static void ohDcsMissionOnAcftName(char* name) {
     ohDcsMissionLastFrame_ = millis();
   }
 }
+// DCS-BIOS listener for the 24 character aircraft name at address 0x0000.
+/// @cond DCSBIOS_LISTENERS
 DcsBios::StringBuffer<24> ohDcsMissionAcftNameBuffer(MetadataStart_ACFT_NAME_A, ohDcsMissionOnAcftName);
+/// @endcond
 
 /**
  * @brief DCS-BIOS callback for the update counter. Records the heartbeat time.
@@ -105,7 +108,10 @@ static void ohDcsMissionOnUpdateCounter(unsigned int newValue) {
   (void)newValue;
   ohDcsMissionLastFrame_ = millis();
 }
+// DCS-BIOS listener for the per-frame update counter at address 0xFFFE (heartbeat).
+/// @cond DCSBIOS_LISTENERS
 DcsBios::IntegerBuffer ohDcsMissionUpdateCounterBuffer(MetadataEnd_UPDATE_COUNTER, ohDcsMissionOnUpdateCounter);
+/// @endcond
 
 /**
  * @brief Whether a DCS mission is running right now.
