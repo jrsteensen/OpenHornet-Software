@@ -170,14 +170,3 @@ All PRs must pass this workflow before being eligible for merge.
 | **Manual trigger** | Yes |
 
 **Function:** Builds HTML Doxygen documentation from `./docs/Doxyfile` and deploys it to the `gh-pages` branch, which powers the public documentation site at [https://jrsteensen.github.io/OpenHornet-Software/](https://jrsteensen.github.io/OpenHornet-Software/).
-
-### Generate Doxygen Docs (`develop-generate-doxygen-docs.yaml`)
-
-| Property | Value |
-|---|---|
-| **Trigger** | PRs targeting `develop`; push to `develop`; manual dispatch |
-| **Manual trigger** | Yes |
-
-**Function:** Builds HTML Doxygen documentation from `./docs/Doxyfile` as a build-only check (no deployment to GitHub Pages).
-
-> **Admin note:** This workflow still references the `develop` branch, which no longer exists as a long-lived branch. Since there are no more pushes to `develop`, this workflow will only fire on manual dispatch. Repository admins should consider retiring this workflow or updating it to serve as a PR-only doc build check targeting `main`.
