@@ -33,8 +33,8 @@
 /**
  * @file 4A9A1-THROTTLE_CONTROLLER.ino
  * @author Arribe, Ash, lahirunirmalx
- * @date 10.08.2026
- * @version u.0.1.1
+ * @date 10.13.2026
+ * @version u.0.1.2
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @warning This sketch is based on a wiring diagram, and was not yet tested on hardware. The throttle solenoids weren't working. (Remove this line once tested on hardware and in system.)
  * @brief Controls the THROTTLE QUADRANT.
@@ -346,7 +346,7 @@ void loop() {
   }
 
 #ifndef DISABLE_IDLE_SOL_SIG
-  if (wowLeft == wowRight == wowNose == true) {
+  if (wowLeft && wowRight && wowNose) {  // Weight on all three wheels
     digitalWrite(IDLE_SOL_SIG, HIGH);
   } else {
     digitalWrite(IDLE_SOL_SIG, LOW);
@@ -354,7 +354,7 @@ void loop() {
 #endif
 
 #ifndef DISABLE_MAX_SOL_SIG
-  if ((wowLeft == wowRight == wowNose == true) && ((launchBarExtended == true) || (arrestingHookUp == false))) {
+  if ((wowLeft && wowRight && wowNose) && ((launchBarExtended == true) || (arrestingHookUp == false))) {
     digitalWrite(MAX_SOL_SIG, LOW);  // With weight-on-wheels, if the lanuch bar is extended or the hook is down then raise afterburner lockout / detent to prevent inadvertent afterburner selection.
   } else {
     digitalWrite(MAX_SOL_SIG, HIGH);  // Otherwise pull the afterburner lockout / detent.

@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 4A2A1-LDG_GEAR_PANEL.ino
- * @author Arribe, Ash
- * @date 2/28/2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.11.2026
+ * @version 0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the LDG GEAR panel.
  *
  * @details
@@ -162,7 +162,7 @@ void loop() {
   if (digitalRead(LG_LIMIT) == 1) {                              //Switch closed, gear handle is down
     if (downLockOverride == true || !digitalRead(LG_ORIDE) == true) {  // Override switched pushed virtually in sim or physically in pit, turn on solenoid to unlock gear handle.
       digitalWrite(LG_LEVER_SOLENOID, HIGH);
-    } else if (wowLeft == wowRight == wowNose == false) {  //No weight on any wheel, turn on solenoid to unlock the gear handle
+    } else if (!wowLeft && !wowRight && !wowNose) {  //No weight on any wheel, turn on solenoid to unlock the gear handle
       digitalWrite(LG_LEVER_SOLENOID, HIGH);
     } else {  // gear handle is down and there is weight on at least one wheel, turn off solenoid to lock the handle down.
       digitalWrite(LG_LEVER_SOLENOID, LOW);

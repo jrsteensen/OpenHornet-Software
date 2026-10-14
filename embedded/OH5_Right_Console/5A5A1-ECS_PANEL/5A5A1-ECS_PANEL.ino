@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 5A5A1-ECS_PANEL.ino
- * @author Arribe, Ash
- * @date 03.24.2026
- * @version 0.2.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.11.2026
+ * @version 0.2.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the ECS panel.
  *
  * @details
@@ -174,7 +174,7 @@ void onBleedAirPullChange(unsigned int newValue) {
         break;
       case 1:
         /// @note It's physically possible to overcome the solenoid by manually holding the bleed air knob up.
-        if (apuSwitchOn == 0 || (wowLeft == wowRight == wowNose == 0)) {  //then pull down, ELSE do nothing.
+        if (apuSwitchOn == 0 || (!wowLeft && !wowRight && !wowNose)) {  // APU off or no weight on any wheel: pull down, ELSE do nothing.
           digitalWrite(BA_SOLENOID, HIGH); // pull down.
           delay(200);  //wait a moment
           digitalWrite(BA_SOLENOID, LOW); // turn off solenoid.
