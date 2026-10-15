@@ -1,5 +1,5 @@
 # Any extra libraries included by this sketch (space separated)
-LIBRARIES = dcs-bios-arduino-library Wire Adafruit_TCA8418 PCA95x5 FastLED TM16xx_LEDs_and_Buttons Adafruit_GFX_Library Adafruit_ADS1X15 Elog WiFi Update WebServer Preferences
+LIBRARIES = dcs-bios-arduino-library Wire Adafruit_TCA8418 PCA95x5 FastLED TM16xx_LEDs_and_Buttons_Library Adafruit_ADS1X15
 
 # Uncomment one of the following to choose the target board
 # include $(ROOTDIR)/include/mega2560.mk
