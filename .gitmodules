@@ -58,3 +58,6 @@
 [submodule "libraries/Adafruit_ADS1X15"]
 	path = libraries/Adafruit_ADS1X15
 	url = https://github.com/adafruit/Adafruit_ADS1X15.git
+[submodule "libraries/Adafruit_BusIO"]
+	path = libraries/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO.git
