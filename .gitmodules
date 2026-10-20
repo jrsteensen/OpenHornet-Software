@@ -49,8 +49,8 @@
 [submodule "libraries/Adafruit_TCA8418"]
 	path = libraries/Adafruit_TCA8418
 	url = https://github.com/adafruit/Adafruit_TCA8418.git
-[submodule "libraries/TM16xx LEDs and Buttons library"]
-	path = libraries/TM16xx LEDs and Buttons library
+[submodule "libraries/TM16xx"]
+	path = libraries/TM16xx
 	url = https://github.com/maxint-rd/TM16xx.git
 [submodule "libraries/PCA95x5"]
 	path = libraries/PCA95x5
@@ -64,3 +64,6 @@
 [submodule "libraries/Adafruit-GFX-Library"]
 	path = libraries/Adafruit-GFX-Library
 	url = https://github.com/adafruit/Adafruit-GFX-Library.git
+[submodule "libraries/Adafruit_TinyUSB_Arduino"]
+	path = libraries/Adafruit_TinyUSB_Arduino
+	url = https://github.com/adafruit/Adafruit_TinyUSB_Arduino.git
