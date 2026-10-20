@@ -68,6 +68,8 @@ private:
     uint16_t dcs_brightness_instrument;                                // Current brightness level (0-65535), for DCS-BIOS controlled mode
     uint16_t dcs_brightness_flood;                                     // Current brightness level (0-65535), for DCS-BIOS controlled mode
     uint16_t pending_instr, pending_console, pending_flood;           // Parked suspicious values
+    unsigned long pend_instr_ms, pend_console_ms, pend_flood_ms;      // millis() when the value was parked
+    static const unsigned long PENDING_CONFIRM_MS = 400;              // Parked value survives this long uncontradicted -> apply
     bool     pend_instr_v = false;
     bool     pend_console_v = false;
     bool     pend_flood_v = false;
@@ -239,7 +241,10 @@ public:
             uint8_t i = nextChannel;                                  // starting where the last gap ended
             nextChannel = (nextChannel + 1) % channelCount;
             if (!(upd->getDirtyMask() & (1 << i))) continue;          // Clean channel
-            if (!dimmerBurst && channels[i]->getLedCount() > budget) continue;   // Doesn't fit this gap; bit stays set (burst: ignore budget)
+            if (!dimmerBurst && channels[i]->getLedCount() > budget) {
+                nextChannel = i;                                  // Park the pointer: this channel opens the next gap with a full budget
+                break;                                            // Rotation becomes real; bounded delay for every dirty channel
+            }
             if (!dimmerBurst && !dcsSilent && !starved && !dcsStreamIdle()) break;   // Next frame started early: stop (burst: keep painting)
     
             channels[i]->showNow(scale);
@@ -337,6 +342,7 @@ public:
                     // PAUSED: do nothing - keep current light state
                     prevDcsState = currentDcsState;
                     DcsBios::loop();
+                    serviceDimmerPending();                       // Apply parked dimmer values after their confirm window
                 }
                 break;
             case MODE_MANUAL:                                         // MODE 2: LEDs controlled manually through BKLT switch
@@ -425,6 +431,7 @@ public:
             if (!pend_instr_v || pdiff > DIMMER_JUMP_LIMIT) {      // Not near the parked value: (re)park
                 pending_instr = newValue;
                 pend_instr_v = true;
+                pend_instr_ms = millis();
                 return;
             }                                                      // Second value near the parked one: genuine
         }
@@ -452,6 +459,7 @@ public:
             if (!pend_console_v || pdiff > DIMMER_JUMP_LIMIT) {    // Not near the parked value: (re)park
                 pending_console = newValue;
                 pend_console_v = true;
+                pend_console_ms = millis();
                 return;
             }                                                      // Second value near the parked one: genuine
         }
@@ -479,6 +487,7 @@ public:
             if (!pend_flood_v || pdiff > DIMMER_JUMP_LIMIT) {      // Not near the parked value: (re)park
                 pending_flood = newValue;
                 pend_flood_v = true;
+                pend_flood_ms = millis();
                 return;
             }                                                      // Second value near the parked one: genuine
         }
@@ -489,6 +498,37 @@ public:
         applyFloodTargets();
     }
 
+
+    /**
+     * @brief Applies parked dimmer values whose confirm window expired
+     * @details The plausibility filter parks large jumps. Garbage values are contradicted
+     *          within the window (the resent true value equals the applied one and clears
+     *          the pending slot via the equality branch). A genuine jump is never resent
+     *          as a change (the DCS-BIOS IntegerBuffer deduplicates identical values), so
+     *          it is applied here once it survives PENDING_CONFIRM_MS uncontradicted.
+     * @see This method is called by processMode() in MODE_NORMAL
+     */
+    void serviceDimmerPending() {
+        unsigned long now = millis();
+        if (pend_instr_v && (now - pend_instr_ms > PENDING_CONFIRM_MS)) {
+            pend_instr_v = false;
+            dcs_brightness_instrument = pending_instr;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyInstrumentTargets();
+        }
+        if (pend_console_v && (now - pend_console_ms > PENDING_CONFIRM_MS)) {
+            pend_console_v = false;
+            dcs_brightness_console = pending_console;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyConsoleTargets();
+        }
+        if (pend_flood_v && (now - pend_flood_ms > PENDING_CONFIRM_MS)) {
+            pend_flood_v = false;
+            dcs_brightness_flood = pending_flood;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyFloodTargets();
+        }
+    }
 
     /**
      * @brief Callback for instrument lighting changes from DCS-BIOS
