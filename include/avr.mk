@@ -7,6 +7,12 @@ ARDUINO_VERSION    = 10819
 ARDMK_DIR          = $(ROOTDIR)/include/Arduino-Makefile
 ARDUINO_LIBS       = $(LIBRARIES)
 
+# DCS-BIOS IRQ transport owns the UART interrupt. FastLED diagnostics must
+# not pull in Arduino HardwareSerial or write logging into the protocol.
+ifneq ($(filter FastLED,$(LIBRARIES)),)
+CPPFLAGS += -DFASTLED_LOG_VERBOSITY=0
+endif
+
 include $(ROOTDIR)/include/openhornet.mk
 include $(ARDMK_DIR)/Arduino.mk
 
