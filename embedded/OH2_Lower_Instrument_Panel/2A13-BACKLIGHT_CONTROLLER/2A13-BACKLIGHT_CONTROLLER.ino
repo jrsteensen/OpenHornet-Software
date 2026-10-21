@@ -32,8 +32,8 @@
 /**
  * @file    2A13-BACKLIGHT_CONTROLLER.ino
  * @author  Ulukaii, Arribe, Higgins
- * @date    May 31, 2026
- * @version V 0.5.5 (tested)
+ * @date    Oct 13, 2026
+ * @version V 0.6.0 (tested)
  * @warning This sketch is based on OH-Interconnect. Adapt it to your actual wiring and 
  *          panel versions.
  * @brief   Controls backlights & most annunciators. 
@@ -355,7 +355,8 @@ void setup() {
     LC_FLOOD.addPanel<LcFloodLights>();
     RC_FLOOD.addPanel<RcFloodLights>();                             
 
-    FastLED.setMaxPowerInVoltsAndMilliamps(VOLTAGE, MAX_MILLIAMPS);   // Set the maximum power in volts and milliamps
+    FastLED.setMaxPowerInVoltsAndMilliamps(VOLTAGE, MAX_MILLIAMPS);   // Set the maximum power in volts and milliamps (manual/rainbow mode path)
+    board->setMaxPowerMW((uint32_t)VOLTAGE * MAX_MILLIAMPS);          // Same budget for the per-channel shows in normal mode
     FastLED.setMaxRefreshRate(100);                                   // Set the maximum refresh rate to 100 Hz instead of std. 400 Hz. Slightly reduces CPU load.
     FastLED.show();                                                   // Show the LEDs
     DcsBios::setup();                                                 // Run DCS Bios setup function

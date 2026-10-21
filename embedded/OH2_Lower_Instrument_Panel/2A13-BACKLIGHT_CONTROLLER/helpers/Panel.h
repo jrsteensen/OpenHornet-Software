@@ -96,6 +96,7 @@ protected:
      */
     void applyInstrLights(const CRGB& instrTarget, const CRGB& cgrbTarget) {
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        bool changed = false;                                         // Track whether any LED of this panel was written
         int n = getLedCount();
         for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if it is a backlight, set color
             Led led;
@@ -103,11 +104,14 @@ protected:
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_INSTR_BL) {
                 getLedStrip()[ledIndex] = instrTarget;
+                changed = true;
             } else if (led.role == LED_INSTR_BL_CGRB) {
                 getLedStrip()[ledIndex] = cgrbTarget;
+                changed = true;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        if (changed)                                                  // Flag only if this panel wrote a matching LED
+            LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());
     }
 
     /**
@@ -117,6 +121,7 @@ protected:
      */
     void applyConsoleLights(const CRGB& consoleTarget) {
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        bool changed = false;                                         // Track whether any LED of this panel was written
         int n = getLedCount();
         for (int i = 0; i < n; i++) {                                 // For each LED, read info from PROGMEM; if it is a console backlight, set color
             Led led;
@@ -124,9 +129,11 @@ protected:
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_CONSOLE_BL) {
                 getLedStrip()[ledIndex] = consoleTarget;
+                changed = true;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        if (changed)                                                  // Flag only if this panel wrote a matching LED
+            LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());
     }
 
     /**
@@ -137,6 +144,7 @@ protected:
      */
     void setIndicatorColor(LedRole role, const CRGB& color) {         // Set color of specific LEDs ("role" parameter)
         if (!getLedStrip() || !getLedTable()) return;                 
+        bool changed = false;                                         // Track whether any LED of this panel was written
         int n = getLedCount();                                        
         for (int i = 0; i < n; i++) {                                 
             Led led;
@@ -144,9 +152,11 @@ protected:
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == role) {
                 getLedStrip()[ledIndex] = color;
+                changed = true;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        if (changed)                                                  // Flag only if this panel wrote a matching LED
+            LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());
     }
 
     /**
@@ -156,6 +166,7 @@ protected:
      */
     void applyFloodlights(const CRGB& floodTarget) {
         if (!getLedStrip() || !getLedTable()) return;                 // Safety checks
+        bool changed = false;                                         // Track whether any LED of this panel was written
         int n = getLedCount();
         for (int i = 0; i < n; i++) {
             Led led;
@@ -163,9 +174,11 @@ protected:
             uint16_t ledIndex = led.index + getStartIndex();
             if (led.role == LED_FLOOD) {
                 getLedStrip()[ledIndex] = floodTarget;
+                changed = true;
             }
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        if (changed)                                                  // Flag only if this panel wrote a matching LED
+            LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());
     }
 
     /**
@@ -183,7 +196,7 @@ protected:
             ledArray[startIndex + i] = NVIS_BLACK;
         }
         
-        LedUpdateState::getInstance()->setUpdateFlag(true);           // Inform that LEDs need to be updated
+        LedUpdateState::getInstance()->setUpdateFlag(getLedStrip());           // Inform that LEDs need to be updated
     }
 };
 
