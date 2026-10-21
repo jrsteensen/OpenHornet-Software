@@ -91,10 +91,8 @@
 // Compile-Time Configuration
 // ══════════════════════════════════════════════════════════════════════════════
 
- /**
-  * OVERRIDE TINYUSB Library for CDC overflow 
-  */
-#define USE_TINYUSB
+// Use the ESP32 core's native TinyUSB CDC Serial transport, enabled by the
+// board build flags. Do not load a second, incompatible TinyUSB stack.
 
 /**
  * Enable or Disable usage of Interrupt processing
@@ -103,9 +101,6 @@
 //#define USE_ADC_RDY 
 //#define USE_IO_INT
 
-#if defined(USE_TINYUSB)
-  #include <Adafruit_TinyUSB.h>
-#endif
 /**
  * Check if we're on a Mega328 or Mega2560 and not on a ESP32 to define the correct
  * serial interface
@@ -129,7 +124,7 @@
  * @brief Main Includes
  */
 #include <Adafruit_TCA8418.h>           //Key Matrix driver
-#include <adafruit_TCA8418_registers.h> //Key Matrix driver
+#include <Adafruit_TCA8418_registers.h> //Key Matrix driver
 #include <TM1640Anode.h>                //TM1640 for OP Display
 #include <TM1640.h>                     //TM1640 for COMM Display
 #include <TM16xxMatrix.h>               //TM1640 matrix for COMM Display
@@ -1510,11 +1505,6 @@ void handleBootMessage() {
   }
 }
 
-// Create USB CDC (Serial) and HID instances
-#if defined(USE_TINYUSB)
-  Adafruit_USBD_CDC usb_serial;
-  Adafruit_USBD_HID usb_hid;
-#endif
 /**
  * @brief  Arduino one-time hardware and peripheral initialisation.
  *
@@ -1538,11 +1528,6 @@ void handleBootMessage() {
  *         14. Calls DcsBios::setup() to initialise the DCS-BIOS serial protocol.
  */
 void setup() {
-  // Initial the TinyUSB Device
-  #if defined(USE_TINYUSB)
-    TinyUSBDevice.begin();
-  #endif
-  
   Serial.begin(250000);
   Serial.printf("Openhornet Up-Front Controller HW Version %s, FW Version %s\n", BOOT_OP_MESSAGES[3], BOOT_OP_MESSAGES[4]);
 
