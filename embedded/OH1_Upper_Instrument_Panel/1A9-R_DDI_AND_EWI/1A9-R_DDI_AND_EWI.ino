@@ -33,8 +33,8 @@
 /**
  * @file 1A9-R_DDI_AND_EWI.ino
  * @author Peter Sawka, OH Community, Arribe, Ash, lahirunirmalx
- * @date 10.08.2026
- * @version 0.1.1
+ * @date 10.14.2026
+ * @version u.0.2.0 (untested)
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the right DDI & EWI module.
  * adapted from Peter Sawka's original Nano code
@@ -44,6 +44,18 @@
  *  * **Reference Designator:** 1A9
  *  * **Intended Board:** CONTROLLER_AMPCD DDI
  *  * **RS485 Bus Address:** 4
+ * 
+ * **Backlight behaviour (issue #117):**
+ *  * Only for the DDI boards with a plain LED backlight on the backlight PWM pin. Boards with
+ *    WS2812 backlighting are driven by 2A13-BACKLIGHT_CONTROLLER and do not use this.
+ *  * On power up the backlight fades from off to full and back to off.
+ *  * When the first DCS-BIOS value arrives the backlight flashes three times, then follows DCS.
+ *  * **Diagnostic mode:** hold any three pushbuttons for three seconds. The backlight goes to full
+ *    and blinks off/on on every pushbutton, rotary switch, encoder or EWI button action.
+ *    Hold any three pushbuttons for three seconds again to exit. Works without DCS running.
+ *  * Diagnostic mode is only available while no DCS mission is running (DCS-BIOS aircraft name
+ *    and heartbeat, see OpenHornetDcsMission.h). If a mission starts while in diagnostic mode,
+ *    the sketch leaves it and the backlight follows DCS again.
  * 
  * **Wiring diagram:**
  * PIN | Function
@@ -97,6 +109,8 @@
 #include "DcsBios.h"
 #include "Wire.h"
 #include "TCA9534.h"
+#include "OpenHornetDiagnostics.h"
+#include "OpenHornetDcsMission.h"
 
 // Define pins per the OH Interconnect. 
 #define RDDI_ROT_DAY A0 ///< RDDI Rotary - Day
@@ -133,6 +147,8 @@ unsigned long debounceDelay = 10;  ///< The debounce delay duration in ms, **inc
 
 int index;
 
+OhBacklightDiagnostics ddiBacklight(DDI_BACK_LIGHT); ///< Power-on fade, DCS sync flash and diagnostic mode for the backlight.
+
 //Connect switches to DCS-BIOS 
 DcsBios::RotaryEncoder rightDdiBrtCtl("RIGHT_DDI_BRT_CTL", "-3200", "+3200", RDDI_BRT_A, RDDI_BRT_B);
 DcsBios::RotaryEncoder rightDdiContCtl("RIGHT_DDI_CONT_CTL", "-3200", "+3200", RDDI_CONT_A, RDDI_CONT_B);
@@ -149,9 +165,13 @@ DcsBios::SwitchMultiPos rightDdiBrtSelect("RIGHT_DDI_BRT_SELECT", rightDdiBrtSel
 /**
  * @brief Setup DCS-BIOS control for DDI backlighting
  *
+ * The value is handed to the diagnostics helper, which applies it in normal
+ * operation and holds it back during the power-on fade, sync flash and diagnostic mode.
+ *
+ * @param newValue INSTR_INT_LT value from DCS-BIOS (0-65535).
  */
 void onInstrIntLtChange(unsigned int newValue) {
-  analogWrite(DDI_BACK_LIGHT, map(newValue, 0, 65535, 0, 255));
+  ddiBacklight.onDcsBrightness(map(newValue, 0, 65535, 0, 255));
 } DcsBios::IntegerBuffer instrIntLtBuffer(FA_18C_hornet_INSTR_INT_LT, onInstrIntLtChange);
 
 /**
@@ -165,8 +185,17 @@ void setup() {
   // Run DCS Bios setup function
   DcsBios::setup();
 
-  pinMode(DDI_BACK_LIGHT, OUTPUT); // set backlighting pin mode to output
-  analogWrite(DDI_BACK_LIGHT, 0); // turn off backlighting
+  // Inputs watched for activity in diagnostic mode (pin modes are set by the DCS-BIOS controls above).
+  ddiBacklight.watchDigitalPin(RDDI_ROT_DAY);
+  ddiBacklight.watchDigitalPin(RDDI_ROT_NIGHT);
+  ddiBacklight.watchDigitalPin(RDDI_ROT_OFF);
+  ddiBacklight.watchDigitalPin(RDDI_BRT_A);
+  ddiBacklight.watchDigitalPin(RDDI_BRT_B);
+  ddiBacklight.watchDigitalPin(RDDI_CONT_A);
+  ddiBacklight.watchDigitalPin(RDDI_CONT_B);
+  ddiBacklight.watchDigitalPin(REWI_FIRE_SW);
+  ddiBacklight.watchDigitalPin(REWI_MC_SW);
+  ddiBacklight.begin(); // set backlight pin mode to output and start the power-on fade
   
   pinMode(DDI_IRQ, OUTPUT);  // Set IRQ pinmode to match sample code to avoid controls becomming unresponsive issue
 
@@ -203,6 +232,9 @@ void loop() {
   //Run DCS Bios loop function
   DcsBios::loop();
 
+  int pressedCount = 0;       // DDI pushbuttons currently pressed, for the diagnostic mode hold check.
+  bool inputChanged = false;  // Any raw DDI pushbutton edge this loop, blinks the backlight in diagnostic mode.
+
 /**
 * Read all the DDI button states and send DCSBios Commands in the following TCA9534 order: RIGHT, Top (buttons reversed), Right (buttons reversed), Bottom.
 *
@@ -229,8 +261,13 @@ void loop() {
       */
       bool btnState = (inputRegister[i] >> (4 - j)) & 1;
 
+      if (btnState == 0) {
+        pressedCount++;
+      }
+
       if (btnState != lastBtnState[index]) {
         lastDebounceTime[index] = millis();
+        inputChanged = true;
       }
 
       if ((millis() - lastDebounceTime[index]) > debounceDelay) {
@@ -244,4 +281,7 @@ void loop() {
       lastBtnState[index] = btnState;
     }
   }
+
+  ddiBacklight.setMissionActive(ohDcsMissionActive()); // no diagnostic mode while a mission is running
+  ddiBacklight.update(pressedCount, inputChanged);
 }
