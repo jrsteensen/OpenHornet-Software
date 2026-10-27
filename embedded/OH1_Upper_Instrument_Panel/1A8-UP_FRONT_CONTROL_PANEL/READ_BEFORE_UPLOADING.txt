@@ -17,16 +17,15 @@ IDE SETTINGS (Tools menu)
   Partition Scheme:  Default 4MB with spiffs
 
 UPLOAD
-  1. File > Open: 1A8-UP-FRONT-CONTROL-PANEL/1A8-UP-FRONT-CONTROL-PANEL.ino
+  1. File > Open: 1A8-UP_FRONT_CONTROL_PANEL/1A8-UP_FRONT_CONTROL_PANEL.ino
   2. Put the board in bootloader mode by hand: hold BOOT, tap RESET,
-     release BOOT. The board shows up as a new COM port.(First upload Only)
-  3. Tools > Port: pick that new port.
+     release BOOT. The board shows up as a new COM port.
+  3. Tools > Port: pick that new port (the number changes every time).
   4. Click Upload and wait for "Done uploading".
 
 CONNECT TO DCS
   In the DCS-BIOS Bridge add the panel's COM port:
   baud 250000, RTS ticked, DTR on or off (both work).
-  Connection to socat using the COM port number also makes connection to DCS.
 
 CHECK IT WORKED
   About 2 s after power-up the displays run a built-in test (5 s outer
