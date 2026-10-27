@@ -3,8 +3,8 @@ READ BEFORE UPLOADING - UFC (Up Front Control) panel, V 1.0.0
 
 BEFORE YOU START
   - Arduino IDE with the ESP32 board core installed
-  - Libraries: the libraries the sketch includes, and the OpenHornet DCS-BIOS
-    fork
+  - Libraries: they come with the OpenHornet-Software repository as
+    submodules (the list is LIBRARIES in the Makefile in this folder)
   - USB cable plugged into the board's USB-C port
   - Do NOT install or enable the Adafruit TinyUSB library
 
