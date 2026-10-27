@@ -33,8 +33,7 @@
 
 /**
  * @file 1A8-UP_FRONT_CONTROL_PANEL.ino
- * @author Sandra Carroll, sandra
- *         Christian Thalhammer, scuba
+ * @author Christian Thalhammer, scuba
  *         B. Murphy, Murtle
  * @date 01.10.2026
  * @version 1.0.0
