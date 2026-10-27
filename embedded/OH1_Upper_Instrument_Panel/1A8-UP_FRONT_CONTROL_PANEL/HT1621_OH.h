@@ -50,10 +50,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *          PWM backlight pin.  All timing is managed by direct GPIO toggles with
  *          4 µs half-periods.
  *
- * @note    The backlight state is now decoupled from display buffer content.
- *          set_backlight_brightness() applies the PWM level directly; subsequent
- *          print_num() / print_str() calls re-apply the same stored level.
- *          The backlight will only be off if set_backlight_brightness(0) was called.
+ * @note    The stored backlight level (set_backlight_brightness()) is kept apart from whether the
+ *          backlight is on. The backlight pin gets that level only while something is lit on the
+ *          scratchpad itself or on an option window (setOptionContent()); with everything blank it is
+ *          held off, and it returns at the stored level when something lights again.
  */
 
 #ifndef HT1621_OH_H_
@@ -81,8 +81,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #define  WDTDIS1  0X0A
 /** @brief Size of the 7-segment numeric display buffer in bytes. */
 #define  BUFFERSIZE 12
-
- //#define HT1621_DEBUG
 
 
 /**
@@ -144,20 +142,20 @@ public:
   /**
    * @brief  Apply the stored brightness level to the backlight PWM pin.
    *
-   * @details Always calls analogWrite(_backlight_p, _brightness_p), so the
-   *          backlight level is determined solely by the last call to
-   *          set_backlight_brightness().  Called internally by print_num()
-   *          and print_str() after each display update.
+   * @details Writes the stored level to the backlight pin while something is lit on the
+   *          scratchpad or on an option window, and 0 otherwise. The level is set by
+   *          set_backlight_brightness(). Called internally by print_num() and print_str() after
+   *          each display update.
    */
   void backlight();
 
   /**
    * @brief  Set the backlight PWM brightness and apply it immediately.
    *
-   * @details Stores @p brightness in _brightness_p then calls
-   *          analogWrite(_backlight_p, _brightness_p) directly, bypassing the
-   *          old buffer-content check.  The new level persists across all
-   *          subsequent print_num() and print_str() calls until changed again.
+   * @details Stores @p brightness in _brightness_p and applies it at once, unless nothing is lit
+   *          (see backlight()), in which case the pin stays off and the level is used as soon as
+   *          something lights. The level persists across all subsequent print_num() and
+   *          print_str() calls until changed again.
    *
    * @param brightness  PWM duty cycle: 0 = off, 255 = full brightness.
    */
@@ -258,6 +256,38 @@ public:
    */
   void noDisplay();
 
+  /**
+   * @brief  Tell the driver a UFC key was pressed on this panel (O/S BRG 9th-character recovery only).
+   *
+   * @details DCS-BIOS exports the BRG string cut to 8 of its 9 characters, so the digit just keyed
+   *          is always the lost 9th character. This remembers the last digit key and, while a BRG
+   *          string is on the glass, appends it. 'C' (CLR) and 'E' (ENT) forget it. It has no
+   *          effect on any other page (grid entries etc.).
+   * @param key  '0'-'9' for a digit key, 'C' for CLR, 'E' for ENT.
+   */
+  void noteKey(char key);
+
+  /**
+   * @brief  Light the scratchpad for the power-on built-in test (NATOPS figure 2-48).
+   *
+   * @details Phase 1 lights the outer segments of the two 16-segment cells, phase 2 the inner
+   *          segments; both phases light every segment of the seven numeric digits. Any other value
+   *          is ignored. The cells stay claimed by the test, so STRING_1 and STRING_2 do not draw
+   *          over it; the next print_num() hands them back.
+   * @param phase  1 = outer segments, 2 = inner segments.
+   */
+  void bitTest(uint8_t phase);
+
+  /**
+   * @brief  Tell the driver whether any option window is lit (scratchpad backlight gating).
+   *
+   * @details The backlight is on only while something is lit on the scratchpad itself or on an
+   *          option window; otherwise the backlight pin is held off. The stored brightness level
+   *          (set_backlight_brightness()) is not changed, so the backlight returns at that level.
+   * @param lit  True when at least one option window shows a visible character.
+   */
+  void setOptionContent(bool lit);
+
 private:
   /** @brief Arduino pin number for HT1621 /CS (chip select, active low). */
   int _cs_p;
@@ -279,6 +309,45 @@ private:
   char _buffer16[4];
   /** @brief Reserved battery-indicator segment bytes (not currently used by UFC). */
   unsigned char _battery[3];
+
+  /** @brief True while print_num() is using the two 16-segment cells as part of a nine-cell number
+   *         string (O/S BRG style). While set, print_str()/print_str2() remember their text but do
+   *         not draw, so they cannot overwrite the digits the number string put there. */
+  bool _numClaimsAlnum;
+  /** @brief True while at least one option window is lit (reported by the sketch); keeps the backlight on. */
+  bool _optionLit;
+  /** @brief Last digit key pressed on this panel (0 = none). Used to rebuild BRG's truncated 9th char. */
+  char _lastKey;
+  /** @brief True once the most recent print_num() was a BRG string exported at only 8 characters. */
+  bool _brgCapped;
+  /** @brief Copy of that 8-character BRG string (+ terminator) for the first-press redraw. */
+  char _brgLast[9];
+
+  /** @brief True when any segment of the scratchpad itself (16-segment cells or numeric digits) is lit. */
+  bool hasContent() const;
+  /** @brief Write the backlight pin: the stored level while something is lit (here or on an option
+   *         window), otherwise off. */
+  void applyBacklight();
+  /** @brief Last STRING_1 text received (2 chars + terminator), redrawn when the claim is released. */
+  char _str1Last[3];
+  /** @brief Last STRING_2 text received (2 chars + terminator), redrawn when the claim is released. */
+  char _str2Last[3];
+
+  /**
+   * @brief  Draw two characters into the digit "8" cell (_buffer16[2..3]) without touching the
+   *         display hardware. This is the drawing half of print_str2(), shared with print_num().
+   */
+  void drawCell8(const char* str);
+  static bool wholeCellGlyph(char a, char b, uint8_t &left, uint8_t &right);
+
+  /**
+   * @brief  Draw a number string as a nine-cell readout (2 alphanumeric cells + 7 numeric cells).
+   *
+   * @details str[i] goes to cell i, left to right: str[0] = digit "9" cell, str[1] = digit "8" cell,
+   *          str[2..8] = the seven numeric cells. This is how DCS lays out O/S BRG entry
+   *          ("999@99'99" = 3 digits, degree, 2 digits, minute mark, 2 digits).
+   */
+  void printNumNineCell(const char* str, int chars);
 
   /**
    * @brief  Write 8 bits of segment data to one HT1621 RAM address.
@@ -425,6 +494,14 @@ HT1621_OH::HT1621_OH(){
 	_buffer16[1] = 0x0000;
 	_buffer16[2] = 0x0000;
 	_buffer16[3] = 0x0000;
+	_buffer[7] = 0x00;
+	_numClaimsAlnum = false;
+	_optionLit = false;
+	_lastKey = 0;
+	_brgCapped = false;
+	_brgLast[0] = '\0';
+	_str1Last[0] = ' '; _str1Last[1] = ' '; _str1Last[2] = '\0';
+	_str2Last[0] = ' '; _str2Last[1] = ' '; _str2Last[2] = '\0';
 }
 
 void HT1621_OH::begin(int cs_p, int wr_p, int data_p, int backlight_p)
@@ -501,22 +578,32 @@ void HT1621_OH::wrone(unsigned char addr, unsigned char sdata)
 }
 
 void HT1621_OH::set_backlight_brightness(int brightness){
+  // Stores the requested level and applies it (applyBacklight() holds the pin off while nothing is
+  // lit). Applies directly, independent of display writes, so the level always reflects the request.
   _brightness_p = brightness;
-  // Fixed: previously called backlight() here, which evaluated buffer content and wrote 0 to the
-  // hardware pin if the display happened to be blank at the moment of the call — overriding the
-  // stored brightness even though _brightness_p was correctly saved. Now applies directly so the
-  // physical PWM always reflects the requested level regardless of display state.
-  analogWrite(_backlight_p, _brightness_p);
+  applyBacklight();
 }
-
 void HT1621_OH::backlight()
 {
-  // Fixed: previously gated analogWrite on buffer content (all-zero buffer → analogWrite 0),
-  // which caused the backlight to turn off whenever print_num/print_str was called with blank
-  // content, even if a valid brightness had been set. Brightness state is now owned solely by
-  // set_backlight_brightness(); backlight() just re-applies the stored level on every display write.
-  analogWrite(_backlight_p, _brightness_p);
+  // Re-applies the stored level (or off, while nothing is lit) on every display write.
+  applyBacklight();
   delay(1);
+}
+bool HT1621_OH::hasContent() const
+{
+  for (int i = 0; i < 7; i++) if (_buffer[i]) return true;
+  for (int i = 0; i < 4; i++) if (_buffer16[i]) return true;
+  return false;
+}
+void HT1621_OH::applyBacklight()
+{
+  analogWrite(_backlight_p, (_optionLit || hasContent()) ? _brightness_p : 0);
+}
+void HT1621_OH::setOptionContent(bool lit)
+{
+  if (lit == _optionLit) return;
+  _optionLit = lit;
+  applyBacklight();
 }
 
 void HT1621_OH::noBacklight()
@@ -618,6 +705,10 @@ void HT1621_OH::update(){
 // shared segment and completes the digit's top-left corner, without drawing any of Dig1's other
 // (mismatched) segments the way the old full-digit "both slots" behavior used to.
 void HT1621_OH::print_str(const char* str, bool leftPadded){
+  // Remember the text, and don't draw while a nine-cell number string (O/S BRG) is using this cell.
+  // It is redrawn from the remembered text when that number string ends (see print_num()).
+  _str1Last[0] = str[0]; _str1Last[1] = (str[0] != '\0') ? str[1] : ' '; _str1Last[2] = '\0';
+  if (_numClaimsAlnum) return;
   if (str[0] == ' ' && isDigit(str[1])) {
     const int digit = str[1] - '0';
     const bool needsTopLeft = (digit == 0 || digit == 4 || digit == 5 || digit == 6 || digit == 8 || digit == 9);
@@ -626,6 +717,18 @@ void HT1621_OH::print_str(const char* str, bool leftPadded){
     backlight();
     update();
     return;
+  }
+  // A lone E or W (magnetic variation East/West, the other character blank) is drawn across the whole
+  // cell; the Dig1/Dig2 half-cell tables below have no glyph for either letter.
+  if (str[0] != '\0') {
+    uint8_t l, r;
+    if (wholeCellGlyph(str[0], str[1], l, r)) {
+      _buffer16[0] = l;
+      _buffer16[1] = r;
+      backlight();
+      update();
+      return;
+    }
   }
   for(int i = 0; i < 2; i++){
       if ( i == 0 ){
@@ -696,6 +799,17 @@ void HT1621_OH::print_str(const char* str, bool leftPadded){
 //      it natively. Previously the two slots were rendered fully independently with no bridging at
 //      all, leaving a permanently-open corner on nearly every pair.
 void HT1621_OH::print_str2(const char* str, bool leftPadded){
+  // Same remember-and-skip rule as print_str() while a nine-cell number string owns this cell.
+  _str2Last[0] = str[0]; _str2Last[1] = (str[0] != '\0') ? str[1] : ' '; _str2Last[2] = '\0';
+  if (_numClaimsAlnum) return;
+  drawCell8(str);
+  backlight();
+  update();
+}
+
+// Draws two characters into the digit "8" cell (_buffer16[2..3]). Shared by print_str2() and the
+// nine-cell number string (O/S BRG), so both render their pair the same way.
+void HT1621_OH::drawCell8(const char* str){
   const int8_t leftId = resolveDigitIdentity(str[0]);
   const int8_t rightId = resolveDigitIdentity(str[1]);
 
@@ -749,14 +863,33 @@ void HT1621_OH::print_str2(const char* str, bool leftPadded){
     _buffer16[2] = lb;
     _buffer16[3] = rb;
   } else {
+    uint8_t wl, wr;
+    if (wholeCellGlyph(str[0], str[1], wl, wr)) {   // lone E / W
+      _buffer16[2] = wl;
+      _buffer16[3] = wr;
+      return;
+    }
     // Neither resolves to a digit (blank / general alphanumeric content) -- unchanged fallback:
     // prefer str[1] over str[0] specifically when str[0] is blank, so the cell isn't wasted on
     // nothing.
     _buffer16[2] = (str[0] == ' ') ? charTo16SegBits_Dig1(str[1]) : charTo16SegBits_Dig1(str[0]);
     _buffer16[3] = charTo16SegBits_Dig2(str[1]);
   }
-  backlight();
-  update();
+}
+
+// Whole-cell glyphs for a lone 'E' or 'W' (the other character of the pair blank or absent). Byte
+// layout as in the 16-segment map: left = D1 E F A1 N G1 H J, right = M L G2 K D2 C B A2.
+//   E = A1 A2 F E D1 D2 G1 G2;  W = F E B C + N L (two sides and the lower diagonals meeting in the centre).
+bool HT1621_OH::wholeCellGlyph(char a, char b, uint8_t &left, uint8_t &right) {
+  char c;
+  if (b == ' ' || b == '\0') c = a;
+  else if (a == ' ') c = b;
+  else return false;
+  switch (c) {
+    case 'E': left = 0b11110100; right = 0b00101001; return true;
+    case 'W': left = 0b01101000; right = 0b01000110; return true;
+    default:  return false;
+  }
 }
 
 // See the declaration in the class body (HT1621_OH.h public section) for the full derivation.
@@ -784,6 +917,57 @@ void HT1621_OH::print_num(const char* str, bool leftPadded){
 	int padding = 8 - chars;
   int k=0;
 
+	// O/S BRG (and any page laid out the same way) uses the whole nine-cell scratchpad: DCS builds a
+	// 9-character string such as "999@99'99" (3 digits, degree, 2 digits, minute mark, 2 digits) and
+	// str[i] belongs in cell i from the left -- cells 0 and 1 are the two 16-segment cells, cells 2-8
+	// are the seven numeric digits. DCS-BIOS exports only the first 8 of those 9 characters
+	// (UFC_SCRATCHPAD_NUMBER_DISPLAY max length 8); the missing 9th character is the digit just keyed,
+	// which is rebuilt from the panel's own key press (see noteKey()). A real 9-character string is
+	// used as is.
+	// Recognised by a minute mark ('), or an 8+ character string whose first character is not a space
+	// (the normal pages always start with the padding space).
+	bool nineCell = false;
+	if (!leftPadded) {
+		if (chars >= 8 && str[0] != ' ') nineCell = true;
+		for (int i = 0; i < chars; i++) {
+			if (str[i] == '\'') nineCell = true;
+		}
+		// DCS-BIOS patched so the first two characters travel in STRING_2 and the number field holds the
+		// other seven (padded to 8 with one leading space): the degree mark is then at index 2, never at
+		// index 3 as in the stock 9-character string. That string is already complete and is drawn like a
+		// normal page (STRING_2 supplies the two 16-segment cells), so the key-press rebuild is not used.
+		if (chars == 8 && str[0] == ' ' && str[2] == '@') nineCell = false;
+	}
+	if (nineCell) {
+		if (!_numClaimsAlnum) _lastKey = 0;  // just arrived on a BRG page: forget any older key
+		if (chars == 8) {
+			// Exported at the 8-character cap, so the 9th character is missing. It is always the digit
+			// just keyed (the newest digit enters at the 9th position), so rebuild it from the key.
+			char full[10];
+			memcpy(full, str, 8);
+			full[8] = _lastKey ? _lastKey : ' ';
+			full[9] = '\0';
+			memcpy(_brgLast, str, 8);
+			_brgLast[8] = '\0';
+			_brgCapped = true;
+			printNumNineCell(full, 9);
+		} else {
+			_brgCapped = false;  // a real 9-character string (fixed upstream): use it as is
+			printNumNineCell(str, chars);
+		}
+		return;
+	}
+	_brgCapped = false;
+	_lastKey = 0;
+
+	// Normal page. If a nine-cell string had taken over the two 16-segment cells, give them back to
+	// STRING_1 / STRING_2 first by redrawing their last received text.
+	if (_numClaimsAlnum) {
+		_numClaimsAlnum = false;
+		print_str(_str1Last, false);
+		print_str2(_str2Last, false);
+	}
+
 	for(int i = 0; i < 8; i++){ // We're getting 8 chars with the first beeing "space" ... so chop of the first one
 		//_buffer[i] &= 0x80; // mask the first bit, used by batter and decimal point
 		char character = leftPadded
@@ -792,6 +976,59 @@ void HT1621_OH::print_num(const char* str, bool leftPadded){
 		  _buffer[i] = charToSegBits(character);
 	}
   backlight();
+	update();
+}
+
+void HT1621_OH::bitTest(uint8_t phase){
+	if (phase != 1 && phase != 2) return;
+	// 16-segment cell, left byte: D1 E F A1 N G1 H J (bit 7..0); right byte: M L G2 K D2 C B A2.
+	// Outer ring = A1 A2 B C D1 D2 E F; inner = H J K G1 G2 N M L.
+	const uint8_t left  = (phase == 1) ? 0xF0 : 0x0F;
+	const uint8_t right = (phase == 1) ? 0x0F : 0xF0;
+	_numClaimsAlnum = true;
+	_brgCapped = false;
+	_lastKey = 0;
+	for (int cell = 0; cell < 2; cell++) {
+		_buffer16[cell * 2]     = left;
+		_buffer16[cell * 2 + 1] = right;
+	}
+	for (int i = 0; i < 7; i++) _buffer[i] = charToSegBits('8');  // every numeric segment
+	_buffer[7] = 0;
+	backlight();
+	update();
+}
+
+void HT1621_OH::noteKey(char key){
+	const bool isDigitKey = (key >= '0' && key <= '9');
+	_lastKey = isDigitKey ? key : 0;  // CLR / ENT forget the digit
+	if (!_numClaimsAlnum || !_brgCapped) return;
+
+	// Only the first digit of an entry needs an immediate redraw: the exported 8 characters do not
+	// change when it is keyed (or when CLR/ENT removes it), so DCS-BIOS sends no update. Later digits
+	// redraw from the next DCS-BIOS update instead.
+	for (int i = 0; i < 8; i++) if (isDigit(_brgLast[i])) return;
+	char full[10];
+	memcpy(full, _brgLast, 8);
+	full[8] = isDigitKey ? key : ' ';
+	full[9] = '\0';
+	printNumNineCell(full, 9);
+}
+
+// The first two characters of a nine-cell string (O/S BRG) are drawn together in the digit "8"
+// 16-segment cell, exactly as a STRING_2 pair is drawn; the digit "9" cell stays blank.
+void HT1621_OH::printNumNineCell(const char* str, int chars){
+	_numClaimsAlnum = true;
+	const int n = (chars > 9) ? 9 : chars;
+	_buffer16[0] = 0;
+	_buffer16[1] = 0;
+	char pair[3] = { (n > 0 ? str[0] : ' '), (n > 1 ? str[1] : ' '), '\0' };
+	drawCell8(pair);
+	for (int i = 0; i < 7; i++) {
+		const int idx = i + 2;
+		_buffer[i] = charToSegBits(idx < n ? str[idx] : ' ');
+	}
+	_buffer[7] = 0;
+	backlight();
 	update();
 }
 
@@ -1044,6 +1281,8 @@ char HT1621_OH::charToSegBits(char character) {
 		return 0b00001000;
   case '.':
 		return 0b01001110;
+	case '\'': // Minute mark (O/S BRG): one small tick at the top right of its cell (segment B).
+		return 0b00000001;
 	case '0':
 		return 0b01111101;
 	case '1':

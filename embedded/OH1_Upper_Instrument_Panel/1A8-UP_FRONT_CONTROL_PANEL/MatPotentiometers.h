@@ -68,13 +68,19 @@ class matPotentiometer : PollingInput, public ResettableInput {
     /**
      * @brief  Force the next poll to transmit by invalidating lastState_.
      *
-     * @details Flips lastState_ to a value that differs from any real reading
-     *          so the hysteresis check fails and a message is sent immediately
-     *          on the next poll.  Used by the DCS-BIOS reset mechanism when
-     *          the simulator reconnects.
+     * @details Sets lastState_ to the far end of the range from the current
+     *          reading, so the change is always larger than the hysteresis band
+     *          and a message is sent on the next poll -- including when the knob
+     *          sits at or near either end of its travel.  Used by the DCS-BIOS
+     *          reset mechanism when the simulator reconnects or a mission starts.
      */
     void resetState() {
-      lastState_ = (lastState_ == 0) ? -1 : 0;
+      unsigned int state;
+      if (reverse_)
+        state = map(*value_, input_min_, input_max_, 65535, 0);
+      else
+        state = map(*value_, input_min_, input_max_, 0, 65535);
+      lastState_ = (state < 32768) ? 65535 : 0;
     }
 
     /**
