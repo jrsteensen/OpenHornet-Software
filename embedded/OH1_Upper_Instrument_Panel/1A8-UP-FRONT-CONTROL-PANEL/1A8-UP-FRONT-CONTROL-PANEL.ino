@@ -32,12 +32,12 @@
 
 
 /**
- * @file 1A8-UFC.ino
+ * @file 1A8-UP-FRONT-CONTROL-PANEL.ino
  * @author Sandra Carroll, sandra
  *         Christian Thalhammer, scuba
  *         B. Murphy, Murtle
  * @date 01.10.2026
- * @version 2.0.0
+ * @version 1.0.0
  * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the Up-Front Control Panel
  *
@@ -298,7 +298,7 @@ static inline uint16_t clampAdc(int16_t raw) {
 bool I2C_SCAN = false;
 
 /** @brief Strings shown on the five option displays during the boot splash screen. Indices map to OP1-OP5. */
-static const char* const BOOT_OP_MESSAGES[]        = {"MODE", "BIOS", "BLD", "H620", "V2.0"};
+static const char* const BOOT_OP_MESSAGES[]        = {"MODE", "BIOS", "BLD", "H631", "V1.0"};
 /** @brief Strings shown on the COMM1 and COMM2 displays during the boot splash screen. */
 static const char* const BOOT_COMM_MESSAGES[]      = {" 1", " 2"};
 /** @brief Strings shown on the scratchpad string and number regions during the boot splash screen. */
@@ -480,6 +480,21 @@ static bool displayBlank             = true;
 static unsigned long bootMessageStartTime = 0;
 /** @brief True while the boot message splash is being displayed on the UFC screens. */
 static bool bootMessageActive             = false;
+/** @brief Length of the version splash, counted from when it is drawn. */
+#define BOOT_SPLASH_MS 10000
+/** @brief Length of each of the two built-in test periods (outer segments, then inner segments). */
+#define BIT_PHASE_MS 5000
+/** @brief Wait after power-up before the built-in test first lights the displays, so they have settled. */
+#define BIT_START_DELAY_MS 2000
+
+/** @brief Built-in test period now showing: 0 = not running, 1 = outer segments, 2 = inner segments. */
+static uint8_t bitPhase                   = 0;
+/** @brief True once the first test period has been drawn (false while waiting BIT_START_DELAY_MS). */
+static bool bitShown                      = false;
+/** @brief millis() when the current test period started (before the first one: when the wait began). */
+static unsigned long bitPhaseStart        = 0;
+/** @brief True from setup() until the first mission-state check: the power-on test was armed in setup(). */
+static bool powerOnSequence               = false;
 
 
 // ════════════════════════════════════════════════════════════════════════════
@@ -525,6 +540,9 @@ void IRAM_ATTR ADS1115_irq() {
 // Input Processing Functions
 // ════════════════════════════════════════════════════════════════════════════
 
+/** @brief Last ADF switch position handled by processUFCIO(); 0xFF forces the next poll to send it again. */
+static uint8_t lastadf = 0xFF;
+
 /**
  * @brief  Read UFC controls that are not part of the TCA8418 key matrix.
  *
@@ -542,7 +560,6 @@ void IRAM_ATTR ADS1115_irq() {
  * @note    Called from loop() after a TCA8418 interrupt event is detected.
  */
 void processUFCIO() {
-  static uint8_t lastadf;
 
   // Poll gate: at most once per millisecond, same as processUFCKeypad(). Longer gates
   // (3 ms) made the buttons feel delayed.
@@ -567,10 +584,11 @@ void processUFCIO() {
     // Lookup table instead of switch/case for a direct, branch-free translation.
     static const char* const adf_values[] = {"0", "INVALID", "2", "INVALID", "0", "INVALID", "1", "INVALID"};
     if (adfsw == 2 || adfsw == 4 || adfsw == 6) {
-      DcsBios::tryToSendDcsBiosMessage("UFC_ADF", adf_values[adfsw]);
+      // If DCS-BIOS cannot take the message yet, keep lastadf as it was so the next poll tries again.
+      if (!DcsBios::tryToSendDcsBiosMessage("UFC_ADF", adf_values[adfsw])) return;
     }
+    lastadf = adfsw;
   }
-  lastadf = adfsw;
 }
 
 /**
@@ -623,6 +641,14 @@ void processUFCKeypad() {
     // Ignore events outside the key matrix (switch GPIO events, empty FIFO read).
     if (row < TCA8418_ROWS && col < TCA8418_COLS) {
       UFCkeys[row][col] = state ? 1 : 0;
+      if (state) {
+        // O/S BRG only: tell the scratchpad which key was pressed (see HT1621_OH::noteKey).
+        // Matrix rows 1-3 are digits 1-9; row 4 is CLR, 0, ENT.
+        if (col < 3) {
+          if (row >= 1 && row <= 3)      scratchpad.noteKey('1' + (row - 1) * 3 + col);
+          else if (row == 4)             scratchpad.noteKey(col == 0 ? 'C' : col == 1 ? '0' : 'E');
+        }
+      }
     }
 
     // Clear the EVENT IRQ flag
@@ -732,6 +758,16 @@ void update_op_display(int disp_num) {
   for (int digit_num = 0; digit_num < OP_DIGITS; digit_num++) {
     sendAsciiChar_OH(disp_num, digit_num, op_display[disp_num].content[digit_num]);
   }
+
+  // The scratchpad backlight is only on while something is lit on the scratchpad or on an option
+  // window. Tell the scratchpad driver whether any option window now has a visible character.
+  bool optionLit = false;
+  for (int i = 0; i < 5 && !optionLit; i++) {
+    for (int d = 0; d < OP_DIGITS; d++) {
+      if (op_display[i].content[d] > ' ') { optionLit = true; break; }
+    }
+  }
+  scratchpad.setOptionContent(optionLit);
 }
 
 /**
@@ -1173,12 +1209,21 @@ DcsBios::IntegerBuffer UpdateSkipCounterBuffer(MetadataEnd_UPDATE_SKIP_COUNTER, 
  *          DCS is at the main menu, and a non-empty aircraft identifier
  *          (e.g. "FA-18C_hornet") once a mission is actively running. This
  *          drives DCSMetaData.MissionStart, which the NOGO/GO LED logic reads
- *          to determine whether DCS is actually connected and running.
+ *          to determine whether DCS is actually connected and running. When a mission
+ *          starts it also forces all polled inputs to re-send their state.
  *
  * @param newValue  Aircraft name string, or empty/nullptr if no mission active.
  */
 void onMissionAcftNameChange(char* newValue) {
+  const bool wasRunning = (DCSMetaData.MissionStart == DCSRUNNING);
   DCSMetaData.MissionStart = (newValue != nullptr && newValue[0] != '\0') ? DCSRUNNING : DSCSTOPPED;
+  // Mission just started (stopped -> running, once): make every polled input (COMM1/COMM2 volume, UFC
+  // brightness, pull switches) and the ADF switch send its current position, so the cockpit matches the
+  // panel without anything being moved. Not repeated while the mission keeps running.
+  if (!wasRunning && DCSMetaData.MissionStart == DCSRUNNING) {
+    DcsBios::PollingInput::resetAllStates();
+    lastadf = 0xFF;
+  }
 }
 DcsBios::StringBuffer<24> missionAcftNameBuffer(MetadataStart_ACFT_NAME_A, onMissionAcftNameChange);
 // ════════════════════════════════════════════════════════════════════════════
@@ -1258,6 +1303,38 @@ void bootMessage(bool noPause, bool noClear, bool noCue) {
     display_comm_char(const_cast<char*>(BLANK_COMM), 0);
     display_comm_char(const_cast<char*>(BLANK_COMM), 1);
   }
+}
+
+/**
+ * @brief  Show one period of the UFC built-in test (NATOPS figure 2-48) on every display.
+ *
+ * @details Period 1 lights the outer segments of the alphanumeric displays (option windows, COMM
+ *          windows and the two scratchpad cells), period 2 the inner segments. Every numeric
+ *          segment and all five option cues are lit in both periods.
+ *
+ *          Segment masks (from OP_DISPLAY_FONT and the COMM layout in CHARSET.h):
+ *          - Option windows (16-bit): outer 0x071F, inner 0xF8E0; together they are all 16 segments.
+ *          - COMM windows (4 columns of 4 rows, row 0 = A, 1 = B, 2 = C, 3 = D): outer = rows A and B
+ *            (0x03), inner = rows C and D (0x0C).
+ *
+ * @param phase  1 = outer segments, 2 = inner segments.
+ */
+static void bitTestShow(uint8_t phase) {
+  const uint16_t opMask   = (phase == 1) ? 0x071F : 0xF8E0;
+  const uint8_t  commMask = (phase == 1) ? 0x03   : 0x0C;
+
+  for (int i = 0; i < 5; i++) {
+    for (uint8_t pos = 0; pos < OP_DIGITS; pos++) {
+      GN1640[i].setSegments16(opMask, op_order[pos]);
+    }
+    cue(i, true);   // CUE4/CUE5 redraw COMM2, so the COMM windows are drawn after the cues
+  }
+  for (int n = 0; n < 2; n++) {
+    for (uint8_t col = 0; col < 4; col++) {
+      matrix_COMM[n].setColumn(col, commMask);
+    }
+  }
+  scratchpad.bitTest(phase);
 }
 
 /**
@@ -1449,9 +1526,12 @@ void updateGoNoGoLedNonBlocking() {
  *          - DCSRUNNING → DSCSTOPPED (first time only): calls bootMessage() to
  *            show the splash and starts a 10-second timer.
  *
- *          After 10 seconds the splash is cleared via a second bootMessage() call.
- *          A 500 ms poll gate on the timeout check avoids calling millis() on
- *          every loop iteration while the splash is active.
+ *          At power-on setup() arms the UFC built-in test. BIT_START_DELAY_MS later this function
+ *          lights it (bitTestShow(): BIT_PHASE_MS of outer segments, then BIT_PHASE_MS of inner
+ *          segments), then shows the version splash. The test runs once per power-up and stops at
+ *          once if a mission starts. After BOOT_SPLASH_MS the splash is cleared via a second
+ *          bootMessage() call. A 500 ms poll gate on the splash timeout check avoids calling
+ *          millis() on every loop iteration while the splash is active.
  *
  *          millis() is only called when a state change or an active boot message
  *          timeout actually needs to be evaluated, minimising overhead.
@@ -1476,8 +1556,18 @@ void handleBootMessage() {
   // Handle mission-state transitions immediately when they occur
   if (stateChanged) {
     prevMissionState = currentMissionState;
+    // The power-on test was started in setup(), before the mission state was known.
+    const bool poweredOnJustNow = powerOnSequence;
+    powerOnSequence = false;
     if (currentMissionState == DCSRUNNING) {
       bootMessageShownForCurrentStop = false;
+      if (poweredOnJustNow && bitPhase != 0) {
+        // The sim was already running at power-on: drop the test (and blank the displays if it had
+        // already lit them); DCS-BIOS fills them in as values change.
+        bitPhase = 0;
+        bootMessageActive = false;
+        if (bitShown) bootMessage(true, false, false);
+      }
       // Mission started: redraw the COMM channels last sent by DCS-BIOS.
       redrawCommFromDcs();
     } else if (currentMissionState == DSCSTOPPED &&
@@ -1490,11 +1580,40 @@ void handleBootMessage() {
     }
   }
 
+  // Power-on built-in test: outer segments for BIT_PHASE_MS, then inner segments for BIT_PHASE_MS,
+  // then the version splash. If a mission starts meanwhile the test stops and DCS-BIOS takes over
+  // the displays (it sends every value at mission start).
+  if (bitPhase != 0) {
+    if (currentMissionState == DCSRUNNING) {
+      bitPhase = 0;
+      bootMessageActive = false;
+    } else if (!bitShown) {
+      // Power-up wait: leave the displays alone until they have settled, then light the first period.
+      if (currentMillis - bitPhaseStart >= BIT_START_DELAY_MS) {
+        bitShown = true;
+        bitPhaseStart = currentMillis;
+        bitTestShow(1);
+      }
+    } else if (currentMillis - bitPhaseStart >= BIT_PHASE_MS) {
+      if (bitPhase == 1) {
+        bitPhase = 2;
+        bitPhaseStart = currentMillis;
+        bitTestShow(2);
+      } else {
+        // Test over: show the version splash (bootMessageActive stays true; the timeout below clears it).
+        bitPhase = 0;
+        bootMessage(true, true, true);
+        bootMessageStartTime = currentMillis;
+      }
+    }
+    return;
+  }
+
   // Poll the 10-second timeout at 500ms resolution — coarse enough for a 10s timer,
   // avoids calling bootMessage() on every loop iteration while the message is active
   if (bootMessageActive && (currentMillis - lastTimeoutCheck >= 500)) {
     lastTimeoutCheck = currentMillis;
-    if (currentMillis - bootMessageStartTime >= 10000) {
+    if (currentMillis - bootMessageStartTime >= BOOT_SPLASH_MS) {
       bootMessage(true, false, false);
       bootMessageActive = false;
       // Splash cleared during a running mission: redraw the COMM channels.
@@ -1521,7 +1640,8 @@ void handleBootMessage() {
  *          7. Initialises the WS2812B FastLED backlight strip.
  *          8. Initialises the HT1621 scratchpad LCD.
  *          9. (not USE_ADC_RDY) Configures the ESP32 native ADC.
- *         10. Shows the boot splash message.
+ *         10. Starts the TM1640 display drivers and arms the power-on built-in test and version
+ *             splash (run by handleBootMessage()).
  *         11. Turns off the FastLED strip (setup complete indication).
  *         12. Reads power source via powerSource().
  *         13. Tests both GO and NOGO LEDs for 2 seconds.
@@ -1529,6 +1649,11 @@ void handleBootMessage() {
  */
 void setup() {
   Serial.begin(250000);
+#if defined(ARDUINO_USB_CDC_ON_BOOT) && ARDUINO_USB_CDC_ON_BOOT && defined(ARDUINO_USB_MODE) && ARDUINO_USB_MODE == 1
+  // Hardware CDC and JTAG: by default every write waits up to 100 ms when the PC is not reading fast
+  // enough, which makes the knobs and keys feel sluggish (worst with DTR off in the DCS-BIOS Bridge).
+  Serial.setTxTimeoutMs(0);
+#endif
   Serial.printf("Openhornet Up-Front Controller HW Version %s, FW Version %s\n", BOOT_OP_MESSAGES[3], BOOT_OP_MESSAGES[4]);
 
   ufcState.begin();  // configures VCC_SNS_3_3V as INPUT_PULLUP
@@ -1645,17 +1770,27 @@ void setup() {
   scratchpad.begin(SCRCS_3_3V, SCRWR_3_3V, SCRDATA_3_3V, SCRBL_3_3V); // (cs, wr, Data, backlight)
   scratchpad.clear(); // clear the screen
 
+  // ---------- TM1640 display drivers: explicit begin()
+  // The TM16xx library runs begin() (which clears the display) by itself the first time a driver sends
+  // data. For the TM1640Anode drivers that happens in the middle of the first setSegments16() call,
+  // after the new segments were stored, so that call's segments are wiped: the first position written
+  // after power-up (the leftmost cell of each option window) stayed dark. Running begin() here, before
+  // anything is drawn, makes every first write behave like the rest.
+  for (int k = 0; k < 6; k++) {
+    GN1640[k].begin(UFC_active, UCF_brightness);   // OP1-OP5 and the CUE row
+  }
+  CUE123.begin(UFC_active, UCF_brightness);
+  COMM1.begin(UFC_active, UCF_brightness);
+  COMM2.begin(UFC_active, UCF_brightness);
+  GN1640_COMM[0].begin(UFC_active, UCF_brightness);
+  GN1640_COMM[1].begin(UFC_active, UCF_brightness);
+
   // Optimized for S3: removed the unused ESP32 native-ADC setup that used to live
   // here (analogSetAttenuation / analogReadResolution). All three pots are read
   // exclusively through the ADS1115 external ADC (see the loop() ADC section);
   // the native ADC was configured but never actually read via analogRead().
   // Leaving it out also avoids the S3's ADC2/Wi-Fi-Bluetooth coexistence quirk
   // entirely, since the native ADC peripheral is never touched.
-
-  //  ---------- Show the boot message. handleBootMessage() clears it ~10 s after loop() starts
-  //  (~13 s from power-on, including the 1 s I2C settle and 2 s GO/NOGO LED test below).
-  //  The NOGO LED then flashes until a mission starts.
-  bootMessage(true, true, true);
 
   //  ---------- turn off backlight to show we're done with setup
   FastLED.clear();
@@ -1670,6 +1805,15 @@ void setup() {
   UFCkeypad.digitalWrite(UFC_NOGO, LOW);
 
   DcsBios::setup();
+
+  //  ---------- Boot sequence. BIT_START_DELAY_MS (2 s) after setup() ends, handleBootMessage() runs the
+  //  built-in test (5 s outer segments, 5 s inner segments), shows the version splash for 10 s, then
+  //  clears the displays. The NOGO LED then flashes until a mission starts.
+  bitPhase            = 1;
+  bitShown            = false;
+  bitPhaseStart       = millis();
+  bootMessageActive   = true;
+  powerOnSequence     = true;
 }
 
 /**
