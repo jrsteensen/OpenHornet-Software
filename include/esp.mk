@@ -25,7 +25,7 @@ APP_ADDR           = 0x10000
 MERGE_BIN_SIZE     = $(if $(FLASH_DEF),$(FLASH_DEF),4MB)
 # These flags are set automatically to blank strings.
 # Override them so that the debug build output doesn't fail.
-BUILD_EXTRA_FLAGS  = -DARDUINO_HOST_OS=\"linux\" -DARDUINO_FQBN=\"esp32:esp32:esp32s2\"
+BUILD_EXTRA_FLAGS += -DARDUINO_HOST_OS=\"linux\" -DARDUINO_FQBN=\"esp32:esp32:$(BOARD)\"
 
 include $(ROOTDIR)/include/openhornet.mk
 include $(ESPMK_DIR)/makeEspArduino.mk
