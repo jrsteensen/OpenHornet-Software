@@ -8,7 +8,7 @@
  *             | |
  *             |_|
  *   ----------------------------------------------------------------------------------
- *   Copyright 2016-2024 OpenHornet
+ *   Copyright 2016-2026 OpenHornet
  *
  *   Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -32,10 +32,10 @@
 
 /**
  * @file 2A4A1-RWR_CONTROL_PANEL.ino
- * @author Arribe, Ash
- * @date 03.21.2024
- * @version 0.1.0
- * @copyright Copyright 2016-2024 OpenHornet. Licensed under the Apache License, Version 2.0.
+ * @author Arribe, Ash, lahirunirmalx
+ * @date 10.14.2026
+ * @version 0.1.1
+ * @copyright Copyright 2016-2026 OpenHornet. Licensed under the Apache License, Version 2.0.
  * @brief Controls the RWR CONTROL panel.
  *
  * @details
@@ -72,10 +72,12 @@
  * serial interface
  * 
  */
+#if not defined(DCSBIOS_RS485_SLAVE) and not defined(DCSBIOS_RS485_MASTER)  // USB serial only; skipped when this sketch runs on the RS485 bus
 #if defined(__AVR_ATmega328P__) || defined(__AVR_ATmega2560__)
 #define DCSBIOS_IRQ_SERIAL  ///< This enables interrupt-driven serial communication for DCS-BIOS. (Only used with the ATmega328P or ATmega2560 microcontrollers.)
 #else
 #define DCSBIOS_DEFAULT_SERIAL  ///< This enables the default serial communication for DCS-BIOS. (Used with all other microcontrollers than the ATmega328P or ATmega2560.)
+#endif
 #endif
 
 #ifdef __AVR__
@@ -86,7 +88,8 @@
  * The Arduino pin that is connected to the
  * RE and DE pins on the RS-485 transceiver.
 */
-
+#define TXENABLE_PIN 5  ///< Sets TXENABLE_PIN to Arduino Pin 5
+#define UART1_SELECT    ///< Selects UART1 on Arduino for serial communication
 
 #include "DcsBios.h"
 #include "2A4A1-RWR_CONTROL_PANEL.h"
