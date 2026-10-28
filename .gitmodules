@@ -46,3 +46,24 @@
 [submodule "libraries/AccelStepper"]
 	path = libraries/AccelStepper
 	url = https://github.com/waspinator/AccelStepper.git
+[submodule "libraries/Adafruit_TCA8418"]
+	path = libraries/Adafruit_TCA8418
+	url = https://github.com/adafruit/Adafruit_TCA8418.git
+[submodule "libraries/TM16xx"]
+	path = libraries/TM16xx
+	url = https://github.com/maxint-rd/TM16xx.git
+[submodule "libraries/PCA95x5"]
+	path = libraries/PCA95x5
+	url = https://github.com/hideakitai/PCA95x5.git
+[submodule "libraries/Adafruit_ADS1X15"]
+	path = libraries/Adafruit_ADS1X15
+	url = https://github.com/adafruit/Adafruit_ADS1X15.git
+[submodule "libraries/Adafruit_BusIO"]
+	path = libraries/Adafruit_BusIO
+	url = https://github.com/adafruit/Adafruit_BusIO.git
+[submodule "libraries/Adafruit-GFX-Library"]
+	path = libraries/Adafruit-GFX-Library
+	url = https://github.com/adafruit/Adafruit-GFX-Library.git
+[submodule "libraries/Adafruit_TinyUSB_Arduino"]
+	path = libraries/Adafruit_TinyUSB_Arduino
+	url = https://github.com/adafruit/Adafruit_TinyUSB_Arduino.git

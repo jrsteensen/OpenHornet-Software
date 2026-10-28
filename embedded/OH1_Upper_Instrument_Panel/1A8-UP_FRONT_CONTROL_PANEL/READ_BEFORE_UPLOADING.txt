@@ -1,0 +1,43 @@
+READ BEFORE UPLOADING - UFC (Up Front Control) panel, V 1.0.0
+===============================================================
+
+BEFORE YOU START
+  - Arduino IDE with the ESP32 board core installed
+  - Libraries: they come with the OpenHornet-Software repository as
+    submodules (the list is LIBRARIES in the Makefile in this folder)
+  - USB cable plugged into the board's USB-C port
+  - Do NOT install or enable the Adafruit TinyUSB library
+
+IDE SETTINGS (Tools menu)
+  Board:             LOLIN S3 Mini
+  USB CDC On Boot:   Enabled
+  USB Mode:          Hardware CDC and JTAG
+  Upload Mode:       UART0 / Hardware CDC
+  Upload Speed:      921600
+  Partition Scheme:  Default 4MB with spiffs
+
+UPLOAD
+  1. File > Open: 1A8-UP_FRONT_CONTROL_PANEL/1A8-UP_FRONT_CONTROL_PANEL.ino
+  2. Put the board in bootloader mode by hand: hold BOOT, tap RESET,
+     release BOOT. The board shows up as a new COM port.
+  3. Tools > Port: pick that new port (the number changes every time).
+  4. Click Upload and wait for "Done uploading".
+
+CONNECT TO DCS
+  In the DCS-BIOS Bridge add the panel's COM port:
+  baud 250000, RTS ticked, DTR on or off (both work).
+
+CHECK IT WORKED
+  About 2 s after power-up the displays run a built-in test (5 s outer
+  segments, 5 s inner segments), then show the version splash (H631, V1.0)
+  for 10 s, then clear. NOGO flashes until a mission starts. Start a mission:
+  the knobs and ADF switch send their positions to the cockpit by themselves.
+
+DCS-BIOS LUA (O/S BRG PAGE)
+  The panel works with the standard FA-18C_hornet.lua and with the patched
+  one that moves the first two BRG characters into the String 2 display.
+  It tells them apart by itself, so there is nothing to set.
+  - Standard Lua: DCS-BIOS exports only 8 of the 9 BRG characters, so the
+    last digit keyed is rebuilt from the panel's own key press.
+  - Patched Lua: the full BRG entry arrives, and the key-press rebuild is
+    not used.
