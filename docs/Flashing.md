@@ -200,6 +200,7 @@ Use this table to find which firmware file belongs on which panel and which flas
 | `2A2A1-LEFT_LIP_MODULE` | Left LIP Module (IFEI) | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `2A3A1-AMPCD` | AMPCD | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `2A4A1-RWR_CONTROL_PANEL` | RWR Control Panel | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
+| `2A5A1-ECM_DISP_PANEL` | ECM DISP Panel / Cabin Pressure Gauge | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `2A7A1-STANDBY_INSTR_MODULE` | Standby Instruments | Arduino MEGA 2560 | [MEGA 2560](#arduino-mega-2560) |
 | `3A2A1-SEAT_CONTROLS` | Seat Controls | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `3A3A1-STICK_CONTROLLER` | Stick Controller | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
@@ -217,6 +218,9 @@ Use this table to find which firmware file belongs on which panel and which flas
 | `4A9A1A1-THROTTLE_INNER_GRIP` | Throttle Inner Grip | Arduino Pro Mini | [Pro Mini](#arduino-pro-mini-atmega328p-8-mhz) |
 | `5A10-DEFOG_PANEL` | Defog Panel | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `5A1A1-RC_ABSIS_BUS_MASTER` | RC Bus Master | Arduino MEGA 2560 | [MEGA 2560](#arduino-mega-2560) |
+| `5A2-RIGHT_AUX_PANEL` | Right Aux Panel (Hook, Wing Fold, AV Cool, Hyd Press Gauge) | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
+| `5A2A4-RADAR_ALTIMETER` | Radar Altimeter | Radar Altimeter Controller (Pro Micro) | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
+| `5A4A1-ELEC_PANEL` | ELEC Panel / Battery Gauge | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `5A5A1-ECS_PANEL` | ECS Panel | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `5A6A1-INTR_LT_PANEL` | Interior Lights Panel | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
 | `5A7A1-SNSR_PANEL` | Sensor Panel | SparkFun Pro Micro | [Pro Micro](#sparkfun-pro-micro-atmega32u4-16-mhz) |
