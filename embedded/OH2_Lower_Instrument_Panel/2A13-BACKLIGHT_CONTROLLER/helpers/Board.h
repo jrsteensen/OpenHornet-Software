@@ -51,6 +51,8 @@ private:
     static const unsigned long SHOW_INTERVAL_NORMAL_MS = 150;         // Min. gap between FastLED.show() calls in MODE_NORMAL. Interrupts are
                                                                       // off during show(), so DCS-BIOS data can ONLY be received in this gap.
                                                                       // Larger = fewer missed updates, but more LED latency. See below.
+    static const unsigned long MAX_SHOW_STARVATION_MS = 250;      // No show for this long = force one (starvation escape)
+    static const unsigned long DIMMER_BURST_MS = 300;             // Window after a dimmer change: budget is lifted
     static const int MAX_CHANNELS = 10;                               // Maximum number of channels
     static const int MODE_NORMAL = 1;                                 // Normal DCS-BIOS controlled mode
     static const int MODE_MANUAL = 2;                                 // Manual mode - control backlts with rotary encoder
@@ -65,12 +67,25 @@ private:
     uint16_t dcs_brightness_console;                                   // Current brightness level (0-65535), for DCS-BIOS controlled mode
     uint16_t dcs_brightness_instrument;                                // Current brightness level (0-65535), for DCS-BIOS controlled mode
     uint16_t dcs_brightness_flood;                                     // Current brightness level (0-65535), for DCS-BIOS controlled mode
+    uint16_t pending_instr, pending_console, pending_flood;           // Parked suspicious values
+    unsigned long pend_instr_ms, pend_console_ms, pend_flood_ms;      // millis() when the value was parked
+    static const unsigned long PENDING_CONFIRM_MS = 400;              // Parked value survives this long uncontradicted -> apply
+    bool     pend_instr_v = false;
+    bool     pend_console_v = false;
+    bool     pend_flood_v = false;
+    static const uint16_t DIMMER_JUMP_LIMIT = 8192;                  // ~12.5% of full scale
     int encSwPin;                                                     // Encoder switch pin
     RotaryEncoder* encoder;                                           // Pointer to encoder instance
     int rotary_pos;                                                   // Current rotary encoder position
     static Board* instance;                                           // Static instance pointer to the Board class
     DcsState prevDcsState = DcsState::EXITED;                         // Previous DCS state for transition detection
-    
+
+    uint8_t  nextChannel;                                             // Round-robin pointer for per-channel updates
+    uint32_t maxPowerMW;                                              // Power budget for scale calc; 0 = no limit
+    unsigned long lastDimmerChangeMs;                                 // millis() of the last applied dimmer change (opens burst window)
+    static const uint16_t LED_BUDGET_PER_GAP = 350;                   // Max LEDs shown per frame gap (~18 ms)
+    static const unsigned long DCS_SILENT_MS = 500;                   // No frame end for this long = DCS not streaming
+        
     /**
      * @brief Private constructor to enforce singleton pattern
      * @see This method is called by getInstance() when creating the singleton instance
@@ -78,6 +93,7 @@ private:
     Board() {
         updCountdown = 0;                                             // Initialize with 0
         lastShowMs = 0;                                               // Initialize with 0
+        lastDimmerChangeMs = 0;                                       // Initialize with 0
         channelCount = 0;                                             // Initialize with 0 channels
         thisHue = 0;                                                  // Initialize with 0
         deltaHue = 3;                                                 // Initialize with 3
@@ -89,6 +105,8 @@ private:
         dcs_brightness_flood = 0;                                     // Initialize DCS brightness to 0
         rotary_pos = 0;                                               // Initialize with 0
         encoder = nullptr;                                            // Initialize with nullptr
+        nextChannel = 0;                                              // Initialize with 0
+        maxPowerMW = 0;                                               // Initialize with 0
     }
 
     /**
@@ -104,7 +122,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyInstrLights(instrTarget, cgrbTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     /**
@@ -117,7 +134,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyConsoleLights(consoleTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
     /**
@@ -130,7 +146,6 @@ private:
         for (int i = 0; i < channelCount; i++) {
             channels[i]->applyFloodlights(floodTarget);
         }
-        LedUpdateState::getInstance()->setUpdateFlag(true);
     }
 
 
@@ -142,6 +157,13 @@ public:
      */
     static Board* getInstance() {
         return instance ? instance : (instance = new Board()); }
+
+    /**
+     * @brief Sets the power budget used to compute the brightness scale for per-channel shows
+     * @param mw Maximum power in milliwatts (voltage * max current); 0 disables the limit
+     * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
+     */
+    void setMaxPowerMW(uint32_t mw) { maxPowerMW = mw; }
 
     /**
      * @brief Sets up the rotary encoder with switch and encoder pins
@@ -157,41 +179,89 @@ public:
     }
 
     /**
-     * @brief Registers a channel with the board
+     * @brief Registers a channel with the board and with the LedUpdateState singleton
      * @param channel Pointer to the channel to register
      * @see This method is called by setup() in 2A13-BACKLIGHT_CONTROLLER.ino
      */
     void registerChannel(Channel* channel) {
+        LedUpdateState::getInstance()->registerArray(channel->getLeds());
         channels[channelCount++] = channel;
     }
 
     /**
      * @brief Update the physical LED state
      * @details FastLED.show() takes ~51 ms for ~1700 LEDs and runs with interrupts disabled,
-     *          so no DCS-BIOS data can be received while it runs. The gap between two show()
-     *          calls is therefore the only window in which updates arrive. In MODE_NORMAL that
-     *          gap is timed (SHOW_INTERVAL_NORMAL_MS) rather than counted in loop() iterations:
-     *          a loop iteration is only ~0.1 ms, so counting them gave a listening window of a
-     *          few ms against ~51 ms of deafness, and most updates were missed until DCS-BIOS
-     *          re-sent them on its ~3.5 s sweep. MODE_MANUAL / MODE_RAINBOW do not call
+     *          so no DCS-BIOS data can be received while it runs. A too long FastLED update 
+     *          will cause a missed DCS-BIOS message, and subsequently flickering lights. 
+     * 
+     *          On the upside, between two DCS-Bios message frames, there is a silence 
+     *          period which we can use to update part of the LEDs. 
+     * 
+     *          Therefore, we implement a per-channel update system. We check if a channel 
+     *          needs an update (is dirty) and if it fits in the current gap
+     *          
+     *          MODE_MANUAL / MODE_RAINBOW do not call
      *          DcsBios::loop(), so they have nothing to listen for and keep the loop countdown.
      * @see This method is called by loop() in 2A13-BACKLIGHT_CONTROLLER.ino
      */
     void updateLeds() {
-        if (!LedUpdateState::getInstance()->getUpdateFlag()) return;  // Nothing changed: no update needed
-
-        if (currentMode == MODE_NORMAL) {                             // Leave a fixed listening window for DCS-BIOS data
-            if (millis() - lastShowMs < SHOW_INTERVAL_NORMAL_MS) return;
-        } else {                                                      // No DCS-BIOS data in these modes: batch by loop count as before
-            updCountdown = (updCountdown == 0) ? 8 : updCountdown;
+        LedUpdateState* upd = LedUpdateState::getInstance();
+        if (!upd->getUpdateFlag()) return;                            // Nothing dirty
+    
+        if (currentMode != MODE_NORMAL) {                             // MANUAL / RAINBOW: no DCS listening,
+            updCountdown = (updCountdown == 0) ? 8 : updCountdown;    // keep legacy batching and global show
             if (--updCountdown != 0) return;
+            cli();
+            FastLED.show();
+            upd->setUpdateFlag(false);
+            sei();
+            return;
         }
-
-        cli();
-        FastLED.show();
-        LedUpdateState::getInstance()->setUpdateFlag(false);          // Reset update flag
-        sei();
-        lastShowMs = millis();                                        // Start the listening window at the END of show()
+    
+        // MODE_NORMAL: show only in the idle gap after a DCS-BIOS frame
+        bool dcsSilent = (millis() - lastFrameEndMs) > DCS_SILENT_MS;
+        bool starved   = (millis() - lastShowMs) > MAX_SHOW_STARVATION_MS;
+        bool dimmerBurst = (millis() - lastDimmerChangeMs) < DIMMER_BURST_MS;   // Active dimming: fluidity beats frame integrity
+        if (!dcsSilent && !starved) {
+            if (!frameJustEnded) return;                              // Wait for end-of-frame marker
+            if (!dcsStreamIdle()) return;                             // Bytes pending: retry next loop
+            if (millis() - lastFrameEndMs > 3) {                      // Gap already stale:
+                frameJustEnded = false;                               // wait for the next one
+                return;
+            }
+        }
+    
+        uint8_t scale = 255;
+        if (maxPowerMW) {                                             // Same computation FastLED.show() uses
+            scale = calculate_max_brightness_for_power_mW(255, maxPowerMW);
+        }
+    
+        uint16_t budget = LED_BUDGET_PER_GAP;
+        for (uint8_t n = 0; n < channelCount; n++) {                  // Visit each channel at most once,
+            uint8_t i = nextChannel;                                  // starting where the last gap ended
+            nextChannel = (nextChannel + 1) % channelCount;
+            if (!(upd->getDirtyMask() & (1 << i))) continue;          // Clean channel
+            if (!dimmerBurst && channels[i]->getLedCount() > budget) {
+                nextChannel = i;                                  // Park the pointer: this channel opens the next gap with a full budget
+                break;                                            // Rotation becomes real; bounded delay for every dirty channel
+            }
+            if (!dimmerBurst && !dcsSilent && !starved && !dcsStreamIdle()) break;   // Next frame started early: stop (burst: keep painting)
+    
+            channels[i]->showNow(scale);
+            lastShowMs = millis();                                    // Feed the starvation timer
+    
+            cli();                                                    // processChar is not reentrant:
+            while (UCSR0A & (1 << RXC0)) {                            // no RX interrupt may interleave
+                volatile uint8_t d = UDR0; (void)d;                   // Drop stale bytes, clear overrun
+            }
+            for (uint8_t k = 0; k < 6; k++) {
+                DcsBios::parser.processChar(0x55);                    // Force resync wait, now atomic
+            }
+            sei();
+            upd->clearBit(i);
+            budget = (channels[i]->getLedCount() > budget) ? 0 : budget - channels[i]->getLedCount();
+        }
+        frameJustEnded = false;                                       // Gap consumed
     }
 
 
@@ -272,6 +342,7 @@ public:
                     // PAUSED: do nothing - keep current light state
                     prevDcsState = currentDcsState;
                     DcsBios::loop();
+                    serviceDimmerPending();                       // Apply parked dimmer values after their confirm window
                 }
                 break;
             case MODE_MANUAL:                                         // MODE 2: LEDs controlled manually through BKLT switch
@@ -349,9 +420,25 @@ public:
      * @see This method is conditionally called by onInstrIntLtChange() in Board.h
      */
     void updateInstrumentLights(uint16_t newValue) {
-        if (newValue == dcs_brightness_instrument) return;            // Central gate: skip if unchanged
-        dcs_brightness_instrument = newValue;                         // In any mode, store the DCS-BIOS brightness value
-        if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
+        if (newValue == dcs_brightness_instrument) { pend_instr_v = false; return; }
+        uint16_t diff = (newValue > dcs_brightness_instrument)
+                      ? newValue - dcs_brightness_instrument
+                      : dcs_brightness_instrument - newValue;
+        if (diff > DIMMER_JUMP_LIMIT) {                            // Suspicious jump:
+            uint16_t pdiff = (newValue > pending_instr)
+                           ? newValue - pending_instr
+                           : pending_instr - newValue;
+            if (!pend_instr_v || pdiff > DIMMER_JUMP_LIMIT) {      // Not near the parked value: (re)park
+                pending_instr = newValue;
+                pend_instr_v = true;
+                pend_instr_ms = millis();
+                return;
+            }                                                      // Second value near the parked one: genuine
+        }
+        pend_instr_v = false;
+        dcs_brightness_instrument = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
+        if (currentMode != MODE_NORMAL) return;
         applyInstrumentTargets();
     }
 
@@ -361,9 +448,25 @@ public:
      * @see This method is called by onConsolesDimmerChange() in Board.h
      */
     void updateConsoleLights(uint16_t newValue) {
-        if (newValue == dcs_brightness_console) return;               // Central gate: skip if unchanged
-        dcs_brightness_console = newValue;                            // In any mode, store the DCS-BIOS brightness value
-        if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
+        if (newValue == dcs_brightness_console) { pend_console_v = false; return; }
+        uint16_t diff = (newValue > dcs_brightness_console)
+                      ? newValue - dcs_brightness_console
+                      : dcs_brightness_console - newValue;
+        if (diff > DIMMER_JUMP_LIMIT) {                            // Suspicious jump:
+            uint16_t pdiff = (newValue > pending_console)
+                           ? newValue - pending_console
+                           : pending_console - newValue;
+            if (!pend_console_v || pdiff > DIMMER_JUMP_LIMIT) {    // Not near the parked value: (re)park
+                pending_console = newValue;
+                pend_console_v = true;
+                pend_console_ms = millis();
+                return;
+            }                                                      // Second value near the parked one: genuine
+        }
+        pend_console_v = false;
+        dcs_brightness_console = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
+        if (currentMode != MODE_NORMAL) return;
         applyConsoleTargets();
     }
 
@@ -373,12 +476,59 @@ public:
      * @see This method is called by onFloodDimmerChange() in Board.h
      */
     void updateFloodLights(uint16_t newValue) {
-        if (newValue == dcs_brightness_flood) return;                 // Central gate: skip if unchanged
-        dcs_brightness_flood = newValue;                              // In any mode, store the DCS-BIOS brightness value
-        if (currentMode != MODE_NORMAL) return;                       // But only in normal mode, actually send update to channels
+        if (newValue == dcs_brightness_flood) { pend_flood_v = false; return; }
+        uint16_t diff = (newValue > dcs_brightness_flood)
+                      ? newValue - dcs_brightness_flood
+                      : dcs_brightness_flood - newValue;
+        if (diff > DIMMER_JUMP_LIMIT) {                            // Suspicious jump:
+            uint16_t pdiff = (newValue > pending_flood)
+                           ? newValue - pending_flood
+                           : pending_flood - newValue;
+            if (!pend_flood_v || pdiff > DIMMER_JUMP_LIMIT) {      // Not near the parked value: (re)park
+                pending_flood = newValue;
+                pend_flood_v = true;
+                pend_flood_ms = millis();
+                return;
+            }                                                      // Second value near the parked one: genuine
+        }
+        pend_flood_v = false;
+        dcs_brightness_flood = newValue;
+        lastDimmerChangeMs = millis();                            // Open/refresh the dimmer burst window
+        if (currentMode != MODE_NORMAL) return;
         applyFloodTargets();
     }
 
+
+    /**
+     * @brief Applies parked dimmer values whose confirm window expired
+     * @details The plausibility filter parks large jumps. Garbage values are contradicted
+     *          within the window (the resent true value equals the applied one and clears
+     *          the pending slot via the equality branch). A genuine jump is never resent
+     *          as a change (the DCS-BIOS IntegerBuffer deduplicates identical values), so
+     *          it is applied here once it survives PENDING_CONFIRM_MS uncontradicted.
+     * @see This method is called by processMode() in MODE_NORMAL
+     */
+    void serviceDimmerPending() {
+        unsigned long now = millis();
+        if (pend_instr_v && (now - pend_instr_ms > PENDING_CONFIRM_MS)) {
+            pend_instr_v = false;
+            dcs_brightness_instrument = pending_instr;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyInstrumentTargets();
+        }
+        if (pend_console_v && (now - pend_console_ms > PENDING_CONFIRM_MS)) {
+            pend_console_v = false;
+            dcs_brightness_console = pending_console;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyConsoleTargets();
+        }
+        if (pend_flood_v && (now - pend_flood_ms > PENDING_CONFIRM_MS)) {
+            pend_flood_v = false;
+            dcs_brightness_flood = pending_flood;
+            lastDimmerChangeMs = now;
+            if (currentMode == MODE_NORMAL) applyFloodTargets();
+        }
+    }
 
     /**
      * @brief Callback for instrument lighting changes from DCS-BIOS
